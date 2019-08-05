@@ -1,0 +1,10 @@
+
+scala console in sbt
+
+running console in sbt can produce an error (noticed this in the first example assignment)
+its to do with ncurses. 
+
+export TERM=xterm-color
+
+solves it. default for me is xterm-256color
+

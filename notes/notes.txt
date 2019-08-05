@@ -1,0 +1,20 @@
+
+1.1 programming paradigms
+
+mutation - change some attribute while maintaining identity. For example, could define a polynomial class, then set a certain coefficient to a particular value.
+
+functional programming - avoid mutation - use immutable variables (values)
+take something and change it, resulting in something else.
+minimise side effects
+
+functional programming
+restricted definition - no mutable variables, assignments, or imperative conttrol structures
+wider sense - a functional programming language allows the construction of elegant programs that focus on fucntions
+
+functions are first class functions
+
+
+
+
+
+
