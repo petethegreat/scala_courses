@@ -58,5 +58,45 @@ object Main {
   /**
    * Exercise 3
    */
-    def countChange(money: Int, coins: List[Int]): Int = ???
+    def countChange(money: Int, coins: List[Int]): Int =
+    {
+      // function for recursion
+      def coinNumber(money: Int, coins: List[Int], combinations: Int,usehead: Boolean) =
+        {
+          //termination conditions
+          // we've made our change
+          if (money == 0) {combinations +1}
+          // we're out of coins, with money remaining
+          else if (coins.isEmpty) {combinations}
+          else if (coins.head <= money )
+              {
+
+                // sum the combinations without it and the commbinations with it
+                we need a case for 
+                if (useHead)
+                {
+                  coinNumber(money,coins,coinNumber(money,coins.tail,combinations)
+                }
+                else {coinNumber(money,coins,combinations, false) }
+
+
+
+                // keep trying this coin
+                // don't try this coin
+                // move on to other coins
+                // try subtracting this coin (multiple times?)
+                // try without using this coin
+                coinNumber(money - coins.head, coins.tail, combinations)
+                // we want to
+
+              }
+            else
+              {
+                // current coin won't fit into our money, try another
+                coinNumber(money, coins.tail, combinations)
+              }
+
+        }
+
+    }
   }
