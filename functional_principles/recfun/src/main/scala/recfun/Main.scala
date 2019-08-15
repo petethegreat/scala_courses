@@ -62,28 +62,26 @@ object Main {
     {
       // function for recursion
       //@scala.annotation.tailrec
-      def coinNumber(money: Int, coins: List[Int], combinations: Int, timesToUseHead:Int): Int =
+      def coinNumber(money: Int, coins: List[Int], combinations: Int): Int =
         {
           //termination conditions
           // we've made our change
           if (money == 0) {
-            println("combination works")
+            //println("combination works")
             combinations +1}
           // we're out of coins, with money remaining
           else if (coins.isEmpty) {
-            println("combination does not work")
-            combinations
-          }
-          else if (coins.head*timesToUseHead <= money ) {
-            println(s"money $money - trying $timesToUseHead x $coins.head")
-            // subtract this number of head coins, and move to next coin in list
-            coinNumber(money - coins.head*timesToUseHead,coins,combinations,timesToUseHead+1 )
-            // try one more of this coin type
-            coinNumber(money - coins.head*timesToUseHead,coins.tail,combinations,0 )
-          } else coinNumber(money,coins.tail,combinations,0 )
+            //println("combination does not work")
+            combinations}
+          // if we have money, use more coins
+          else if (money > 0 ) {
+            //println(s"money $money - trying  $coins.head")
+            // use one (more) of this coin, and try without any more of this coin
+            coinNumber(money - coins.head,coins,combinations) + coinNumber(money ,coins.tail,combinations)
+          } else 0 // we can't use any more of this coin - not going to get any more use out of it
         }
       // end definition of coinNumber
-      coinNumber(money,coins,0,0)
+      coinNumber(money,coins,0)
     }
   }
 
