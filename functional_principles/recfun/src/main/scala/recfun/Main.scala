@@ -61,16 +61,32 @@ object Main {
     def countChange(money: Int, coins: List[Int]): Int =
     {
       // function for recursion
-      def coinNumber(money: Int, coins: List[Int], combinations: Int, timesToUseHead:Int) =
+      //@scala.annotation.tailrec
+      def coinNumber(money: Int, coins: List[Int], combinations: Int, timesToUseHead:Int): Int =
         {
           //termination conditions
           // we've made our change
-          if (money == 0) combinations +1
+          if (money == 0) {
+            println("combination works")
+            combinations +1}
           // we're out of coins, with money remaining
-          else if (coins.isEmpty) combinations
-          else if (coins.head*timesToUseHead <= money ) coinNumber(money - coins.head*timesToUseHead,coins,combinations,timesToUseHead+1 )
-          else coinNumber(money,coins.tail,combinations,0 )
+          else if (coins.isEmpty) {
+            println("combination does not work")
+            combinations
+          }
+          else if (coins.head*timesToUseHead <= money ) {
+            println(s"money $money - trying $timesToUseHead x $coins.head")
+            // subtract this number of head coins, and move to next coin in list
+            coinNumber(money - coins.head*timesToUseHead,coins,combinations,timesToUseHead+1 )
+            // try one more of this coin type
+            coinNumber(money - coins.head*timesToUseHead,coins.tail,combinations,0 )
+          } else coinNumber(money,coins.tail,combinations,0 )
         }
+      // end definition of coinNumber
       coinNumber(money,coins,0,0)
     }
   }
+
+
+// need to continue when we find a good state
+// need to give up on tail recursion
