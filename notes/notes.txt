@@ -40,7 +40,6 @@ in call by name, unused arguments are not evaluated
 
 def loop = loop
 
-
 def moose(a: Int, b: Int):Int = a
 
 moose(1,loop)
