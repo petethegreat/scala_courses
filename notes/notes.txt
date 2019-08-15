@@ -24,8 +24,50 @@ call by name
 def fun(a: =>Int): Int
 function fun takes an integer argment (a). argument a is evaluated when it needs to be.
 
+Not all functions terminate, infinte loops are a thing
 
 
+Both call by value and call by name will reduce to the same outcome provided
+  - the reduced expression consists of pure functions (no state information/side effects?)
+  - both evaluations terminate (no infinte loops)
+
+if call by value terminates, then call by name will also
+converse is not guarenteed: call by name termination does not imply call by value termination
+in call by name, unused arguments are not evaluated
+  - could have a function that takes two arguments. The second argument is not used (always)
+  - could pass a non-terminating input to the CBN function, which is not used. no big deal
+  - call by value will try to evaluate it and get stuck
+
+def loop = loop
+
+
+def moose(a: Int, b: Int):Int = a
+
+moose(1,loop)
+will terminate under call by name but not call by value
+
+scala uses call by value by default, Unless the function arguments are defined with =>
+
+def moose_cbn(a: =>Int, b: =>Int) = {}
+
+conditionals
+Boolean operations don't always need to evaluate the right hand operand (short circuit evaluation)
+
+
+true && e -> e
+false && e -> false
+true || e -> true
+false || e -> e
+
+
+
+Things can be defined by name or by value
+so 
+def x = loop
+is a function, it is not evaluated untill it needs to be (call by name)
+
+val x = loop
+evaluates to loop (call by value) immediately. this will kill your scala session/repl
 
 
 test
