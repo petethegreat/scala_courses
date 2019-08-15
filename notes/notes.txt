@@ -89,6 +89,14 @@ def factorial(N:Int) = {
     currentProd(N,1)
 }
 
+blocks and scope
+a block is defined by curly braces {}
+
+definitiones inside a block are invisible outside the block
+definitions from outside the block are visible inside, provided they have not been shadowed
+
+
+
 
 
 

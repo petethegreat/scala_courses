@@ -16,4 +16,5 @@
 # tex stuff
 notes/*.aux
 notes/*.log
+notes/*.out
 

@@ -1,7 +1,47 @@
 \documentclass{article}
+\usepackage{graphicx}
+% \usepackage{dot2texi}
+\makeatletter
+\@ifundefined{verbatim@out}{\newwrite\verbatim@out}{}
+\makeatother
+% \usepackage{tikz}
+\usepackage{hyperref}
+% \usetikzlibrary{shapes,arrows}
+% \usepackage[pdf]{graphviz}
+%\usepackage{feynmp}
+\usepackage{subfigure}
+\usepackage{dsfont}
+
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Scala,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\graphicspath{{figs/}}
+\title{Scala Notes}
+
+\author{Peter Thompson}
+
 \begin{document}
-
-
 \section{functional paradigms}
 
 
@@ -18,6 +58,18 @@ wider sense - a functional programming language allows the construction of elega
 functions are first class functions
 
 \section{misc}
+
+\begin{lstlisting}
+// Hello.java
+import javax.swing.JApplet;
+import java.awt.Graphics;
+
+public class Hello extends JApplet {
+    public void paintComponent(Graphics g) {
+        g.drawString("Hello, world!", 65, 95);
+    }    
+}
+\end{lstlisting}
 
 
 \end{document}
