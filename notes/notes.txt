@@ -69,6 +69,8 @@ is a function, it is not evaluated untill it needs to be (call by name)
 val x = loop
 evaluates to loop (call by value) immediately. this will kill your scala session/repl
 
+Recursion
+Recursive functions must always have their return type explicitly defined
 
 Tail Recursion
 If a function calls itself as it's last action, the stack frame can be reused
