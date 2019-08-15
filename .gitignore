@@ -1,1 +1,19 @@
-.idea/
+# intellij stuff
+**/.idea/
+
+
+# scala prject stuff
+**/dist/*
+**/target/
+**/lib_managed/
+**/src_managed/
+**/project/boot/
+**/project/plugins/project/
+**/.history
+**/.cache
+**/.lib/
+
+# tex stuff
+notes/*.aux
+notes/*.log
+

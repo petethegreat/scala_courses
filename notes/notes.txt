@@ -70,7 +70,24 @@ val x = loop
 evaluates to loop (call by value) immediately. this will kill your scala session/repl
 
 
-test
+Tail Recursion
+If a function calls itself as it's last action, the stack frame can be reused
+Essentially it acts the same as a loop
+
+if a functions last action is to call a function, (maybe the same, maybe different functino), then the stack frame can be used - this is a tail-call
+
+Tail recursive factorial (works)
+
+def factorial(N:Int) = {
+    @scala.annotation.tailrec
+    def currentProd(n:Int, prod:Int) :Int = {
+        if (n==0) prod
+        else currentProd(n-1,n*prod)
+    }
+    currentProd(N,1)
+}
+
+
 
 
 
