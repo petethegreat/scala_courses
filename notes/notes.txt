@@ -225,6 +225,12 @@ Mind Blown
 These functions are in the worksheet "curying.sc" under misc_worksheets project
 
 
+# functional implementation of sets
+week 2 assignment was interesting. A set can be implemented as a function that returns true if it contains the supplied argument. Union of two sets is then the or of their charateristic functions, and the intersection the and. 
+The map implementation took me a while to figure out. Instead of thinking of map as [f(x) for x in set], we define the mapped characteristic as a check to see whether the initial set contains (any) element that would map to x. It's a bit backwards. 
+
+syntax notation
+extended Backus-Naur form (EBNF)
 
 
 
