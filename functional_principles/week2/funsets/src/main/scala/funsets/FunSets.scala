@@ -81,8 +81,7 @@ object FunSets {
     // if any elements in s map to x
 
     // could start with empty set (x:Int) => false, loop through all in s, and union F(x) if x in s
-    def map(s: Set, f: Int => Int): Set = ???
-
+    def map(s: Set, f: Int => Int): Set = (x:Int) => exists(s,(y:Int)=> f(y) == x)
   
   /**
    * Displays the contents of a set
