@@ -232,6 +232,8 @@ The map implementation took me a while to figure out. Instead of thinking of map
 syntax notation
 extended Backus-Naur form (EBNF)
 
+# classes and dynamic binding
+dynamic binding is how the function determines which class method should be invoked at runtime
 
 
 
