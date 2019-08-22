@@ -232,6 +232,69 @@ The map implementation took me a while to figure out. Instead of thinking of map
 syntax notation
 extended Backus-Naur form (EBNF)
 
+
+classes
+exapmles of this stuff are in rational worksheet (week2/misc_worksheets/rationals.sc)
+
+class Rational(x:Int, y:Int) {
+  
+  def method(args:Int) = block
+}
+
+methods are public
+class definition is the constructor
+private methods should be prefaced with private declaration
+overriding methods should be prefixed with override
+
+in a class method, the instance of the class can be referenced with this (In lectures, the argument to class methods is often "that", so multiplication could be written new Rational(this.numer*that.numer,this.denom*that.denom))
+
+require is a function that can be used to make sure the class being initialised meets some conditions, for example rational worksheet (week2/misc_worksheets/rationals.sc), we require that a class be initialised with a nonzero denominator. require takes a condition and a string as arguments. If the condition is not met, then an illegalArgumentException is thrown and the string is printed.
+
+
+also, there is assert. Assert also takes a condition and a string, but throws an AssertionError when the conditino is not met.
+
+The intent is that require enforces a precondition on the caller of a function
+assert is used to check the code of the function itself. 
+
+require is to make sure the function is called as intended, assert is to check that things are not borked in the internals.
+
+Alternate constructors
+alternate constructors can be created by defining "this" as a function that takes alternate arguments (by signature), and then invoking the primary constructor appropriately (again, using this)
+e.g. def this(x:Int) = this(x,1)
+
+then val moose = new Rational(3) will be mapped to Rational(3,1)
+
+
+defining operators
+
+any method with a parameter can be used like an infix operator
+r add s is equivalent to r.add(s)
+r less s -> r.less(s), etc
+
+identifiers
+operators can be used as identifiers
+alphanumeric - starts with letter, follwed by letters/numbers
+symbolic - start with operator symbol, followed by other operator symbols
+underscore counts as letter
+alphanumeric can end in _ followed by operator symbols
+
+so x_, x_+*, x1, *, vector_++, counter_= 
+are valid identifiers
+
+unary_- the binary - operator
+
+things like +, -, <, > can just be defined as class methods
+
+operator precedence
+
+https://docs.scala-lang.org/tour/operators.html
+
+a + b ^? c ?^ d less a ==> b | c
+
+can be rewritten (parenthesised) as 
+
+((a + b) ^? (c ?^ d)) less ((a ==> b) | c)
+
 # classes and dynamic binding
 dynamic binding is how the function determines which class method should be invoked at runtime
 

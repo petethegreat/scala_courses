@@ -77,6 +77,8 @@ class FunSetSuite extends FunSuite {
     val s1 = singletonSet(1)
     val s2 = singletonSet(2)
     val s3 = singletonSet(3)
+    val s123 = List(1,2,3).map(singletonSet).reduce(union)
+    val emptySet = (x:Int) => false
   }
 
   /**
@@ -107,6 +109,68 @@ class FunSetSuite extends FunSuite {
       assert(contains(s, 1), "Union 1")
       assert(contains(s, 2), "Union 2")
       assert(!contains(s, 3), "Union 3")
+    }
+  }
+  // PT
+  // intersect, diff, filter, forall, exists, map
+  test("intersect contains an intersection") {
+    new TestSets {
+      val sIntersection = intersect(s1, s123)
+      assert(contains(sIntersection, 1), "intersection 1")
+      assert(!contains(sIntersection, 2), "intersection 2")
+      assert(!contains(sIntersection, 3), "intersection 3")
+    }
+  }
+  test("intersect can yield an empty set") {
+    new TestSets {
+      val emptyIntersection = intersect(s1, s3)
+      assert(!contains(emptyIntersection, 1), "empty intersection 1")
+      assert(!contains(emptyIntersection, 2), "empty intersection 2")
+      assert(!contains(emptyIntersection, 3), "empty intersection 3")
+    }
+  }
+
+
+  test("diff yields a difference") {
+    new TestSets {
+      val theDiff = diff(s123, s2)
+      assert(contains(theDiff, 1), "difference 1")
+      assert(!contains(theDiff, 2), "difference 2")
+      assert(contains(theDiff, 3), "difference 3")
+    }
+  }
+
+  test("filter picks out odd numbers") {
+    new TestSets {
+      val sFiltered = filter(s123, (x:Int) => x%2 != 0)
+      assert(contains(sFiltered, 1), "filter 1")
+      assert(!contains(sFiltered, 2), "filter 2")
+      assert(contains(sFiltered, 3), "filter 3")
+    }
+  }
+
+  test("forall works") {
+    new TestSets {
+      assert(!forall(s123, (x:Int) => x%2 == 0), "forall 1")
+      assert(forall(s2, (x:Int) => x%2 == 0), "forall 2")
+      assert(forall(emptySet, (x:Int) => true),"forall empty")
+    }
+  }
+  test("exists works") {
+    new TestSets {
+      assert(exists(s123, (x:Int) => x%2 == 0), "exists 1")
+      assert(!exists(s2, (x:Int) => x>6), "exists 2")
+      assert(!exists(emptySet, (x:Int) => true),"exists empty")
+    }
+  }
+  // Map
+  test("Map works 1") {
+    new TestSets {
+      val mapped = map(s123,(x:Int) =>x*2)
+      assert(forall(mapped, (x:Int) => x%2 == 0), "divisible by 2")
+      assert(contains(mapped,2),"contains 2")
+      assert(contains(mapped,4),"contains 2")
+      assert(contains(mapped,6),"contains 2")
     }
   }
 
