@@ -298,14 +298,39 @@ can be rewritten (parenthesised) as
 # classes and dynamic binding
 dynamic binding is how the function determines which class method should be invoked at runtime
 
+term rewriting?
+
+Class hierarchies - more that one cass goes into the definintion of a derived class
+
+Abstract classes are those in which a definition is missing an implementation
+
+abstract class IntSet {
+    def incl(x:Int): IntSet
+    def contains(x:Int) Boolean
+}
+As the definitions are missing, the class cannot be instatntiated. new IntSet will give a compiler error.
 
 
 
 
+persistent data structures
+with out binary trees, when we call include, we are not mutating. New nodes are created, but the old ones are still present. We could backtrack to the version of the data prior to the insertion (in principle)
+
+we use the extend keyword to derive a class.
+this implies that both empty and nonempty meet all the criteria of intset, but may have additional functionality. Instances of thee classes can be used whenever intsets are reuired
+
+intset is the superclass of both Empty and NonEmpty
+
+if no extend clause is given, then the statndard java class "object" is assumed
+
+the base class of a given class are all direct or indirect superclasses
+
+redefine can be used to reimplement a non abstract definition, but the override clause must be used.
 
 
-
-
+when replacing Empty class with Empty object, the object is singleton.
+there is only one instance of the object, new does not need to be used.
+singleton objects are values, Empty evaluates to itself
 
 
 
