@@ -1,9 +1,5 @@
 
 // int sets
-
-
-
-
 abstract class IntSet{
   def contains(x:Int): Boolean
   def incl(x: Int): IntSet
@@ -12,7 +8,6 @@ abstract class IntSet{
 
 // abstract class cannot be instantiated
 //val moose = new IntSet
-
 
 class NonEmpty(elem: Int, left: IntSet, right: IntSet) extends IntSet {
   def contains(x: Int): Boolean = if (x < elem) left.contains(x)
@@ -27,7 +22,7 @@ class NonEmpty(elem: Int, left: IntSet, right: IntSet) extends IntSet {
   // we update left and right elements as we include things
 
   override def toString = s"{ ${left} ${elem} ${right} }"
-  override def union(other: IntSet) = left.union(right).union(other)
+  override def union(other: IntSet) = left.union(right).union(other).incl(elem)
 }
 
 //class Empty extends IntSet {
@@ -48,10 +43,12 @@ object Empty extends IntSet {
   override def toString = "."
   override def union(other:IntSet) = other
 
-
 }
 
-
-
-  val t1 = new NonEmpty(3, Empty, Empty)
-  val t2 = t1.incl(7)
+val t1 = new NonEmpty(3, Empty, Empty)
+val t2 = t1.incl(7)
+val list1 = List(1,2,3)
+def ListToSet(thelist:List[Int]): IntSet = thelist.map((x:Int) => new NonEmpty(x,Empty,Empty)).reduce(((x:IntSet, y:IntSet) => x.union(y)))
+val set1 = ListToSet(List(9,5,3,1,7))
+val set2 = ListToSet(List(8,2,6,4))
+val set3 = set1.union(set2)

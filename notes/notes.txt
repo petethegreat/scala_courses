@@ -333,4 +333,74 @@ there is only one instance of the object, new does not need to be used.
 singleton objects are values, Empty evaluates to itself
 
 
+## Classes and packages
+
+to define a pacakge, use the package clause
+package progfun.examples
+object Hello {}
+
+object would then be located in the progfun.examples package, it's fully qualified name is progfun.examples.Hello
+
+import clause canbe used to refer to objects/classes by nae
+
+import progfun.examples.Hello
+Hello
+
+or 
+
+import progfun.week3.{Rational, Hello}
+
+or
+
+import progfun.week3._
+
+following things are imported by default
+
+
+all member of package scala
+all member of package java.lang
+all member of the singleton object scala.Predef
+
+For example, Int and Boolean are members of scala (scala.Int, scala.Boolean)
+assert and requre are in scala.preDef
+
+
+scala-lang.org/api/current
+
+In java and scala a class can only have one superclass (not true in python (or c++?))
+
+If there are several natural (potential) superclasses, use traits instead
+
+trait Planar {
+  def height: Int
+  def width: Int
+  def surface = width*height
+}
+
+traits are defined the same way as abstract base classes. 
+classes can then implement traits
+
+class Square extends Shape with Planar with Movable ...
+
+traits are like interfaces in java, but are more powerful because then can contain fields and concrete methods.
+traits cannot have value parameters, only classes can.
+
+Any is the base type of all types
+AnyVal inherits from Any. Numeric types (boolean, Int) inherit from AnyVal
+Any defines methods '==','!=', toString
+
+Nothing is at the bottom of scala's type hierarchy. it is a subtype of every other type.
+Nothing can signal abnormal termination.
+Empty lists/containers can have elememt type Nothing
+
+Null is a subtype of all reference types, and the type of the null value
+(null is the value, Null is the type)
+
+Polymorphism
+
+
+
+
+
+
 
