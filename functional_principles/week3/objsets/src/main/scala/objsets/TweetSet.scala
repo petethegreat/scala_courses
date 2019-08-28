@@ -2,6 +2,8 @@ package objsets
 
 import TweetReader._
 
+import scala.math.max
+
 /**
  * A class to represent tweets.
  */
@@ -105,6 +107,17 @@ abstract class TweetSet {
    * This method takes a function and applies it to every element in the set.
    */
   def foreach(f: Tweet => Unit): Unit
+
+  // return the size of the set
+  def size : Int
+  // return the depth of the tree (or branch) - useful for balancing
+  def depth: Int
+
+//  def colour: Char
+
+//  def insert(tweet: Tweet): TweetSet
+//  def balance: TweetSet
+
 }
 
 class Empty extends TweetSet {
@@ -126,6 +139,10 @@ class Empty extends TweetSet {
 
   def foreach(f: Tweet => Unit): Unit = ()
 
+  override def size = 0
+  override def depth = 0
+//  override def colour = 'b'
+
   override def union(that: TweetSet): TweetSet = that
 }
 
@@ -135,39 +152,61 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
       else right.filterAcc(p,left.filterAcc(p, acc))
 
 
-  override def union(that: TweetSet): TweetSet = left.union(right).union(that).incl(elem)
+//  override def union(that: TweetSet): TweetSet = left.union(right).union(that).incl(elem)
+//  override def union(that: TweetSet): TweetSet = this.remove(elem).union(that.incl(elem))
+  override def union(that: TweetSet): TweetSet =  if (that.size == 0) this
+    else left.union(right.union(that.incl(elem)))
+//  that.filter((x:Tweet) => !this.contains(x)).union(left)
+//  filter(that,(x:Tweet) => !this.contains(x))
+
+
+
+
+  override def size = left.size + right.size + 1
+  override def depth: Int = max(left.depth,right.depth) +1
+//
+//  override def mostRetweeted: Tweet = {
+//    def maxTweet(ts: TweetSet,thresh: Tweet): Tweet =
+//      if (ts.filter((x: Tweet) => x.retweets > thresh.retweets).size > 0) maxTweet(ts.filter((x: Tweet) => x.retweets > thresh.retweets), )
+//      else thresh
+//
+//    maxTweet(this,this.elem)
+//  }
 
   override def mostRetweeted: Tweet = {
-    def checkSubTree(ts: TweetSet): Tweet = {
-      // get the most retweeted element from the subtree, else use parent element
-      try ts.mostRetweeted
-      catch {
-        case java_nse: java.util.NoSuchElementException => elem
-//        case _: Throwable => {println("checkSubTree - unexpected error"),
-      }
-    }
-    val maxTweet = if (checkSubTree(left).retweets > checkSubTree(right).retweets) checkSubTree(left)
-    else checkSubTree(right)
-    if (elem.retweets > maxTweet.retweets) elem else maxTweet
-    }
+    def maxRetweets(t1: Tweet, t2: Tweet) = if (t1.retweets > t2.retweets) t1 else t2
+
+    if (left.size > 0 && right.size == 0) maxRetweets(left.mostRetweeted, elem)
+    else if (right.size > 0 && left.size == 0) maxRetweets(right.mostRetweeted, elem)
+    else if (left.size == 0 && right.size == 0) elem
+    else maxRetweets(elem, maxRetweets(left.mostRetweeted, right.mostRetweeted))
+  }
+
+
+
 
   override def descendingByRetweet: TweetList = {
-      def descRecurse(theSet: TweetSet, theList: TweetList): TweetList = {
-        try {
-          val mostRetweets = theSet.mostRetweeted
-          descRecurse(theSet.remove(mostRetweets),new Cons(mostRetweets, theList))
-        }
-        catch{
-          case jne: NoSuchElementException => theList
-        }
+    def descRecurse(theSet: TweetSet, theList: TweetList): TweetList = {
+      try {
+        val mostRetweets = theSet.mostRetweeted
+        descRecurse(theSet.remove(mostRetweets),new Cons(mostRetweets, theList))
+        // recurse then return
+        // our recurse function should return a list, and then we add to it
+        // pass the empty list to the bottom, then add as things return
+
+
       }
-      def reverseList(initial: TweetList, reversed: TweetList): TweetList = {
-        if (initial.isEmpty)  reversed
-        else reverseList(initial.tail,new Cons(initial.head,reversed))
+      catch{
+        case jne: NoSuchElementException => theList
       }
-    // end reverseList
-      reverseList(descRecurse(this, Nil),Nil)
     }
+    def reverseList(initial: TweetList, reversed: TweetList): TweetList = {
+      if (initial.isEmpty)  reversed
+      else reverseList(initial.tail,new Cons(initial.head,reversed))
+    }
+  // end reverseList
+    reverseList(descRecurse(this, Nil),Nil)
+  }
   // start with Nill (empty list) and add to it
   //  recurse
   //  take the set, get most tweeted, add to list
@@ -248,6 +287,3 @@ object Main extends App {
 }
 
 // https://github.com/pbl64k/coursera-progfun-faqs/blob/master/week3-a3-objsets-faq.md
-// TODO: Our union is slow
-// TODO: Don't use exceptions to check for emptiness
-// TODO: filter/filterAcc for mostRetweeted
