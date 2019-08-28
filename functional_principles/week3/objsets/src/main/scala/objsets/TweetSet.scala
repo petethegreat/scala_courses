@@ -186,34 +186,14 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
 
   override def descendingByRetweet: TweetList = {
-    def descRecurse(theSet: TweetSet, theList: TweetList): TweetList = {
-      try {
-        val mostRetweets = theSet.mostRetweeted
-        descRecurse(theSet.remove(mostRetweets),new Cons(mostRetweets, theList))
-        // recurse then return
-        // our recurse function should return a list, and then we add to it
-        // pass the empty list to the bottom, then add as things return
-
-
+    def descRecurse(theSet: TweetSet): TweetList = 
+      if ( theSet.size == 0) Nil
+      else {
+        val mostTweeted = theSet.mostRetweeted
+        new Cons(mostTweeted,descRecurse(theSet.remove(mostTweeted)))
       }
-      catch{
-        case jne: NoSuchElementException => theList
-      }
-    }
-    def reverseList(initial: TweetList, reversed: TweetList): TweetList = {
-      if (initial.isEmpty)  reversed
-      else reverseList(initial.tail,new Cons(initial.head,reversed))
-    }
-  // end reverseList
-    reverseList(descRecurse(this, Nil),Nil)
-  }
-  // start with Nill (empty list) and add to it
-  //  recurse
-  //  take the set, get most tweeted, add to list
-  //  remove from set, repeat
-  //  stop when the set is empty
-  //    inner function to recurse through set, and accumulate to list
-
+    descRecurse(this)
+}
 
 
   /**
