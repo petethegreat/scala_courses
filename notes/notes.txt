@@ -398,7 +398,16 @@ Null is a subtype of all reference types, and the type of the null value
 
 Polymorphism
 
+type parameterisation
+type parameterisation means that classes and methods can accept types as parameters. This is analagous to templates (e.g. STL) in c++, instead of a single vector class, we initialis objects of type vector<double> or vector<int>, or vector<myClass>.
 
+
+cons list
+a cons list is an imutable linked list. It is constructed from two fundamental building blocks
+Nil - empty list
+Cons - contains a single element and the rest of the list
+So, a list of (3,5,7,6,4) would be represented as (3,(5, (7, (6, (4, ()))))), which would be constructed as 
+cons(3,cons(5, cons(7, cons(6, cons(4,Nil)))))
 
 
 
