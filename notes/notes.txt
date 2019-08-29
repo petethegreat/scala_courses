@@ -397,6 +397,13 @@ Null is a subtype of all reference types, and the type of the null value
 (null is the value, Null is the type)
 
 Polymorphism
+many forms
+ - a function can be invoked using arguments of many types
+ - a type (template/parameterisation) can have instances of many types (i.e. an instance can be one of many types)
+subtyping - an instance of a subtype can be treated as if it were the base class (converse is not true)
+generics - one template can be generalise to many different subtyped versions
+
+
 
 type parameterisation
 type parameterisation means that classes and methods can accept types as parameters. This is analagous to templates (e.g. STL) in c++, instead of a single vector class, we initialis objects of type vector<double> or vector<int>, or vector<myClass>.
@@ -409,7 +416,39 @@ Cons - contains a single element and the rest of the list
 So, a list of (3,5,7,6,4) would be represented as (3,(5, (7, (6, (4, ()))))), which would be constructed as 
 cons(3,cons(5, cons(7, cons(6, cons(4,Nil)))))
 
+To implement a conslist, define a trait that with head and tail fields. The head should be an element, the type of the tail should be the same as the type of the trait (e.g. TweetList)
+Derive classes that extend the base list trait, one for the empty list (Nil) and one for non-empty (Cons)
+
+syntax: class MyClass(val head:Int, val tail:IntList)
+the vals in the constructor mean that the class will have fields associated with those parameters of the constructor.
+ 
+class MyClass(val head:Int, val tail:IntList) = { ...}
+is euivalent to 
+class MyClass( headparm:Int, tailParm: IntList) = {
+  val head = headparm
+  val tail = tailParm
+  ...
+
+}
+
+back to type parameterisation, this is done using square brackets
+trait List[T]
+class Cons[T](head:T, tail: List[T]) extends List[T]  {}
+
+T is the type parameter. We could instantiate Cons objects for lists of Int or Double using
+
+val IntList = Cons[Int](7,Nil[Int])
+val dubList = Cons[Double](7.5,Nil[Double])
+For example
+
+Type inference works with type parameterisation
+For instance, 
+class dummy[T](val head:T) = {...}
+
+val moose = new dummy(7) 
+val caribou = new dummy(7.5)
+the compiler will infer that dummy[Int] is the best type for moose, and dummy[Double] is best for caribou
 
 
-
-
+Type parameters/arguments are removed at runtime - this is called type erasure
+done differently from c++, where type info is still around at runtime
