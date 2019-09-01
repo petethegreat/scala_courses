@@ -491,3 +491,42 @@ class succ(n: Nat) extends Nat{
   def - (that: Nat) = if that.isZero this else (this.predecessor)-(that.predecessor)
 
 } 
+
+## functions as objects
+
+function values are treated as objects in scala
+the function type A => B is an abbreviation fot the class scala.Function1[A,B]
+roughly, this is 
+package scala
+trait Function1[A,B] {
+  def apply(x: A): B
+}
+functions are objects with apply method
+
+there are traits for functions that can take up to 22 parameters
+
+## function values
+
+(x: Int) => x*x
+
+{
+  class AnonFun extends Function1[Int, Int] 
+  {
+    def apply(x: Int) = x*x
+  }
+  new AnonFun
+}
+
+Anonymous class syntax
+new Function1[Int, Int] { def apply(x: Int) = x*x}
+
+methods are not function values, anything defined with def
+
+but if the method is used in aplace where a function value is expected, it is automatically type converted to the function value (eta exoansion)
+
+Can create an object that can be used as a function by implementing methods named apply - see week4 worksheet
+
+
+
+
+
