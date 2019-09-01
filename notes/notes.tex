@@ -152,7 +152,151 @@ A block is defined by curly braces \lstinline|{}|
 
 Definitiones inside a block are invisible outside the block. 
 Definitions from outside the block are visible inside, provided they have not been shadowed.
+A lot of object oriented functionality can be warngled from scopes and closures. Methods defined within a class constructor have acesss to the parameters of that constructor, even if those parameters are not assigned to fields of the class. 
+For example:
 
+\begin{lstlisting}
+class NonEmpty(elem: Int, left: IntSet, right: IntSet) extends IntSet {
+  def contains(x: Int): Boolean = if (x < elem) left.contains(x)
+    else if (x > elem) right.contains(x)
+    else true
+    ...
+\end{lstlisting}
+the method \lstinline{contains} refers to \lstinline{elem}.
+
+\subsection{higher order functions}
+% TODO - clean below here
+functions are first class values
+they can be passed and returned
+a function that does this is called a higher order function
+
+this can be used to factor out common procedures. For example, 
+\begin{lstlisting}
+sumFunc(a:Int,b:Int,f: Int =>Int): Int = {
+    if (a > b) 0 else f(a) + sumFunc(a+1,b,f)
+}
+\end{lstlisting}
+
+defines a function sumFunc, that takes two integers and a function that takes an Int and returns an Int (\lstinline{Int => Int})
+For example, we could sum all squares or cubes between 2 and 5 by calling
+\begin{lstlisting}
+sumFunc(2,5,square)
+sumFunc(2.5.cube)
+\end{lstlisting}
+The notation \lstlinlne{A => B} is  a {\b function type}. it is a type that defines a mapping from type {\b A} to type {\b B} (by a function)
+
+\subsection{anonymous functions}
+strings exist as literals. We can just write "abc", and the compiler knows it to be a string. We don't need to do \lstinline{def str = "abc"; println(str)}
+instead \lstinlineprintln{("abc")} works just fine
+Same can be done with functions, we don't always need to define a function, we can define anonymous functions as needed. (same as lambda functions in python)
+
+these are defined like this
+\begin{lstlisting}
+(x: Int) => x*x*x
+\end{lstlisting}
+the type of x can be omitted if it can be inferred.
+
+anonymous functions are syntactic sugar:
+\lstinline{(x:Int) = x*x} and \lstinline{def f(x:Int) = x*x; f} 
+evaluate to the same.
+
+tail recursive sum
+\begin{lstlisting}
+def sum(f: Int => Int, a:Int, b:Int) = {
+    @scala.annotation.tailrec
+    def doSum(total:Int, aval:Int):Int = {
+        if (aval > b) total else doSum(total + f(aval),aval+1)
+    }
+    doSum(0,a)
+}
+\end{lstlisting}
+
+\subsection{currying}
+from docs -
+\begin{verb} 
+"Methods may define multiple parameter lists. When a method is called with a fewer number of parameter lists, then this will yield a function taking the missing parameter lists as its arguments."\end{verb}
+a function that returns a function. Like a template in c++, for example
+
+\begin{lstlisting}
+def sum (f: Int => Int) :(Int, Int) => Int = {
+    def sumF(a:Int,b:Int): Int = {
+    if (a>b) 0 else f(a) + sumF(a+1,b)
+    }
+    sumF
+}
+
+\end{lstlisting}
+sum now takes a function, and returns a function (return type is (Int,Int) => Int). the returned functino will take two Ints and return one. In this case, an when an initial function (f) is passed into sum, it will return a function that sums the initial function (f) within the supplied bounds.
+
+so, we could do
+
+def sumCubes = sum((x:Int) => x*x*x)
+def sumSquares = sum((x:Int) => x*x)
+
+and then call
+sumSquares(2,3) // 13
+sumCubes(4,7) // 748
+
+Alternatively, we could invoke the returned function directly
+
+val moose = sum((x:Int)=>x*x) (2,3) //13
+
+Again, there is some syntactic sugar for currying
+
+def sum(f:Int => Int) (a:Int,b:Int): Int = {
+    if (a>b) 0 else f(a) + sum(f)(a+1,b)
+}
+is equivalent to the definitino of sum above, but without the definition of the inner function. 
+
+multiple parameter lists
+def f(args1)...(argsn) = E
+where n > 1 is equivlaent to
+def f(args1)...(argsn-1) = {def g(argsn) = E ; g}
+
+or
+def f(args1)...(argsn-1) = (argsn => E)
+
+Carrying this through gives
+
+def f = (args1 => (args2 => ...(argsn => E)))
+
+named after Haskell Brooks Curry (same guy Haskell language is named after )
+
+
+
+function that calculates product of values of function for points on an interval
+write factorial in terms of product
+
+function that generalises sum and product
+
+def product(f: Int=>Int) (a:Int,b:Int) :Int = {
+if (a>b) 1 else product(f)(a+1,b)*f(a)  
+}
+
+def factorial(n:int) = product((x:Int) =>x)(1,n)
+
+
+def CumulativeFunctionOperation(operation: (Int,Int) => Int, initVal:Int)(f:Int=>Int)(a:Int,b:Int):Int = {
+    if (a>b) initVal else operation(f(a),CumulativeFunctionOperation(operation,initVal)(f)(a+1,b))
+}
+
+def sum2:(Int=>Int)=>(Int,Int)=>Int = CumulativeFunctionOperation((x:Int,y:Int)=> x+y,0)
+
+sum2(x=>x*x)(2,3) // 13
+
+def prod2:(Int=>Int)=>(Int,Int)=>Int = CumulativeFunctionOperation((x:Int,y:Int)=> x*y,1)
+
+prod2(x=>x*x)(2,3) // 36
+
+
+CumulativeFunctionOperation is a form of map reduce
+the operation is the reducer
+the supplied funcion is the map
+the bounds define the sequence that we are map/reducing
+
+Mind Blown
+
+These functions are in the worksheet "curying.sc" under misc_worksheets project
 
 \section{misc}
 

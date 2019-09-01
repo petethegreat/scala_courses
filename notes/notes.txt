@@ -452,3 +452,42 @@ the compiler will infer that dummy[Int] is the best type for moose, and dummy[Do
 
 Type parameters/arguments are removed at runtime - this is called type erasure
 done differently from c++, where type info is still around at runtime
+
+## Objects
+
+a pure object oriented language (like Java) is one in which every value is an object and the type of each value is a class. Every operation is a class method.
+
+In scala, ints and booleans are, at some level, mapped to java/scala primitive types, but these can defined as regular classes. All operations on ints/booleans can be implemented as methods.
+
+Example - booleans class implemented as IfThenElse function
+cond.ifThenElse(thenExpression,elseExpression)
+
+
+peano numbers - this was discussed in GEB
+
+def operator<[T](x:=> T): Boolean = ifThenElse(false,x)
+
+implement natural numbers
+abstract class Nat {
+  def isZero: Boolean
+  def predecessor: Nat
+  def successor: Nat
+  def + (that: Nat): Nat
+  def - (that: Nat): Nat
+}
+
+object Zero extends Nat{
+  def isZero = true
+  def successor =  new succ(this)
+  def predecessor = throw scala.invalidArgumentException("zero has no predecessor")
+  def + (that: Nat) = that
+  def - (that: Nat) = throw scala.invalidArgumentException("cannot subtract from zero") // if that.isZero this else error
+}
+class succ(n: Nat) extends Nat{
+  def isZero = false
+  def predecessor = n
+  def sucessor = new succ(this)
+  def + (that: Nat) = if that.isZero this else (this.successor)+(that.predecessor)
+  def - (that: Nat) = if that.isZero this else (this.predecessor)-(that.predecessor)
+
+} 
