@@ -52,3 +52,13 @@ def ListToSet(thelist:List[Int]): IntSet = thelist.map((x:Int) => new NonEmpty(x
 val set1 = ListToSet(List(9,5,3,1,7))
 val set2 = ListToSet(List(8,2,6,4))
 val set3 = set1.union(set2)
+
+
+
+// week 4 - subtyping and generics
+val a: Array[NonEmpty] = Array(new NonEmpty(1,Empty, Empty))
+val b: Array[IntSet] = a
+b(0) = Empty
+val s: NonEmpty = a(0)
+
+

@@ -526,6 +526,62 @@ but if the method is used in aplace where a function value is expected, it is au
 
 Can create an object that can be used as a function by implementing methods named apply - see week4 worksheet
 
+object List {
+  def apply[T](x1:T, x2:T) = new Cons[T](x1,new Cons(x2,new Nil[T]))
+  def apply[T] (x1:T) = new Cons[T](x1,new Nil[T])
+  def apply() = new Nil[Nothing]()
+
+}
+
+## Subtyping and generics
+
+subtyping - deriving a class from an existing class
+generics - functions/classes templates that take a type as a parameter
+
+Liskov substitiution principle - can be used to determine when one type can be a subtype of another
+Barbara Liskov
+gist:
+if A <: B, then everything once can do with a value of type B then one should also be able to do with a value of type A
+more formally:
+Let q(x) be  a property provable about objects x of type B. Then q(y) should be provable for objects y of type A where A <: B
+
+
+### Bounds
+def assertAllPos[S <: IntSet] (r:S): S = ...
+
+assertAllPos is parameterised by type S, which has an *upper bound* of IntSet. That is, the type provided to assertAllPos must be a subtype of IntSet. Conversely, 
+def func[ S >: T] = ... means that S mus be a supertype of T, or that T must be a subtype of S
+
+def func2[ S >: A <: B] - S must be a supertype of a and a subtype of B
+
+## Variance
+Given that NonEmpty <: IntSet (nonempty is a subtype of IntSet)
+does it follow that List[NonEmpty] <:List[IntSet] ?
+
+Seems like it should make sense, a list of NonEmpty could be contained in a list of IntSet
+This is called covariance, the subtyping relationship holds (is covariant) across the type parameterisation
+
+In Scala, Arrays are *NOT* convariant, so trying to assign an array of type A to an array of type B will give a type error. Covariance can be useful when we cannot use type parameterisation. Scala has type parameterisation
+check week3 misc worksheets IntSets for an example
+
+// week 4 - subtyping and generics
+val a: Array[NonEmpty] = Array(new NonEmpty(1,Empty, Empty))
+val b: Array[IntSet] = a  // type error here (compile time)
+b(0) = Empty
+val s: NonEmpty = a(0)
+
+
+
+
+
+Note
+indexing notation myList(0), myArray(1) uses parentheses (round brackets), because *these containers are implemented as functions*
+
+
+
+
+
+
 
 
 
