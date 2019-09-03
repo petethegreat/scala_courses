@@ -505,6 +505,14 @@ functions are objects with apply method
 
 there are traits for functions that can take up to 22 parameters
 
+Conversely, any object with an apply method can be invoked in a similar fashion to a function
+
+object myObject {
+  def apply (n:Int) = println(n)
+}
+
+myObject(2)
+
 ## function values
 
 (x: Int) => x*x
@@ -620,7 +628,49 @@ class Sum(e1:Expr, e2: Expr) extends Expr {
 But again, adding new functionality (such as printing the expression rather than evaluating) means we need to implement show method in each class. Also, an operation like simplify  ( A * B + A * C -> A*(B + C)) is very difficult to implement (it is nonlocal, and cannot be captured in the method of a single object)
 
 Pattern Matching is the solution
-## Pattern Matching
+## Pattern Matching and Case Classes
+
+Often, for a given object we want to know
+ - what subclass was used?
+ - what were the arguments passed to the constructor?
+
+ scala automates this
+
+ Case Classes
+
+ can use case keyword as a modifier when extending a class
+
+ trait Expr
+ case class Number(n:Int) extends Expr
+ case class Sum(e1: Expr, e2: Expr) extends Expr
+
+ with case classes, the compiler automatically adds companion objects which contain an apply method:
+
+ object Number { 
+   def apply (n: Int) = new Number(n)
+ }
+
+ object Number { 
+   def apply (e1: Expr, e2: Expr) = new Sum(e1, e2)
+ }
+
+Then different functionality can be implemented by matching on the case of the class
+
+def eval(e: Expr): Int = e match {
+  case Number(n) => n
+  case Sum(e1,e2) => eval(e1) + eval(e2)
+}
+
+Note that n, e1, e2 are not defined in the above. The case statements are *patterns*
+patterns can be formed from 
+  - constructors (Number, Sum)
+  - variables (n, e1, e2)
+  - wildcard patterns (_)
+  - constants (1, true, val N = 2)
+
+The same variable can only occur once in a pattern, so sum (x,x is not legal)
+variable names must begin with a lowercase letter, constants with an upper case letter
+
 
 
 

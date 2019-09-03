@@ -24,9 +24,18 @@ object Huffman {
   
 
   // Part 1: Basics
-    def weight(tree: CodeTree): Int = ??? // tree match ...
+    def weight(tree: CodeTree): Int = tree match {
+      case Fork(left,right,chars,weight) => weight
+      case Leaf(char, weight) => weight
+    } // tree match ...
   
-    def chars(tree: CodeTree): List[Char] = ??? // tree match ...
+    def chars(tree: CodeTree): List[Char] = tree match {
+      case Fork(_, _, chars, _) => chars
+      case Leaf(char,_) => List(char)
+    } // tree match ...
+   // PT - dunno about this, seems too simple. If makeCodeTree is adding weights/ concatenating chars, then we don't need to recurse
+   // but maybe at some point we will?
+  // we may need to traverse the tree to update things, once we start building it. To update weights we will need to recurse
   
   def makeCodeTree(left: CodeTree, right: CodeTree) =
     Fork(left, right, chars(left) ::: chars(right), weight(left) + weight(right))
@@ -69,7 +78,7 @@ object Huffman {
    *       println("integer is  : "+ theInt)
    *   }
    */
-    def times(chars: List[Char]): List[(Char, Int)] = ???
+    def times(chars: List[Char]): List[(Char, Int)] = chars.map(x => (x,1)).groupBy(x => x._1).map((x,y) => (x,y.reduce((a,b) => a + b)))
   
   /**
    * Returns a list of `Leaf` nodes for a given frequency table `freqs`.
