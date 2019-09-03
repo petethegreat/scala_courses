@@ -570,6 +570,57 @@ val b: Array[IntSet] = a  // type error here (compile time)
 b(0) = Empty
 val s: NonEmpty = a(0)
 
+## More on variance
+
+## decomposition
+
+Say we want to rewrite mathematica. Start with just numbers and sum operation
+expression class
+number and sum subclass
+number has a value
+sum has leftop and rightop
+
+trait Expr {
+  def isNumber: Boolean // classification
+  def isSum: Boolean // classification
+  def leftop: Expr //accessor
+  def rightOp: Expr //accessor
+  def numValue: Int //accessor
+}
+
+class Number(n: Int) extends Expr { 
+def isNumber: Boolean = true
+def isSum: Boolean = false
+def numValue : Int = n
+def leftop: Expr = new throw Error("leftop on number")
+def rightop: Expr = new throw Error("rightop on number")
+}
+
+class Sum(e1: Expr, e2: Expr) extends Expr { 
+def isNumber: Boolean = false
+def isSum: Boolean = true
+def numValue : Int = new throw Error("numValue on sum")
+def leftop: Expr = e1
+def rightop: Expr = e2
+}
+
+such that new Sum(e1,e2) represents e1 + e2
+
+this is one way to do it, but annoying. To add prod and variable type expressions, 25 new methods would need to be written (isVar, isProd classifiers and varValue (String) accessor). So thats 3*3 new methods for existing classes, and 2*(3+5) = 16 new methods for the new classes. 25 new methods for two new classes
+
+Hacky solution would be to use isInstanceOf[T] or asInstanceOf[T] methods, but these are discouraged (there are better ways of accomplishing this). Type casts can fail (good practice to try isInstanceOf before invoking asInstanceOf)
+
+If we only care about a small number of operations on expressions (such as evaluating or printing them)
+then our abstract class only needs to define these, and sub classes can implement them. 
+e.g. 
+class Sum(e1:Expr, e2: Expr) extends Expr {
+  def eval = e1.eval + e2.eval
+}
+
+But again, adding new functionality (such as printing the expression rather than evaluating) means we need to implement show method in each class. Also, an operation like simplify  ( A * B + A * C -> A*(B + C)) is very difficult to implement (it is nonlocal, and cannot be captured in the method of a single object)
+
+Pattern Matching is the solution
+## Pattern Matching
 
 
 
