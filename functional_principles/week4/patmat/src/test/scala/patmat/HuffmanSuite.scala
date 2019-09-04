@@ -12,8 +12,13 @@ class HuffmanSuite extends FunSuite {
 	trait TestTrees {
 		val t1 = Fork(Leaf('a',2), Leaf('b',3), List('a','b'), 5)
 		val t2 = Fork(Fork(Leaf('a',2), Leaf('b',3), List('a','b'), 5), Leaf('d',4), List('a','b','d'), 9)
-	}
 
+	}
+  // PT
+  trait TestCharacters{
+    val mySet = Set(('e',1), ('w',1), ('h',1), ('r',1), ('d',1), (' ',1))
+    val myString: String = "hello world"
+  }
 
   test("weight of a larger tree") {
     new TestTrees {
@@ -31,6 +36,10 @@ class HuffmanSuite extends FunSuite {
 
   test("string2chars(\"hello, world\")") {
     assert(string2Chars("hello, world") === List('h', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd'))
+  }
+  // PT
+  test("PT - test character frequencies") {
+    assert( times(List('h', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd')).toSet === Set(('e',1), ('w',1), ('h',1), ('r',1), ('d',1), (' ',1), (',', 1), ('l',3),('o',2) ))
   }
 
 
