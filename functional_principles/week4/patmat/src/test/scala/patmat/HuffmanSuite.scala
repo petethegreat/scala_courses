@@ -12,12 +12,16 @@ class HuffmanSuite extends FunSuite {
 	trait TestTrees {
 		val t1 = Fork(Leaf('a',2), Leaf('b',3), List('a','b'), 5)
 		val t2 = Fork(Fork(Leaf('a',2), Leaf('b',3), List('a','b'), 5), Leaf('d',4), List('a','b','d'), 9)
-
+    //PT
+    val testLeafTreeList = List(Leaf('a',1), Leaf('b',2), Leaf('c',3), Leaf('d',4))
+    val testDecodeTree = Fork(Leaf('a',6),Fork(Leaf('b',3),Leaf('c',1),"bc".toList,4),"abc".toList,10)
 	}
   // PT
   trait TestCharacters{
-    val mySet = Set(('e',1), ('w',1), ('h',1), ('r',1), ('d',1), (' ',1))
+    val mySet: Set[(Char, Int)] = Set(('e',1), ('w',1), ('h',1), ('r',1), ('d',1), (' ',1))
     val myString: String = "hello world"
+
+
   }
 
   test("weight of a larger tree") {
@@ -53,10 +57,27 @@ class HuffmanSuite extends FunSuite {
     assert(combine(leaflist) === List(Fork(Leaf('e',1),Leaf('t',2),List('e', 't'),3), Leaf('x',4)))
   }
 
+  //PT
+  test( "test until") {
+    new TestTrees { assert(until(singleton,combine)(testLeafTreeList) == List(Fork(Leaf('d',4),Fork(Fork(Leaf('a',1), Leaf('b',2),"ab".toList,3), Leaf('c',3),"abc".toList,6), "dabc".toList,10)))
+    }
+  }
+// PT test decode
+  test( "PT - test decode") {
+    new TestTrees {
+      assert(decode(testDecodeTree,List(0,1,0,1,1)) === "abc".toList)
+    }
+  }
 
   test("decode and encode a very short text should be identity") {
     new TestTrees {
       assert(decode(t1, encode(t1)("ab".toList)) === "ab".toList)
+    }
+  }
+  //PT
+  test("decode and quick encode a very short text should be identity") {
+    new TestTrees {
+      assert(decode(t2, quickEncode(t2)("abdbbadbdbdabbbbda".toList)) === "abdbbadbdbdabbbbda".toList)
     }
   }
 

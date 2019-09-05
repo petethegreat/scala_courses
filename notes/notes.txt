@@ -511,6 +511,10 @@ object myObject {
   def apply (n:Int) = println(n)
 }
 
+Note
+indexing notation myList(0), myArray(1) uses parentheses (round brackets), because *these containers are implemented as functions*
+
+
 myObject(2)
 
 ## function values
@@ -527,6 +531,9 @@ myObject(2)
 
 Anonymous class syntax
 new Function1[Int, Int] { def apply(x: Int) = x*x}
+
+** Note - Anonymous class syntax is used in the definitions of tests in the assignments
+A set of variables are defined in a trait, the trait is then extended to include a test assertion (in the constructor)
 
 methods are not function values, anything defined with def
 
@@ -636,7 +643,7 @@ Often, for a given object we want to know
 
  scala automates this
 
- Case Classes
+ ## Case Classes
 
  can use case keyword as a modifier when extending a class
 
@@ -650,7 +657,7 @@ Often, for a given object we want to know
    def apply (n: Int) = new Number(n)
  }
 
- object Number { 
+ object Sum { 
    def apply (e1: Expr, e2: Expr) = new Sum(e1, e2)
  }
 
@@ -671,12 +678,67 @@ patterns can be formed from
 The same variable can only occur once in a pattern, so sum (x,x is not legal)
 variable names must begin with a lowercase letter, constants with an upper case letter
 
+A constructor pattern C(p1, ..., pn) will match all values of type C (or a subtype) that have been constructed with arguments p1, ..., pn.
+a variable pattern x matches any value, and binds the name of the variable to that value.
+a constant pattern matches for equality ( lhs == rhs)
+
+example
+
+def eval(e) = e match {
+  case Number(n) => n
+  case Sum(e1, e2) => eval(e1) + eval(e2)
+}
+
+Then eval(Sum(Number(1),Number(2))) can be rewritten as
+
+Sum(Number(1),Number(2)) match { 
+  case Number(n) => n
+  case Sum(e1, e2) => eval(e1) + eval(e2)
+}
+
+which could be rewritten (following the match on sum)
+
+eval(Number(1) + eval(Number(2)))
+and then 
+1 + 2
+3
+
+
+def show(e: Expr): String = match e {
+  case Sum(e1,e2) => show(e1) + " + " + show(e2)
+  case Number(n) => n.toString
+}
+
+week4 misc worksheets expressions.sc
+
+## Lists
+
+fundamental data type in functinoal programming
+Arrays are mutable, lists are not
+arrays are flat, lists are recursive (defined similarly to the cons list we worked with earlier)
+
+Lists are constructed from the empty list *Nil*, and the construction operator (cons) ::
+e.g. val myList = x::xs
+x is the head of the list, xs is the remainder (tail)
+
+e.g. anotherList = 1 :: (2 :: (3 :: (4 :: Nil)))
+
+The cons operator :: is syntactic sugar. ll = x::xs is equivalent to ll = new Cons(x,xs)
+
+convention - operators ending in : associate to the right A :: B :: C -> A :: (B :: C)
+Also, with infix notation, the operator is the method of the right hand operand
+A :: (B :: C) -> C.::(B).::(A)
+
+Lists can be decomposed via pattern matching
+1 :: 2 :: xs - lists that start with 1 and then 2
+x :: Nil - lists of length 1
 
 
 
 
-Note
-indexing notation myList(0), myArray(1) uses parentheses (round brackets), because *these containers are implemented as functions*
+
+
+
 
 
 
