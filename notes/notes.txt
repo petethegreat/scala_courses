@@ -311,7 +311,7 @@ abstract class IntSet {
 As the definitions are missing, the class cannot be instatntiated. new IntSet will give a compiler error.
 
 
-
+## got to here
 
 persistent data structures
 with out binary trees, when we call include, we are not mutating. New nodes are created, but the old ones are still present. We could backtrack to the version of the data prior to the insertion (in principle)
