@@ -435,6 +435,27 @@ theInstance.method()
 \end{lstlisting} 
 will invoke \lstinline|A.method()|. 
 
+\chapter{Scala class Hierarchy and Packages}
+
+\begin{figure}[hbp]
+\includegraphics[width=10cm]{scala_type_hierarchy}
+\caption{scala type hierarchy}
+\end{figure}
+
+
+\begin{itemize}
+\item { \bf Any} is the base type of all types.
+\item {\bf AnyVal} inherits from Any. Numeric types (boolean, Int) inherit from AnyVal
+\item {\bf Any} defines methods '==','!=', toString
+\end{itemize}
+
+Nothing is at the bottom of scala's type hierarchy. it is a subtype of every other type.
+Nothing can signal abnormal termination.
+Empty lists/containers can have elememt type Nothing
+
+Null is a subtype of all reference types, and the type of the null value
+(null is the value, Null is the type)
+
 % term rewriting?
 
 % Class hierarchies - more than one class goes into the definintion of a derived class

@@ -23,3 +23,4 @@
 \contentsline {subsection}{\numberline {3.6.2}traits}{14}{subsection.3.6.2}
 \contentsline {subsection}{\numberline {3.6.3}subtyping}{14}{subsection.3.6.3}
 \contentsline {subsection}{\numberline {3.6.4}dynamic binding}{15}{subsection.3.6.4}
+\contentsline {chapter}{\numberline {4}Scala class Hierarchy and Packages}{16}{chapter.4}
