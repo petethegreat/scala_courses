@@ -82,7 +82,10 @@ object Anagrams {
    *  Note that the order of the occurrence list subsets does not matter -- the subsets
    *  in the example above could have been displayed in some other order.
    */
-  def combinations(occurrences: Occurrences): List[Occurrences] = for (a <- occurrences)
+  def combinations(occurrences: Occurrences): List[Occurrences] = occurrences match {
+    case List() => List(Nil)
+    case (a:Char,n:Int)::xs => (for (oo <- combinations(xs); i<- 1 to n) yield (a,i)::oo):::combinations(xs)
+  } //for (a <- occurrences)
 
     //val quack3 = for (x <- oc; i <- 0 to x._2) yield (x._1,i)
   // for comprehension over whether an element is included
