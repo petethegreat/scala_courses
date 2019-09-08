@@ -460,6 +460,29 @@ Null is a subtype of all reference types, and the type of the null value
 
 % Class hierarchies - more than one class goes into the definintion of a derived class
 
+\chapter{placeholder}
+\Section{list functionality}
+sublists and element access. The list \textbf{xs} has the following methods available
+\begin{itemize}
+  \item \textbf{xs.head} - first element in list
+  \item \textbf{xs.tail} - remainder of list, with first element removed
+  \item \textbf{xs.last} - last element of list
+  \item \textbf{xs.init} - list containing all elements except first
+  \item \textbf{xs.length} - number of elements in list
+  \item \textbf{xs.take(n)} - sublist containing the first n elements of xs
+  \item \textbf{xs.drop(n)} - sublist containing all remaining elements of xs, after the first n have been removed
+  \item \textbf{xs(n)} - the nth element of list xs. The item access function is implemented through the apply function(xs.apply(n)), which can be invoked through just xs(n). 
+\end{itemize}
+other list operations
+\begin{itemize}
+  \item \textbf{xs ++ ys} - concatenates xs and ys. This can also be done with the cons-like operator xs:::ys.
+  \item \textbf{xs.reverse} - reverse the list
+  \item \textbf{xs.updated.(n,x)} - replace the nth element with x
+  \item \textbf{xs.indexOf(x)} - get the index of the first occurence of x (or -1 if x does not occur in xs)
+  \item \textbf{xs.contains} - true if xs contains x, false otherwise
+\end{itemize}
+
+
 
 
 
