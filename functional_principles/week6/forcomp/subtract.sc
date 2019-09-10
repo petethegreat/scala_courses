@@ -43,24 +43,30 @@ val blah = combinations(cat).map(x => (x,dictionaryByOccurrences.get(x)))
 // if occurences is empty return List(currentSentence)
 
 
+//for {
+//  subset <-  combinations(occurenceRoom)
+//  newWords <- subset.map(dictionaryByOccurrences.get)
+//} yield (subset,newWords)
+//goes to
+//combinations(occurenseRoom).flatMap(subset => subset.map(dictionary.get).map(newwords => (newwords,subset)))
 
-
+//combinations(sentenceOccurrences(List("catdog"))).flatMap(subset => subset.map)
 def moose(sentence: Sentence): List[Sentence] = {
   @scala.annotation.tailrec
   def moosemoose(occurenceRoom: Occurrences, currentSentence: Sentence): List[Sentence] = {
     //      def wordsets = combinations(occurenceRoom).flatMap(w => dictionaryByOccurrences.get)
     //      val moose = combinations(occurenceRoom).flatMap()
     occurenceRoom match {
-      case List() => List(currentSentence)
-      case y::ys => for expression over combinations yield moosemoose
+      case List() => currentSentence
+      case y::ys => for {  // check that occurenceRoom is not empty
+        subset <- combinations(occurenceRoom)
+        newword <- dictionaryByOccurrences.get(subset)
+      } yield moosemoose(subtract2(occurenceRoom,subset),newword::currentSentence)
     }
-    case
-
-  }}
-
-    for{
-      item<- combinations(occurenceRoom)
-        .map(x => (x,dictionaryByOccurrences.get(x)))
-
+  }
 }
+
+// issue is that we are yielding the return type of the inner function
+// which will wrap that return type in a list
+// The return types for both cases must match
 
