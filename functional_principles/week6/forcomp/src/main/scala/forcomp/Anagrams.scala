@@ -38,7 +38,7 @@ object Anagrams {
   def wordOccurrences(w: Word): Occurrences = w.toLowerCase.groupBy((x:Char) => x).transform( (k,v) => v.length).toList.sorted
 
   /** Converts a sentence into its character occurrence list. */
-  def sentenceOccurrences(s: Sentence): Occurrences = s.flatMap(wordOccurrences)
+  def sentenceOccurrences(s: Sentence): Occurrences = wordOccurrences(s.reduce(_ + _))
 
   /** The `dictionaryByOccurrences` is a `Map` from different occurrences to a sequence of all
    *  the words that have that occurrence count.
@@ -101,7 +101,23 @@ object Anagrams {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = ???
+//  def subtract(x: Occurrences, y: Occurrences): Occurrences = for ((xa,xi) <- x) y.find((fya:Char,fyi:Int) => fya == xa) match {
+//
+//  }
+//  def subtract2(x: Occurrences, y: Occurrences): Occurrences = for
+//  ((xa,xi) <- x) y.find(fy => fy._1 == xa) match {
+//      case Some(ccc:(Char,Int)) if ccc._2 < xi => yield (xa,xi - ccc._2)}
+//      case None => { yield (xa,xi)}
+//    }
+
+def subtract(x: Occurrences, y: Occurrences): Occurrences = {
+    (for {
+      (xa,xi) <- x
+      subtracted = y.find(fy => fy._1 == xa) match {
+        case Some(fv:(Char,Int)) => xi - fv._2
+        case None => xi
+      }} yield (xa,subtracted)).filter(ov => ov._2 >0)
+  }
 
   /** Returns a list of all anagram sentences of the given sentence.
    *
@@ -143,5 +159,46 @@ object Anagrams {
    *
    *  Note: There is only one anagram of an empty sentence.
    */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
+    @scala.annotation.tailrec
+    def addWords(occurenceRoom: Occurrences, currentSentence: Sentence): List[Sentence] = {
+      //      def wordsets = combinations(occurenceRoom).flatMap(w => dictionaryByOccurrences.get)
+      //      val moose = combinations(occurenceRoom).flatMap()
+      if (combinations(occurenceRoom).flatMap(dictionaryByOccurrences.get).len < 2)
+        for {
+          subSet <- combinations(occurenceRoom)
+          newWord <- subSet.map(dictionaryByOccurrences.get)} addWords(subtract(occurenceRoom, subSet), newWord :: currentSentence)
+    }
+
+    addWords(sentenceOccurrences(sentence), List())
+  }
+
+
+
+
+
+
+//    from the sentence, get the occurences  (sentenceOccurrences(s: Sentence): Occurrences)
+    //    recursive function, takes occurences (characters left) and current sentence list)
+    //    from the occurences, get the subsets (combinations(occurrences: Occurrences))
+    //    for each subset,
+    //     - lookup the map (dictionaryByOccurrences: Map[Occurrences, List[Word]])
+    //       -- if we find anything in the map, subtract the occurence value from the subset
+    //       -- append all found words to the sentence
+    //       -- recurse
+
+
+
+
+
+
+
+
+
+//      Hint: First of all, think about the recursive structure of the problem: what is the base case, and how should the result of a recursive invocation be integrated in each iteration? Also, using for-comprehensions helps in finding an elegant implementation for this method.
+
+//    Test the `sentenceAnagrams` method on short sentences, no more than 10 characters. The combinations space gets huge very quickly as your sentence gets longer, so the program may run for a very long time. However for sentences such as `Linux rulez`, `I love you` or `Mickey Mouse` the program should end fairly quickly -- there are not many other ways to say these things.
+
+
+
 }
