@@ -51,22 +51,71 @@ val blah = combinations(cat).map(x => (x,dictionaryByOccurrences.get(x)))
 //combinations(occurenseRoom).flatMap(subset => subset.map(dictionary.get).map(newwords => (newwords,subset)))
 
 //combinations(sentenceOccurrences(List("catdog"))).flatMap(subset => subset.map)
-def moose(sentence: Sentence): List[Sentence] = {
-  @scala.annotation.tailrec
-  def moosemoose(occurenceRoom: Occurrences, currentSentence: Sentence): List[Sentence] = {
-    //      def wordsets = combinations(occurenceRoom).flatMap(w => dictionaryByOccurrences.get)
-    //      val moose = combinations(occurenceRoom).flatMap()
-    occurenceRoom match {
-      case List() => currentSentence
-      case y::ys => for {  // check that occurenceRoom is not empty
-        subset <- combinations(occurenceRoom)
-        newword <- dictionaryByOccurrences.get(subset)
-      } yield moosemoose(subtract2(occurenceRoom,subset),newword::currentSentence)
-    }
-  }
+//def moose(sentence: Sentence): List[Sentence] = {
+//  @scala.annotation.tailrec
+//  def moosemoose(occurenceRoom: Occurrences, currentSentence: Sentence): List[Sentence] = {
+//    //      def wordsets = combinations(occurenceRoom).flatMap(w => dictionaryByOccurrences.get)
+//    //      val moose = combinations(occurenceRoom).flatMap()
+//    occurenceRoom match {
+//      case List() => List(currentSentence)
+//      case y::ys => { for {  // check that occurenceRoom is not empty
+//        subset <- combinations(occurenceRoom)
+//        newwordOpt <- dictionaryByOccurrences.get(subset)
+//        newword <- Some(newwordOpt)
+//      } yield moosemoose(subtract2(occurenceRoom,subset),newword::currentSentence)}.flatten
+//    }
+//  }
+//} // doesn't work, type mismatch
+
+val list1 = List(1,2,3)
+val list2 = List("cat","dog","moose")
+
+val sounds: List[String] = for {
+  x<- list1
+  y<- list2
+} yield {(x,y) match {
+  case (1,_) => "one"
+  case (_,"cat") => "meow"
+  case _ => "other"
+}}
+
+sounds
+
+def chiwowow(sentence: Sentence): List[Sentence] = {
+  def woof(occurenceRoom: Occurrences,currentSentence: Sentence): List[Sentence] ={
+    if (occurenceRoom.isEmpty) List(currentSentence) else {
+      {
+        for { subset <- combinations(occurenceRoom) }
+          yield { dictionaryByOccurrences.get(subset) match {
+            case Some(listOfWords) => {
+              for (ww <- listOfWords) yield woof(subtract(occurenceRoom,subset),ww::currentSentence)
+              }.flatten
+            case None => Nil
+          }}.flatten
+      }
+    }}
+  woof(sentenceOccurrences(sentence),Nil)
 }
 
-// issue is that we are yielding the return type of the inner function
-// which will wrap that return type in a list
-// The return types for both cases must match
+
+def chiwowow2(sentence: Sentence): List[Sentence] = {
+  def woof(occurenceRoom: Occurrences,currentSentence: Sentence): List[Sentence] ={
+    if (occurenceRoom.isEmpty) List(currentSentence) else {
+
+        for { subset <- combinations(occurenceRoom)
+              word <-  dictionaryByOccurrences.getOrElse(subset,Nil)
+          sentence <- woof(subtract(occurenceRoom,subset),word::currentSentence)
+              }
+          yield sentence
+    }}
+  woof(sentenceOccurrences(sentence),Nil)
+  }
+
+val theAnagrams = chiwowow2(List("cat","dog"))
+
+
+
+
+println("done?")
+
 

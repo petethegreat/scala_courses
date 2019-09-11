@@ -160,33 +160,16 @@ def subtract(x: Occurrences, y: Occurrences): Occurrences = {
    *  Note: There is only one anagram of an empty sentence.
    */
   def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
-    @scala.annotation.tailrec
-    def addWords(occurenceRoom: Occurrences, currentSentence: Sentence): List[Sentence] = {
-      //      def wordsets = combinations(occurenceRoom).flatMap(w => dictionaryByOccurrences.get)
-      //      val moose = combinations(occurenceRoom).flatMap()
-      if (combinations(occurenceRoom).flatMap(dictionaryByOccurrences.get).len < 2)
-        for {
-          subSet <- combinations(occurenceRoom)
-          newWord <- subSet.map(dictionaryByOccurrences.get)} addWords(subtract(occurenceRoom, subSet), newWord :: currentSentence)
-    }
-
-    addWords(sentenceOccurrences(sentence), List())
+    def addWords(occurenceRoom: Occurrences,currentSentence: Sentence): List[Sentence] ={
+      if (occurenceRoom.isEmpty) List(currentSentence) else {
+        for { subset <- combinations(occurenceRoom)
+              word <-  dictionaryByOccurrences.getOrElse(subset,Nil)
+              sentence <- addWords(subtract(occurenceRoom,subset),word::currentSentence)
+              }
+          yield sentence
+      }}
+    if (sentence.isEmpty) List(Nil) else addWords(sentenceOccurrences(sentence),Nil)
   }
-
-
-
-
-
-
-//    from the sentence, get the occurences  (sentenceOccurrences(s: Sentence): Occurrences)
-    //    recursive function, takes occurences (characters left) and current sentence list)
-    //    from the occurences, get the subsets (combinations(occurrences: Occurrences))
-    //    for each subset,
-    //     - lookup the map (dictionaryByOccurrences: Map[Occurrences, List[Word]])
-    //       -- if we find anything in the map, subtract the occurence value from the subset
-    //       -- append all found words to the sentence
-    //       -- recurse
-
 
 
 
