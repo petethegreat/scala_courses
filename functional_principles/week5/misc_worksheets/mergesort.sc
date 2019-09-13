@@ -56,3 +56,30 @@ def msort_ord[T](xs:List[T])(implicit ord: Ordering[T]): List[T] = {
 }
 
 println(msort_ord(myList2))
+
+def pack[T](xs:List[T]):List[List[T]] = xs match {
+  case Nil => Nil
+  case y1::ys => pack(ys) match
+  { case Nil => List(y1)::Nil
+    case z1::zs => if (z1.head==y1) (y1::z1)::zs else (List(y1))::z1::zs
+  }
+}
+
+pack(List(1,1,2,2,2,3,3,3,2,2,1,2))
+
+def pack2[T](xs:List[T]):List[List[T]] = xs match {
+  case Nil => Nil
+  case y1::ys => {
+    val (matched,unmatched) = xs.span(m => m == y1)
+    matched::pack(unmatched)
+  }
+
+}
+pack2(List(1,1,2,2,2,3,3,3,2,2,1,2))
+def rl[T](l:List[T]): List[(T,Int)] = {
+  pack2(l).map(x => (x.head,x.length))
+}
+rl(List(1,1,2,2,2,3,3,3,2,2,1,2))
+
+
+
