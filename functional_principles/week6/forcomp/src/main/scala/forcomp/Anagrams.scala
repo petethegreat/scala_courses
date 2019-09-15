@@ -101,7 +101,13 @@ object Anagrams {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = ???
+//  def subtract(x: Occurrences, y: Occurrences): Occurrences = for ((xa,xi) <- x )  y.find( (ya,yi) => ya == xa ) match { case (yy:Char,ii:Int) =>  })
+  def subtract(x: Occurrences, y: Occurrences): Occurrences = for ((xa,xi)<-x)
+//  y.find( (ya,yi) => ya == xa) match {
+//    case (yyaa, yyii)  if (yyii < xi) => yyii match {
+      case n > xi => throw new Error(s" ")
+
+    }}
 
   /** Returns a list of all anagram sentences of the given sentence.
    *
