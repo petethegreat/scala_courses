@@ -533,6 +533,19 @@ The compiler will search for an implicit definition that
 \end{itemize}
 If there is a single (most specific) definition, it will be taken as the argument. Otherwise an error will be thrown
 
+\section{More Lists}
+\subsection{Higher order List functions}
+\begin{itemize}
+  \item \textbf{xs.map} - takes a function, returns a list formed by applying the function to each element of the list
+  \item \textbf{xs.filter} - takes a function, returns a subset of the list containing all elements for which the function evaluates to true
+  \item \textbf{xs.filterNot} - takes a function, returns a subset of the list containing all elements for which the function evaluates to false
+  \item \textbf{xs.partition} - takes a function evaluating to bool, returns two lists, one containing elements that evaluate to true, the other elements that evaluate to false
+  function evaluates to false
+  \item \textbf{xs.takeWhile} - takes a function evaluating to bool, returns all elements up to (excluding) the first that evaluates to false
+  \item \textbf{xs.dropWhile} - takes a function evaluating to bool, returns all elements after (including) the first that evaluates to false
+  \item \textbf{xs.span} - takes a function evaluating to bool, returns two lists. The first list is equivalent to takeWhile, the second to dropWhile
+\end{itemize}
+
 \section{Higher order List functions}
 \begin{itemize}
   \item \textbf{xs.map} - takes a function, returns a list formed by applying the function to each element of the list
@@ -545,14 +558,31 @@ If there is a single (most specific) definition, it will be taken as the argumen
   \item \textbf{xs.span} - takes a function evaluating to bool, returns two lists. The first list is equivalent to takeWhile, the second to dropWhile
 \end{itemize}
 
-  
+\subsection{reduction of lists}
+reduction - reduces a list to a single value. For example, the sum/product functions we implemented earlier.
+
+The reducLeft method can be used to reduce a list. 
+\begin{lstlisting}
+List(x1,x2,...,xn).reduceLeft(op) = ( ... ( x1 op x2) op x3) ...) op xn
+\end{lstlisting}
+
+So sum and product could be written as 
+
+\begin{lstlisting}
+def sum(xs:List[Int]) = (0::xs).reduceLeft((x,y) => x+y)
+def product(xs:List[Int]) = (1::xs).reduceLeft((x,y) => x*y)
+\end{lstlisting}
+
+reduceLeft can not be applied to an empty list. FoldLeft can. Foldleft takes a n accumulator variable in addition to the reduction function. If the list is empty, then FoldLeft returns the value of the accumulator. 
+
+\subsection(aside - anonymous parameters)
+Instead of passing reduceLeft the function \lstinline|(x,y) => x + y|, we can simply write \lstinline|(_ + _)|
+each underscore (\_) represents a new parameter, going from left to right. The parameters are defined at the next outer pair of parentheses ) or the whole expression). 
 
 
+Analogously to reduceLeft and foldLeft, there exist functions foldRight and reduceRight, which start at the tail of the tree and work towards the beginning.
 
-
-
-
-
+In cases where the operation is associative and commutative, then it does not matter whether foldLeft or foldRight is used. If this is not true then the direction in which we fold will affect the result. Consider list concatenation \lstinline|(xs foldleft ys) (_ :: _)|. Beacuse the cons operator expects an element of type T as its first parameter and of List[T] for it's second, if foldRight is used then an error will be thrown.
 
 
 
