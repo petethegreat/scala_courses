@@ -461,7 +461,11 @@ Null is a subtype of all reference types, and the type of the null value
 % Class hierarchies - more than one class goes into the definintion of a derived class
 
 \chapter{placeholder}
-\Section{list functionality}
+\section{ for comprehension}
+backward arrows \lstinline|<-| call flatmap
+final \lstinline|yield| calls map
+
+\section{list functionality}
 sublists and element access. The list \textbf{xs} has the following methods available
 \begin{itemize}
   \item \textbf{xs.head} - first element in list
@@ -472,6 +476,7 @@ sublists and element access. The list \textbf{xs} has the following methods avai
   \item \textbf{xs.take(n)} - sublist containing the first n elements of xs
   \item \textbf{xs.drop(n)} - sublist containing all remaining elements of xs, after the first n have been removed
   \item \textbf{xs(n)} - the nth element of list xs. The item access function is implemented through the apply function(xs.apply(n)), which can be invoked through just xs(n). 
+  \item \textbf{xs.splitAt(n)} - splits the list at position $n$, returns two lists in a tuple
 \end{itemize}
 other list operations
 \begin{itemize}
@@ -481,6 +486,78 @@ other list operations
   \item \textbf{xs.indexOf(x)} - get the index of the first occurence of x (or -1 if x does not occur in xs)
   \item \textbf{xs.contains} - true if xs contains x, false otherwise
 \end{itemize}
+
+\section{Pairs and Tuples}
+Some examples in  mergesort.sc \verb|week6/misc_worksheets/mergesort.sc|.
+
+Functions can return multiple objects wrapped in a tuple, for example \href{https://www.scala-lang.org/api/2.12.3/scala/collection/immutable/List.html#splitAt(n:Int):(List[A],List[A])}{splitAt}:  \listInline| def splitAt(n:Int):(List[A],List[A])|. This returns a pair of lists, the first list contains the first $n$ elements of the original, the second contains the remaining elements. Pairs in scala can be written \lstinline|(x,y)|.
+
+Pairs can be generalised to Tuples, which are collections of more than two elements.
+
+A tuple is an instance of a parameterised scala type $\mathrm{scala.Tuple}N[T_1,...,T_N]$
+The expression $(e_1,...e_N)$ is equivalent to $\mathrm{scala.Tuple}N(e_1,...e_N)$. Tuples can also be used in pattern matching.
+
+TupleN classes follow the definition below
+\begin{lstlisting}
+case class Tuple2[T1,T2](_1: +T1,_2: +T2) {
+  override def toString = "(" + _1 +", " + _2 + ")"
+}
+\end{lstlisting}
+fields can be accessed by the names \lstinline|_1, _2| etc. As tuples are case classes, they can be used for pattern matching (see above worksheet).
+
+\section{Implicit Parameters}
+
+Would like to extend our mergesort to work on arbitrary parameter types. If we just specify a type parameter $[T]$ in the constructor (and don't do anything else), we'll get an error as the $<$ operator is not defined for all types. A solution is to take a function as an argument, and use that to make the $ x < y$ comparison.
+
+There is, however, a class in the scala standard library that handles ordering - \lstinline|scala.math.ordering[T]| provides ways for ordering objects of type T
+
+Instead of parameterising our function with a custom function for parameterisation, we could use Ordering for comparison instead:
+\begin{lstlisting}
+def msort_ord[T](xs:List[T])(ord: Ordering[T]): List[T] = {
+...
+case (x::xs,y::ys) => if (ord.lt(x,y)) x::merge(xs,y::ys) ...
+...
+merge(msort_ord(left)(ord),msort_ord(right)(ord)) }
+}
+msort_ord(myList2)(Ordering.String))
+\end{lstlisting}
+
+even better is to declare $ord$ as an $implicit$ parameter
+\lstinline|def msort_ord[T](xs:List[T])(implicit ord: Ordering[T]): List[T] = ...|
+Then ord no longer needs to be specified with the msort function is invoked. The compilier will figure out what should be used.
+The compiler will search for an implicit definition that
+\begin{itemize}
+  \item is marked \lstinline|implicit|
+  \item has a type compatible with \lstinline|T|
+  \item is visible at the point of the function call, or is defined in a companion object associated with T.
+\end{itemize}
+If there is a single (most specific) definition, it will be taken as the argument. Otherwise an error will be thrown
+
+\section{Higher order List functions}
+\begin{itemize}
+  \item \textbf{xs.map} - takes a function, returns a list formed by applying the function to each element of the list
+  \item \textbf{xs.filter} - takes a function, returns a subset of the list containing all elements for which the function evaluates to true
+  \item \textbf{xs.filterNot} - takes a function, returns a subset of the list containing all elements for which the function evaluates to false
+  \item \textbf{xs.partition} - takes a function evaluating to bool, returns two lists, one containing elements that evaluate to true, the other elements that evaluate to false
+  function evaluates to false
+  \item \textbf{xs.takeWhile} - takes a function evaluating to bool, returns all elements up to (excluding) the first that evaluates to false
+  \item \textbf{xs.dropWhile} - takes a function evaluating to bool, returns all elements after (including) the first that evaluates to false
+  \item \textbf{xs.span} - takes a function evaluating to bool, returns two lists. The first list is equivalent to takeWhile, the second to dropWhile
+\end{itemize}
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
