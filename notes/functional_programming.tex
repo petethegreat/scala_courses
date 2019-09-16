@@ -584,13 +584,44 @@ Analogously to reduceLeft and foldLeft, there exist functions foldRight and redu
 
 In cases where the operation is associative and commutative, then it does not matter whether foldLeft or foldRight is used. If this is not true then the direction in which we fold will affect the result. Consider list concatenation \lstinline|(xs foldleft ys) (_ :: _)|. Beacuse the cons operator expects an element of type T as its first parameter and of List[T] for it's second, if foldRight is used then an error will be thrown.
 
+\section{logic}
 
+We can prove that a program is correct if we can prove that definitions in the program obey certain laws. One of the core claims about functional programming is that it lends itself more easily to reasoning about programs.
 
+Consider concatenation. We expect concatenation to satisfy the following properties
+\begin{lstlisting}
+(xs ++ ys) ++ zs == xs ++ (ys ++zs) //associativity
+xs ++ Nil == xs
+Nil ++ xs == xs
+\end{lstlisting}
 
+We can use \textem{structural induction} do prove these. This is similar to proof by induction in mathematics ( Assuming a rule is true for some n, prove that this implies truth for n+1. If the rule can be shown to be true for a particular value of n, then it is proven to be true for all n above this value)
 
+Referential transparency - a proof can freely apply reduction (term rewriting) steps as equalities to some part of a term. This works because functional programs don't have side effects, so a term is equivalent to the term to which it reduces.
 
+\subsection Structural induction
+To prove a property P(xs) for all lists xs -
+\begin{itemize}
+  \item show that P(Nil) holds
+  \item for a list xs and some element x, show the \textbf{induction step} holds
+  \begin{itemize} \item if P(xs) holds, then P(x::xs) also holds
+\end{itemize}
+\end{itemize}
 
+Our definition for concatenation was
+\begin{lstlisting}
+def concat[T](xs:List[T], ys:List[T]) = xs match
+{
+  case Nil => ys
+  case x::xs1 => x :: concat(xs1,ys)
+  }
+\end{lstlisting}
 
+From the abov implementation, we can conclude
+\begin{itemize}
+\item Nil ++ ys = ys
+\item (x ::xs1) ++ ys = x:: (xs1 ++ ys)
+\end{itemize}
 
 
 
