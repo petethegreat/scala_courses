@@ -595,7 +595,7 @@ xs ++ Nil == xs
 Nil ++ xs == xs
 \end{lstlisting}
 
-We can use \textem{structural induction} do prove these. This is similar to proof by induction in mathematics ( Assuming a rule is true for some n, prove that this implies truth for n+1. If the rule can be shown to be true for a particular value of n, then it is proven to be true for all n above this value)
+We can use \textem{structural induction} do prove these. This is similar to proof by induction in mathematics ( Assuming a rule is true for some n, prove that this implies truth for n+1. If the rule can be shown to be true for a particular value of n, then it is proven to be true for all n above this value). 
 
 Referential transparency - a proof can freely apply reduction (term rewriting) steps as equalities to some part of a term. This works because functional programs don't have side effects, so a term is equivalent to the term to which it reduces.
 
@@ -608,6 +608,9 @@ To prove a property P(xs) for all lists xs -
 \end{itemize}
 \end{itemize}
 
+For the inductive step, we assume that the hypothesis is true for a given list xs, and then show that it is also true for (x::xs).
+
+We will show that concatenation is associative, that is, \listinline| (xs ++ ys) ++ zs == xs ++ (ys ++zs)|
 Our definition for concatenation was
 \begin{lstlisting}
 def concat[T](xs:List[T], ys:List[T]) = xs match
@@ -617,13 +620,29 @@ def concat[T](xs:List[T], ys:List[T]) = xs match
   }
 \end{lstlisting}
 
-From the abov implementation, we can conclude
+From the above implementation, we can conclude
 \begin{itemize}
 \item Nil ++ ys = ys
-\item (x ::xs1) ++ ys = x:: (xs1 ++ ys)
+\item (x ::xs1) ++ ys = x:: (xs1 ++ ys) 
 \end{itemize}
+which satisfies the nil case
+
+For the induction step, we wish to show that \lstinline|((x::xs) ++ ys) ++ zs = x::(xs ++ (ys ++ zs))|
+\begin{lstlisting}
+((x::xs) ++ ys) ++ zs = (x::(xs ++ ys)) ++ zs
+// from 2nd line above
+= x::((xs ++ ys) ++ zs) // same again
+= x::(xs ++ (ys ++ zs)) // by induction hypothesis
+\end{lstlisting}
+last line is the rhs above. As we have now proven the inductive step, and demonstrated that thr rule holds for a Nil list, we have thus proven the associativity of concatenation.
 
 
+% xs ++ Nil = xs
+% Nil + Nil = Nil
+
+% (x::xs) ++ Nil
+% x::(xs ++ Nil)
+% x:: xs
 
 % syntax notation
 % extended Backus-Naur form (EBNF)
