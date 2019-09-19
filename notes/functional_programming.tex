@@ -636,6 +636,24 @@ For the induction step, we wish to show that \lstinline|((x::xs) ++ ys) ++ zs = 
 \end{lstlisting}
 last line is the rhs above. As we have now proven the inductive step, and demonstrated that thr rule holds for a Nil list, we have thus proven the associativity of concatenation.
 
+\subsection{ further equational proofs}
+
+consider the reverse function of a list
+
+\begin{lstlisting}
+Nil.reverse = Nil
+(x::xs).reverse = xs.reverse ++ List(x)
+\end{lstlisting}
+
+we would like to prove that \lstinline|xs.reverse.reverse = xs|. The Nil case is easy. 
+\begin{lstlisting}
+(x::xs).reverse.reverse = x::xs
+(xs.reverse ++ List(x)).reverse = (x::xs).reverse.reverse
+\end{lstlisting}
+
+first we generalise
+
+
 
 % xs ++ Nil = xs
 % Nil + Nil = Nil
