@@ -651,7 +651,16 @@ we would like to prove that \lstinline|xs.reverse.reverse = xs|. The Nil case is
 (xs.reverse ++ List(x)).reverse = (x::xs).reverse.reverse
 \end{lstlisting}
 
-first we generalise
+first we generalise, we aim to show \lstinline|(ys ++ list(x)).reverse = x::(ys.reverse)|
+Nil case
+\begin{lstlisting}
+(Nil ++ list(x)).reverse = List(x).reverse 
+= (x::Nil).reverse 
+= Nil.reverse ++ List(x)
+= Nil ++ (x::Nil)
+= x::Nil
+= x::(Nil.reverse)
+\end{lstlisting}
 
 
 
