@@ -651,7 +651,7 @@ we would like to prove that \lstinline|xs.reverse.reverse = xs|. The Nil case is
 (xs.reverse ++ List(x)).reverse = (x::xs).reverse.reverse
 \end{lstlisting}
 
-first we generalise, we aim to show \lstinline|(ys ++ list(x)).reverse = x::(ys.reverse)|
+For the inductive step, first we generalise. We aim to show \lstinline|(ys ++ list(x)).reverse = x::(ys.reverse)|
 Nil case
 \begin{lstlisting}
 (Nil ++ list(x)).reverse = List(x).reverse 
@@ -662,7 +662,24 @@ Nil case
 = x::(Nil.reverse)
 \end{lstlisting}
 
+inductive step - assume \lstinline|(ys ++ list(x)).reverse = x::(ys.reverse)|, show \lstinline|((y::ys) ++ list(x)).reverse = x::((y::ys).reverse)|
 
+\begin{lstlisting}
+((y::ys) ++ List(x)).reverse
+(y::(ys ++ List(x))).reverse
+(ys ++ List(x)).reverse ++ List(y) //2nd clause reverse
+(x::ys.reverse) ++ List(y) // induction
+x:: (ys.reverse ++ List(y))
+x:: ( y::ys).reverse
+\end{lstlisting}
+
+
+excercise - show that \lstinline| (xs ++ ys) map f = (xs map f) ++ (ys map f)|
+requires clauses of ++ as well as those of map:
+\begin{lstlisting}
+Nil map f = Nil
+(x::xs) map f = f(x) :: (xs map f)
+\end{lstlisting}
 
 % xs ++ Nil = xs
 % Nil + Nil = Nil
