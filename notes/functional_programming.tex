@@ -684,7 +684,19 @@ Nil map f = Nil
 \section{ Other Collections}
 \subsectoin{Vectors}
 
-Lists are structured recursively as \lstinline|x::xs|, which makes it 
+Lists are structured recursively as \lstinline|x::xs|, which means that it is faster to access elements near the beginning. Vectors use a tree like list structure - If there are more than 32 elements, then the tree is two levels deep, and can hold up to 32^2 = 1024 elements. Access patterns across Vectors are much more balanced.
+
+Vectors and lists are very similar, the constructors are the same, and all the same map, fold, foreach, are supported. Cons is the exception, instead of \lstinline|::|, Vectors have the operators \lstinline|+:| for adding an element to the left (prepending) and \lstinline|:+| for adding an element to the right (appending).
+
+Vectors and Lists are subclasses of Sequence. Scala also contains Sets and Maps. Sequences, Sets, and Maps are subclasses of Iterable.
+
+Arrays and Strings support the same operations as sequences, and can be implicitly converted to sequence (but not subclasses).
+
+ranges can be used to construct sequences of integers
+\lstinline|val r: Range = 1 to 10 by 3|
+
+
+
 
 % xs ++ Nil = xs
 % Nil + Nil = Nil
