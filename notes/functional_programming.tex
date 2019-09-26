@@ -695,6 +695,15 @@ Arrays and Strings support the same operations as sequences, and can be implicit
 ranges can be used to construct sequences of integers
 \lstinline|val r: Range = 1 to 10 by 3|
 
+\section{for expressions}
+
+in imperative programming, nested loops are used frequently. In functional programming, we recursively build a data structure. Take a range, map, flatmap etc., and then filter.
+
+For expresssions produce no side effects, in contrast to for loops in imperative programming.
+
+For epressions take the form \lstinline| for (s) yield e |, where $s$ is \textem{sequence of generatprs and filters} and e is an expression that returns a value for each iteration.
+
+a generator is of the form \lstinline|p <- e|, where p is a pattern and e an expression that evaluates to a collection. a filter is of the form \lstinline| if f|, where f is a boolean expression. if there are several generators in a expression, the last vary faster than the first.
 
 
 
