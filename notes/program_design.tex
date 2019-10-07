@@ -1,0 +1,83 @@
+\part{Program Design}
+\chapter{more with for}
+\section{queries with for}
+
+For expresions in scala can be likened to queries in an RDBMS.
+
+\begin{lstlisting}
+for (b <-books, a<- b.authors if a.startsWith "Bird," ) yield b.title
+
+for { 
+	b1 <- books
+	b2 <- books
+	if b1.title < b2.title
+	a1 <- b1.authors
+	a2 <- b2.authors
+	if a1 == a2
+	} yield a1
+\end{lstlisting}
+
+If the author has written 3 books, they will be printed 3 times.
+
+\section{translating for-expressions}
+For expressions are pretty handy. For expressions can generally be translated into expressions based on flatmap, map, and filter. Conversely, all of these functions can be defined in terms of for - 
+\begin{lstlisting}
+def mapFun[T,U](xs: List[T], f: T => U) : List[U] = for (x <- xs) yield f(x)
+
+def flatMapFun[T,U]( xs:List[T], f: T => List[U]): List[U] = for (x <- xs, y <- f(x)) yield y
+
+def filterFun[T](xs: List[T], f: T => Boolean): List[T] = for (x <-xs if f(x)) yield x
+
+\end{lstlisting}
+
+Scala translates for expressions into expressions based on map, flatmap and filter.
+
+A really simple for-expression
+\begin{lstlisting}
+for (x <-e1) yield e2
+\end{lstlisting}
+can be translated to
+\begin{lstlisting}
+e1.map( x => e2)
+\end{lstlisting}
+
+Expressions of the form \lstlinline|for (x <-e1 if f; s) yield e2|, where f is a filter and s is a (potentially empty) arbitrary sequence of generators and filters can be translated to 
+\begin{lstlisting}
+for (x<- e1.withFilter(x => f) ; s ) yield e2
+\end{lstlisting}
+withfilter is a lazy (i.e. smarter) implementation of filter. It does not create a new (intermediate) collection. The above expression is still contains a for expression, but we have removed one element (the if).
+
+Cases containing more than one leading generator can be translated using flatmap
+\begin{lstlisting}
+for (x <-e1 ; y<-e2 ; s) yield e3
+\end{lstlisting}
+can be translated to 
+\begin{lstlisting}
+e1.flatMap(x => for (y <-e2 ; s) yield e3
+\end{lstlisting}
+
+In all of these cases, we are removing one element from the for expression. Thus an arbitrary expression can be reduced to a sequence of maps and flatmaps.
+
+\begin{lstlisting}
+for { 
+	i <- 1 to N
+	j <- 1 to i
+	if isPrime(i + j)
+} yield (i, j)
+\end{lstlisting}
+
+can be rewritten as
+\begin{lstlisting}
+//(1 until N).flatMap(i => for ( y <- 1 until i if isPrime(i,j)) yield (i,j) )
+
+(1 until N).flatMap( i => 
+	(1 until i).withFilter(j => isPrime(i + j)
+	.map(j => (i,j)))
+\end{lstlisting}
+
+The for query above on books can be translated to \lstinline|books.flatmap(b => b.authors.withFilter(a => a.startswith("Bird").map(y => y.title)))|
+
+Note that for expressions are not limited to lists//sequences/iterables. The translation only depends on the prescence of the methods map, flatmap, and withFilter. User defined types can be used in for expressions, provided these three methods are implemented.
+
+For example, the collection books might instead be an interface to a database. Provided the methods are are implemented, for expressions can be used to query. the Scala database connection frameworks ScalaQuery and Slick make use of this.
+
