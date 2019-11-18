@@ -58,13 +58,13 @@ trait StringParserTerrain extends GameDef {
         (r,c) match {
           case (r < 0 || c < 0) =>  false
           case r >= levelVector.length => false
-          case c >=  levelVector
-
-
-
-
+          case c >=  (levelVector.apply(r).length) => false
+          case levelVector.apply(r).apply(c) != '-' => true
+          case _ => false
         }
-        println("lv length = "+levelVector.length); levelVector(r)(c) != '-'}
+        // println("lv length = "+levelVector.length);
+        // levelVector(r)(c) != '-'
+      }
     }
     isValid
   }
