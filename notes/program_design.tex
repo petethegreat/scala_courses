@@ -81,3 +81,78 @@ Note that for expressions are not limited to lists//sequences/iterables. The tra
 
 For example, the collection books might instead be an interface to a database. Provided the methods are are implemented, for expressions can be used to query. the Scala database connection frameworks ScalaQuery and Slick make use of this.
 
+
+
+\section{Monads}
+
+monads must have an associated unit function, and have a flatmap method. I don't really get monads right now.
+
+\section{Structural Induction}
+
+Structural induction can be applied to trees.
+To prove a property $P(t)$ for all trees of a certain type $t$
+\begin{itemize}
+	\item show that $P(l)$ holds for all leaves $l$ of a tree
+	\item For each type of internal node t with subtrees $s_1, s_2 \ldots s_n$, show that
+	$P(s_1)\wedge P(s_2)\wedge \ldots \wedge P(s_n)$ implies $P(t)$ 
+\end{itemize}
+
+if the property holds on all of the tree's subtrees, then it holds on the tree
+
+
+consider the implementation of IntSets
+
+\begin{lstlisting}
+abstract class IntSet {
+	def incl(x: Int) : IntSet
+	def contains(x: Int): Boolean
+}
+
+object Empty extends IntSet {
+	def contains(x: Int): Boolean = false
+	def incl(x: Int): IntSet = NonEmpty(x, Empty, Empty)
+}
+
+case class NonEmpty(elem: Int, left: IntSet, right: IntSet) extends IntSet {
+	def contains(x: Int): Boolean = 
+		if (x < elem) left contains x
+		else if (x > elem) right contains x
+		else true
+	def incl(x: Int): IntSet = 
+		if  (x < elem) NonEmpty(elem, left incl x, right)
+		else if (x > elem) NonEmpty(elem, left, right incl x)
+		else this
+}
+\end{lstlisting}
+
+how do we prove the correctness of this implementation holds? 
+consider the following three laws (for integers x,y and Intset s):
+\begin{itemize}
+	\item \lstinline|Empty contains x = false|
+	\item \lstinline| (s incl x) contains x = true|
+	\item \lstinline|(s incl x) contains y = s contains y|
+\end{itemize}
+
+The first law is straightforward, and can be seen to be true (Empty.contains is false). 
+
+For the second law (proposition), we can do strutural induction. Consider the base case when $s$ is an empty set. The we would like to show that \lstinline| (Empty incl x) contains x = true|. \lstinline|Empty incl x| evaluates to \lstinline| NonEmpty(x,...)|, and contains x will evaluate to true in this case.
+
+For the base case when $s$ is NonEmpty, assume it takes the form NonEmpty(z,l,r), where l and r are subtrees. There are two cases to consider, z == x and z != x. If z == x, then NonEmpty(x,...) incl x will return this, which contains x, so we're good. if z != x, then NonEmpty(z) incl x will contain x, so we're good.
+\section{streams}
+
+Streams are like lists, but are evaluated lazily. The tail of the stream is not evaluated until it is needed. Streams are constructed from the object Stream.empty and the constructor stream.cons.
+
+For lists, we might have something like
+\begin{lstlisting}
+def listrange(lo:Int, hi: Int): List[Int] = 
+	if lo >= hi Nil
+	else lo::listrange(lo+1,hi)
+\end{lstlisting}
+For streams, we would do
+\begin{lstlisting}
+def StreamRange(lo:Int, hi: Int): Stream[Int] = 
+	if lo >= hi Stream.empty
+	else Stream.cons(lo,StreamRange(lo+1,hi))
+\end{lstlisting}
+
+The standard shorthand for the cons operator, \lstinline|::|, will always produce a list. There is an equivalent for streams, the hash operator: \lstinline|#::|, which can be used in expressions and patterns. 
