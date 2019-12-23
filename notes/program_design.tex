@@ -156,3 +156,41 @@ def StreamRange(lo:Int, hi: Int): Stream[Int] =
 \end{lstlisting}
 
 The standard shorthand for the cons operator, \lstinline|::|, will always produce a list. There is an equivalent for streams, the hash operator: \lstinline|#::|, which can be used in expressions and patterns. 
+
+\section{State}
+Up untill now we've been doing this purely functionally, as much as possible.
+Some things will have a state. 
+
+Everything witha mutable state will be constructed from variables. variables are declared with \lstinline|var| instead of \lstinline|val|. Variables can have their value changed later through assignment.
+
+When assignment is possible, then determining whether or not things are equivalent becomes more difficult. Previously, if things evaluate to the same expression, then they are equal. 
+
+\begin{lstlisting}
+val x = E; val y = E;
+val x = E; val y = x;
+\end{lstlisting}
+The two lines above produce the same result. In both cases, x and y evaluate to E
+\begin{lstlisting}
+val x = new BankAccount; val y = new BankAccount;
+val x = new BankAccount; val y = x;
+\end{lstlisting}
+In this case, the two lines give different results. In the first, two new bankaccounts are created. In the second, y is copied from x.
+
+How do we define "the same"? Operational equivalence - Execute the definitions of x and y, followed by an arbitrary set of operations involving x and y (S), observing all results. Then, execute the definitions followed by a different sequence of operations, S', in which every occurence of y in S has been replaced by x. If the results are different, then x and y are certainly different. Else, if every possible pair of sequences (S, S') are indistinguishable, then x and y are the same.
+
+Assignment breaks the substitution model that we have been using up until now. In general, if we are not using purely functional code, then the substitution model will not hold.
+
+\section{Loops}
+
+Here's a possible definition of while that can be used to constrruct loops
+\begin{lstlisting}
+
+def WHILE(condition: => Boolean)(command :=> unit): unit = 
+	if condition
+	{ command
+		WHILE(condition)(command)
+		}
+	else ()
+\end{lstlisting}
+
+ 
