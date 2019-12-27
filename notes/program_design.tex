@@ -41,7 +41,7 @@ can be translated to
 e1.map( x => e2)
 \end{lstlisting}
 
-Expressions of the form \lstlinline|for (x <-e1 if f; s) yield e2|, where f is a filter and s is a (potentially empty) arbitrary sequence of generators and filters can be translated to 
+Expressions of the form \lstinline|for (x <-e1 if f; s) yield e2|, where f is a filter and s is a (potentially empty) arbitrary sequence of generators and filters can be translated to 
 \begin{lstlisting}
 for (x<- e1.withFilter(x => f) ; s ) yield e2
 \end{lstlisting}
@@ -193,4 +193,35 @@ def WHILE(condition: => Boolean)(command :=> unit): unit =
 	else ()
 \end{lstlisting}
 
- 
+ \section{event simulation}
+
+ digital circuits - states are boolean.
+ Will consider inverters (NOT), AND, and OR gates.
+
+ Half adder - takes two inputs (A and B), and has two outputs (SUM and CARRY). CARRY is equal to A AND B, while SUM is A OR B AND NOT A AND B
+
+
+\begin{figure}
+\begin{circuitikz}
+\draw 
+
+(2,0) node[and port] (lowerand) {} 
+(2,3) node[or port] (upperor) {}
+
+(upperor.in 1) -- ++ (-2,0)
+(lowerand.in 2) -- ++ (-2,0)
+
+(upperor.out) ++( 2,0) node[and port, anchor=in 1](upperand){}
+(lowerand.out) |- ++(1,1) node[not port](middlenot){}
+(middlenot.out) |- (upperand.in 2)
+(upperor.out) -- (upperand.in 1)
+
+(upperor.in 1) -- ++ (-1.25,0) |- (lowerand.in 1)
+(upperor.in 2) -- ++ (-0.75,0) |- (lowerand.in 2)
+(lowerand.out) -- ++ (4,0)
+;
+
+\end{circuitikz}
+\caption{half adder}
+\end{figure}
+

@@ -490,7 +490,7 @@ other list operations
 \section{Pairs and Tuples}
 Some examples in  mergesort.sc \verb|week6/misc_worksheets/mergesort.sc|.
 
-Functions can return multiple objects wrapped in a tuple, for example \href{https://www.scala-lang.org/api/2.12.3/scala/collection/immutable/List.html#splitAt(n:Int):(List[A],List[A])}{splitAt}:  \listInline| def splitAt(n:Int):(List[A],List[A])|. This returns a pair of lists, the first list contains the first $n$ elements of the original, the second contains the remaining elements. Pairs in scala can be written \lstinline|(x,y)|.
+Functions can return multiple objects wrapped in a tuple, for example \href{https://www.scala-lang.org/api/2.12.3/scala/collection/immutable/List.html#splitAt(n:Int):(List[A],List[A])}{splitAt}:  \lstinline| def splitAt(n:Int):(List[A],List[A])|. This returns a pair of lists, the first list contains the first $n$ elements of the original, the second contains the remaining elements. Pairs in scala can be written \lstinline|(x,y)|.
 
 Pairs can be generalised to Tuples, which are collections of more than two elements.
 
@@ -595,7 +595,7 @@ xs ++ Nil == xs
 Nil ++ xs == xs
 \end{lstlisting}
 
-We can use \textem{structural induction} do prove these. This is similar to proof by induction in mathematics ( Assuming a rule is true for some n, prove that this implies truth for n+1. If the rule can be shown to be true for a particular value of n, then it is proven to be true for all n above this value). 
+We can use \em{structural induction} do prove these. This is similar to proof by induction in mathematics ( Assuming a rule is true for some n, prove that this implies truth for n+1. If the rule can be shown to be true for a particular value of n, then it is proven to be true for all n above this value). 
 
 Referential transparency - a proof can freely apply reduction (term rewriting) steps as equalities to some part of a term. This works because functional programs don't have side effects, so a term is equivalent to the term to which it reduces.
 
@@ -610,7 +610,7 @@ To prove a property P(xs) for all lists xs -
 
 For the inductive step, we assume that the hypothesis is true for a given list xs, and then show that it is also true for (x::xs).
 
-We will show that concatenation is associative, that is, \listinline| (xs ++ ys) ++ zs == xs ++ (ys ++zs)|
+We will show that concatenation is associative, that is, \lstinline| (xs ++ ys) ++ zs == xs ++ (ys ++zs)|
 Our definition for concatenation was
 \begin{lstlisting}
 def concat[T](xs:List[T], ys:List[T]) = xs match
@@ -682,9 +682,9 @@ Nil map f = Nil
 \end{lstlisting}
 
 \section{ Other Collections}
-\subsectoin{Vectors}
+\subsection{Vectors}
 
-Lists are structured recursively as \lstinline|x::xs|, which means that it is faster to access elements near the beginning. Vectors use a tree like list structure - If there are more than 32 elements, then the tree is two levels deep, and can hold up to 32^2 = 1024 elements. Access patterns across Vectors are much more balanced.
+Lists are structured recursively as \lstinline|x::xs|, which means that it is faster to access elements near the beginning. Vectors use a tree like list structure - If there are more than 32 elements, then the tree is two levels deep, and can hold up to $32^2 = 1024$ elements. Access patterns across Vectors are much more balanced.
 
 Vectors and lists are very similar, the constructors are the same, and all the same map, fold, foreach, are supported. Cons is the exception, instead of \lstinline|::|, Vectors have the operators \lstinline|+:| for adding an element to the left (prepending) and \lstinline|:+| for adding an element to the right (appending).
 
@@ -701,7 +701,7 @@ in imperative programming, nested loops are used frequently. In functional progr
 
 For expresssions produce no side effects, in contrast to for loops in imperative programming.
 
-For epressions take the form \lstinline| for (s) yield e |, where $s$ is \textem{sequence of generatprs and filters} and e is an expression that returns a value for each iteration.
+For epressions take the form \lstinline| for (s) yield e |, where $s$ is \em{sequence of generatprs and filters} and e is an expression that returns a value for each iteration.
 
 a generator is of the form \lstinline|p <- e|, where p is a pattern and e an expression that evaluates to a collection. a filter is of the form \lstinline| if f|, where f is a boolean expression. if there are several generators in a expression, the last vary faster than the first.
 
