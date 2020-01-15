@@ -74,10 +74,17 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
     findMin(deleteMin(insert(b,insert(a,empty)))) == Math.max(a,b)
   }
 
+  property("sorted_after_melding") = forAll{ (h:H, g:H) =>
+    getMinSequence(meld(g,h)) == (getMinSequence(g):::getMinSequence(h)).sorted
+
   }
 
 
-// test properties
+
+
+
+
+  // test properties
 
 
 
