@@ -336,3 +336,53 @@ but (bad points)
 \end{itemize}
 
 \subsection{functional reactive programming}
+reactive programming is reacting to a sequence of events in time.
+
+Functionally, we aggregate an event sequence into a signal.
+\begin{itemize}
+	\item The signal is a value that changes over time.
+	\item it is represented as a function that maps from time domain to value.
+	\item instead of propagating updates to a mutable state, we define new signals in terms of existing ones.
+\end{itemize}
+
+There are two fundamental operations over signals - obtaining the value of the signal at the current time, e.g. \lstinline|mousePosition()| and defining a signal in terms of other signals -
+\begin{lstlisting}
+
+def inReactangle(LL: Position, UR: Position): Signal[Boolean] = 
+Signal {
+	val pos = mousePosition()
+	LL <= pos && pos <= UR
+}
+\end{lstlisting}
+
+Values of Signal are immutable
+There is a subclass of Signal, \lstinline|Var|, that has an update operation
+\begin{lstlisting}
+val sig = Var(3) // signal with constant value of 3
+sig.update(5) // sig now has value of 5
+\end{lstlisting}
+
+Updates can be written as assignments (syntactic sugar).
+Variable signals look a bit like mutable variable, but we can map over them. If we define a signal b to be equal to 2 time a, then updates to a automatically propagate to b. With mutable variables this is not the case, b would need to be redefined after a is changed.
+
+bank account with signals looks much simpler. no need to explicitly publish stuff.
+\begin{lstlinsing}
+class BankAccount {
+	val balance = Var(0)
+	
+	def deposit(amount:Int):Unit = 
+		if (amount > 0) 
+		{
+			balance() = balance() + amount
+			// syntatic sugar for balance.update(balance() + amount)
+		}
+
+	def withdraw(amount:Int):Unit = 
+		if (amount > 0 && balance() >= amount) {
+		balance() = balance() - amount
+		} else throw new Error("insufficient funds")
+}
+\end{lstlisting }
+
+
+
