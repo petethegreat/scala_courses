@@ -1,0 +1,41 @@
+didn't push from unicron
+
+https://github.com/rohgar/scala-design-2/wiki/A-Simple-FRP-Implementation
+
+signals take an expression, and implement an apply method
+
+class Signal[T]( expr: => T) {
+    def apply(): T = ??? 
+}
+
+object Signal {
+    def apply[T] (expr: => T) = new Signal(expr)
+}
+
+Signal(expr) will invoke the object's apply method, returning a new instance of the Signal class, with the supplied expression
+
+Vars extend signals, such that they can be updated.
+
+class Var[T] (expr: => T) extends Signal[T](expr) {
+    def update(expr: => T): Unit = ???
+}
+
+object Var { 
+    def apply[T](expr: => T) = new Var(expr)
+}
+
+moose = Var(expr)
+moose.update(expr2)
+
+## Syntatic sugar
+moose() = expr2 is equivalent to moose.update(expr2), just as moose(expr) is syntatic sugar for moose.apply(expr)
+
+
+signal maintains:
+  - it's current value
+  - the expression that defines the signal value
+  - a set of observers - other signals that depend on value.
+if signal changes, observers are re-evaluated.
+
+How do we record dependencies?
+  - 
