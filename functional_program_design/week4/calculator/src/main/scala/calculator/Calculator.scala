@@ -17,9 +17,17 @@ object Calculator extends CalculatorInterface {
   def eval(expr: Expr, references: Map[String, Signal[Expr]]): Double = {
     expr match {
       case Literal(v) => v
-      case Ref(name) => eval(getReferenceExpr(name,references) ,references.removed(name))
-        // something like this??? if a reference has been looked up, it is no longer known. This will prevent circular stuff.
-//      case Plus(a,b) => case
+      case Ref(name) => eval(getReferenceExpr(name,references),references - name)
+        // something like this??? if a reference has been looked up, it is no longer known. This will prevent circular stuff.//
+        // our reference could be "b"
+        // b could contain the expression "c + 1"
+        // b could contain the (circular) expression "b + 1"
+        // need to work back through the references until we get to a literal.
+      case Plus(a,b) => eval(a,references) + eval(b,references)
+        // 2.0 + c
+      case Minus(a,b) => eval(a,references) - eval(b,references)
+      case Divide(a,b) => eval(a,references) / eval(b,references)
+      case Times(a,b) => eval(a,references) * eval(b,references)
       case _ => 0.0
     }
   }
