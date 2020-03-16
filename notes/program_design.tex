@@ -385,4 +385,99 @@ class BankAccount {
 \end{lstlisting }
 
 
+\section{more functional reactive programming}
 
+\url{https://github.com/rohgar/scala-design-2/wiki/A-Simple-FRP-Implementation}
+
+signals take an expression, and implement an apply method
+\begin{lstlisting}
+class Signal[T]( expr: => T) {
+    def apply(): T = ??? 
+}
+
+object Signal {
+    def apply[T] (expr: => T) = new Signal(expr)
+}
+\end{lstlisting}
+\lstinline|Signal(expr)|will invoke the object's apply method, returning a new instance of the Signal class, with the supplied expression.
+
+Vars extend signals, such that they can be updated. Vars implement and update method.
+
+\begin{lstlisting}
+class Var[T] (expr: => T) extends Signal[T](expr) {
+    def update(expr: => T): Unit = ???
+}
+
+object Var { 
+    def apply[T](expr: => T) = new Var(expr)
+}
+
+moose = Var(expr)
+moose.update(expr2)
+\end{lstlisting}
+
+\subsection{Syntatic sugar}
+\lstinline|moose() = expr2| is equivalent to \lstinline|moose.update(expr2)|, just as \lstilnine|moose(expr)| is syntatic sugar for \lstinline|moose.apply(expr)|.
+
+
+signal maintains:
+begin{itemize}
+\item it's current value
+\item the expression that defines the signal value
+\item a set of observers - other signals that depend on value.
+\end{itemize}
+if signal changes, observers are re-evaluated.
+
+
+How do we record dependencies?
+
+\section{latency/asynchoronicity}
+Computations can take time. 
+Scala has a Try monad for exception handling. Try is an abstract class with Success and Failure case subclasses. We can iterate over stuff, and return an instance of success when it works or Failure when it does not. Then we can make use of the successes and handle the failures.
+
+Future is another monad, Instead of handling success/failure it handles latency - the computation may be complete or ongoing (or waiting/whatever)
+
+Really simple network stack:
+\begin{lstlisting}
+trait Socket {
+	def readFromMemory(): Array[Byte]
+	def sendToEuropet(packet: Array[Byte]): Array[Byte]
+	}
+
+val socket = Socket()
+val packet = socket.readFromMemory()
+val confirmation = socket.sendToEurope(packet)
+
+\end{lstlisting}
+Reading from memory takes some time, sending to Europe takes a lot of time.
+
+\lstinline{Future[T]} is a monda that handles both Exceptions and Latency.
+
+\begin{lstlisting}
+
+import scala.concurrent._
+import scala.concurrent.Execution.Implicits.global
+
+trait Future[T] {
+	def onComplete(callback: Try[T] => Unit)
+	//(implicit executor: ExecutionContext): Unit
+}
+\end{lstlisting}
+
+When the execution is complete, the callback function is invoked. Note that as the try monad is used, the computiation we are waiting for may have suceeded or failed, but this can be handled.
+
+Javascript uses a shit-tonne of callbacks.
+
+Our reading/sending example above can be modified to 
+\begin{lstlisting}
+
+val socket = Socket()
+val packet: Future[Array[Byte]] = socket.readFromMemory()
+
+val confirmation: Future[Array[Byte]] = packet.onComplete{
+	case Sucess(p) => socket.sendToEurope(p)
+	case Failure(t) => ...
+	}
+\end{lstlisting}
+
+This can result in a lot of nesting. But monads are sweet, because they can be flatmapped.
