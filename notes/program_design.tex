@@ -481,3 +481,33 @@ val confirmation: Future[Array[Byte]] = packet.onComplete{
 \end{lstlisting}
 
 This can result in a lot of nesting. But monads are sweet, because they can be flatmapped.
+
+The implementation of Future might look like
+\begin{lstlisting}
+trait Future[T] {
+	def onComplete( callback: Try[T] => unit) = ...
+	def flatMap[S] (f: T => Future[S]) : Future[S] = ???
+}
+\end{lstlisting}
+How would we implement flatMap using onComplete? 
+
+\begin{lstlisting}
+trait Future[T] { self => 
+	def flatMap( f: T => Future[S]): Future[S] = { 
+		new Future[S]{
+			def onComplete(callback: Try[S] => Unit): Unit = {
+				self onComplete {
+					case Success(x) => f(x).onComplete(callback)
+					case Failure(e) => callback(Failure(e))
+				}
+			}
+		}
+	}
+}
+\end{lstlisting}
+
+Flatmap creates a new \lstinline|Future[S]|, and defines it's onComplete method. The new future's oncomplete relies on the onComplete method of the initial Future (self). If the self computation completes sucessfully, then the mapping function f is applied and the onComplete/callback for the Future[S] is invoked.
+if self's computation fails, then the failure is passed to the callback function directly.
+
+
+
