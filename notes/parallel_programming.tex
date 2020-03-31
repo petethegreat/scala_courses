@@ -1,0 +1,86 @@
+\chapter{parallel programming}
+
+parallelism and concurrency
+
+parallelism is doing several things at the same time, by efficently using hardware
+parallelism is mainly concerned with organising the computational prbolem into multiple subproblems that can be executed simultaneously and independently.
+parallel programming focusses on structuring the algorithms and/or data, such that as many numbers can be crunched as quickly as possible.
+
+Bit-level parallelism is structuring the hardware/software so that a larger number of bits are involved in a single operation. Think of addition - one bit addition would add the ones bits, then carry over (if needed) and add the twos bits, then carry over and do the fours bits, and so on. Alternatively, a four bit algorithm/hardware could add all four of these bits simultaneously in a single operation.
+
+Instruction level parallelism is executing different instructions from the same instruction stream in parallel
+
+concurrency is where multiple instructions may or may not execute at the same time.
+Main focus of conncurrency is figuring out how to structure a program such that some parts can continue to execute while other parts wait for things (fetch data from memory/disk/database/web). Concurrent programming is targeted towards writing asynchrounous applications.
+
+There is some overlap between the two, but neither is a superset of the other.
+
+
+c = a2 + a2
+b = a1 + a2
+d = b + c
+
+b and c can be computed in parallel. This is instruction level parallelism
+
+task level parallism - carrying out operations from two (or more) seperate instruction streams at the same time.
+THis is what we deal with mostly.
+
+\section{paralleism in the jvm}
+
+will assume we are running on a multicore/multiprocessor system
+
+\begin{itemize}
+    \item OS - software that manages hardware and software resources, and schedules program execution
+    \item process - an instance of a program
+    \begin{itemize}
+        \item The same program can be started more than once, and thus may be running in multiple processes
+    \end{itemize}
+    \item threads
+
+\end{itemize}
+
+There are usually many processes running on a small number of cpus. The OS schedules execution - each process will run for a small chunk of time ( {\em time slice}), then the os switches execution to another. This is multitasking.
+
+two different processes cannot directly access each other's memory - they are isolated.
+
+A single program (process) may make use of multiple threads (concurrency units). All threads within a program have access to the program's memory space.
+
+Each thread has a program counter and a program stack. A given thread may not access the stack (or stack variables) of another thread. For threads to communicate, they must read/write to shared (heap) memory.
+
+\section{threading in the jvm}
+
+\begin{itemize}
+    \item define a subclass of \lstinline|Thread|
+    \item instantiate an object of this subclass
+    \item invoke the \lstinline|start| method of the subclass
+\end{itemize}
+
+The definition of the subclass defines the code that will be used. 
+
+An operation is {\em atomic} if it occurs instantaenously from the perspective of other threads.
+The \lstinline|synchronized| block can be invoked to ensure atomicity. No more than one thread may execute the same synchronized block at the same time.
+
+synchronized blocks can be nested. For example, when transferring from a source to a destination, you might want to invoke synchoronised on both objects, such that the transfer is atomic.
+
+\section{deadlock}
+Deadlock occurs when two (or more) threads wait to acquire resources without releasing resources that they hold. None of the threads can proceed, as all are waiting for another thread to finish. This can happen when \lstinline|synchronized| blocks are nested.
+
+Deadlocks can be avoided by always acquiring resources in a specific order. In the transfer example, each account is associated with a unique id. For a given transfer, the lowest uid is acquired first, followed by the other. This avoids circular dependencies, as things hold the lowest and wait for the highest. Assuming self-transfers are guarded against, then one of the threads involving the highest account will be able to complete, freeing the lower, allowing other threads to proceed. 
+
+\section{memory model}
+the memory model is a set of rules used in the JVM that describes how threads will interact when accessing shared memory.
+
+\begin{itemize}
+    \item two threads writing to seperate locations do not require synchronisation
+    \item A thread X that joins on thread Y is guaranteed to observe all writes performed by Y after join returns.
+\end{itemize}
+
+Threads and Synchronization are fairly low level functionalities. In practice we will probably work with higher level abstractions.
+
+
+def inline_sum(vals):
+    thesum = 0
+    for n,v in enumerate(vals):
+    thesum = n/(n+1)*thesum + 1/(n+1)*v
+    return thesum
+
