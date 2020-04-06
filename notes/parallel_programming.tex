@@ -78,5 +78,56 @@ the memory model is a set of rules used in the JVM that describes how threads wi
 Threads and Synchronization are fairly low level functionalities. In practice we will probably work with higher level abstractions.
 
 
+\section{running computations in parallel}
+
+Consider the case where we want to compute the pnorm for an array
+
+\begin{equation}
+\norm{\mathbf{x}}_p = \left(\sum_{i=1}^{n} |x_i|^p \right)^{1/p}
+\end{equation}
+
+
+Simplest case is to just sequentially loop over all the elements.
+We can use two threads. Define $m=n/2$, then one thread computes the sum for $1 \leq i < m$, the other for $m \leq i \leq n$. Then we add the results and raise to the power $1/p$.
+
+Following will compute the sum of the raised elements of an array (worksheet pnorm)
+{\bf Note} - the ending index on slice is exclusive.
+\begin{lstlisting}
+def sumSegment(a: Array[Int], p:Double, s: Int, t:Int): Int =
+  {
+    def raise(aa:Int): Int = floor(pow(aa.abs,p)).toInt
+
+    a.slice(s,t).map(raise).sum
+  }
+
+val myArray = Array(1,2,3,4,5,6)
+
+sumSegment(myArray,2,0,3)
+\end{lstlisting}
+
+Four four threads, we could similarly divide the initial array into four pieces. What if we have an unbounded number of threads? If there is no predefined limit on the number of threads we may use, then we can break this into as many pieces as is suitable. There is some overhead associated with setting up threads, so we define some threshold. For a (sub) array with size less than the threshold, we just operate on it sequentially, else we break our array into two pieces and parallelise across these.
+
+\begin{lstlisting}
+
+def pNormRec(a: Array[Int],p:Double): Int = 
+    power(segmentRec(a,p,0,a.length),1/p)
+
+def segmentRec(a: Array[Int],p: Double,s: Int,t: Int) = {
+    if (t-s < threshold)
+        sumSegment(a,p,s,t)
+    else
+    {
+    val m = s + (t - s)/2 // (t +s) /2 ?
+    val sum1, sum2 = parallel(
+        segmentRec(a,p,s,m),
+        segmentRec(a,p,m,t))
+    sum1 +sum2
+    }
+
+}
+\end{lstlisting}
+Again, note that as the ending index on slice is exclusive, we can specify $m$ as both the end index for the first segment and the start index for the second segment.
+
+
 
 
