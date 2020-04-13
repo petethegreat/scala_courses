@@ -43,7 +43,16 @@ object VerticalBoxBlur extends VerticalBoxBlurInterface {
    */
   def blur(src: Img, dst: Img, from: Int, end: Int, radius: Int): Unit = {
     // TODO implement this method using the `boxBlurKernel` method
-    ???
+    // from and end are x coordinates
+    var xx = from
+    while (xx < end) {
+      var yy =0
+      while (yy < src.height){
+        dst(xx,yy) = boxBlurKernel(src, xx, yy, radius)
+        yy += 1
+      }
+      xx += 1
+    }
   }
 
   /** Blurs the columns of the source image in parallel using `numTasks` tasks.
