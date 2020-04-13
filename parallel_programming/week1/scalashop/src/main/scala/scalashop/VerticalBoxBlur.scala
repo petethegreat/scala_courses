@@ -63,7 +63,19 @@ object VerticalBoxBlur extends VerticalBoxBlurInterface {
    */
   def parBlur(src: Img, dst: Img, numTasks: Int, radius: Int): Unit = {
     // TODO implement using the `task` construct and the `blur` method
-    ???
+    val barWidth = math.max(1,src.width/numTasks).toInt
+    val froms = 0 to src.width by barWidth
+    val fromtos = froms.zip(froms.tail)
+    //spawn our tasks
+//    println(s"barwidth = $barWidth\n")
+//
+//    println(s"froms = $List(froms)")
+//    println(s"barwidth = $barWidth\n")
+//    val from = 0
+    val tasks = fromtos.map( f => task(blur(src,dst,f._1, math.min(f._2,src.width) -1 ,radius)))
+    tasks.map(x => x.join)
+
+
   }
 
 }
