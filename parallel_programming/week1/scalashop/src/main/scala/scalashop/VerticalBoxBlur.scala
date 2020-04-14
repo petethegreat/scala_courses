@@ -45,9 +45,9 @@ object VerticalBoxBlur extends VerticalBoxBlurInterface {
     // TODO implement this method using the `boxBlurKernel` method
     // from and end are x coordinates
     var xx = from
-    while (xx < end) {
+    while (xx < end -1) {
       var yy =0
-      while (yy < src.height){
+      while (yy < src.height -1){
         dst(xx,yy) = boxBlurKernel(src, xx, yy, radius)
         yy += 1
       }
@@ -72,7 +72,7 @@ object VerticalBoxBlur extends VerticalBoxBlurInterface {
 //    println(s"froms = $List(froms)")
 //    println(s"barwidth = $barWidth\n")
 //    val from = 0
-    val tasks = fromtos.map( f => task(blur(src,dst,f._1, math.min(f._2,src.width) -1 ,radius)))
+    val tasks = fromtos.map( f => task(blur(src,dst,f._1, math.min(f._2,src.width) ,radius)))
     tasks.map(x => x.join)
 
 

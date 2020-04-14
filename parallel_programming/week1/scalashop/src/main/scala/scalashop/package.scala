@@ -45,16 +45,16 @@ package object scalashop extends BoxBlurKernelInterface {
     // TODO implement using while loops
     // start at min_x, iterate to max x
 
-    var n_pix = 0
-    var mean_red = 0
-    var mean_green = 0
-    var mean_blue = 0
-    var mean_alpha = 0
+    var n_pix = 0.0
+    var mean_red = 0.0
+    var mean_green = 0.0
+    var mean_blue = 0.0
+    var mean_alpha = 0.0
 
     var xx = clamp(x-radius,0, src.width)
-    while ( xx < clamp(x + radius, 0, src.width)) {
-      var yy = clamp(y-radius,0,src.height)
-      while ( yy < clamp(y + radius, 0, src.height)) {
+    while ( xx < clamp(x + radius, 0, src.width-1)) {
+      var yy = clamp(y-radius,0,src.height-1)
+      while ( yy < clamp(y + radius, 0, src.height-1)) {
         mean_red = n_pix/(n_pix +1)*mean_red + red(src(xx,yy))/(n_pix +1)
         mean_green = n_pix/(n_pix +1)*mean_green + green(src(xx,yy))/(n_pix +1)
         mean_blue = n_pix/(n_pix +1)*mean_blue + blue(src(xx,yy))/(n_pix +1)
@@ -65,7 +65,7 @@ package object scalashop extends BoxBlurKernelInterface {
        }
       xx = xx + 1
     }
-    rgba(mean_red,mean_green,mean_blue,mean_alpha)
+    rgba(mean_red.toInt,mean_green.toInt,mean_blue.toInt,mean_alpha.toInt)
   }
 
   val forkJoinPool = new ForkJoinPool
