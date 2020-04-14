@@ -51,10 +51,10 @@ package object scalashop extends BoxBlurKernelInterface {
     var mean_blue = 0.0
     var mean_alpha = 0.0
 
-    var xx = clamp(x-radius,0, src.width)
-    while ( xx < clamp(x + radius, 0, src.width-1)) {
+    var xx = clamp(x-radius,0, src.width-1)
+    while ( xx <= clamp(x + radius, 0, src.width-1)) {
       var yy = clamp(y-radius,0,src.height-1)
-      while ( yy < clamp(y + radius, 0, src.height-1)) {
+      while ( yy <= clamp(y + radius, 0, src.height-1)) {
         mean_red = n_pix/(n_pix +1)*mean_red + red(src(xx,yy))/(n_pix +1)
         mean_green = n_pix/(n_pix +1)*mean_green + green(src(xx,yy))/(n_pix +1)
         mean_blue = n_pix/(n_pix +1)*mean_blue + blue(src(xx,yy))/(n_pix +1)

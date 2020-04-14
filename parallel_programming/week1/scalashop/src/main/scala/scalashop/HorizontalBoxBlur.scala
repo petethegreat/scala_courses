@@ -43,10 +43,10 @@ object HorizontalBoxBlur extends HorizontalBoxBlurInterface {
   // TODO implement this method using the `boxBlurKernel` method
 
     var yy = from
-    while (yy < end-1)
+    while (yy < end)
       {
         var xx =0
-        while (xx < src.width -1) {
+        while (xx < src.width) {
           dst(xx,yy) = boxBlurKernel(src,xx,yy,radius)
           xx += 1
         }
@@ -65,9 +65,10 @@ object HorizontalBoxBlur extends HorizontalBoxBlurInterface {
     val barHeight = math.min(1.0,src.height/numTasks).toInt
     val froms = (0 to src.width by barHeight)
     val fromEnds = froms.zip(froms.tail)
+
     val tasks = fromEnds.map(x => task(blur(src,dst,x._1,math.min(x._2,src.height),radius)))
 
-    tasks.foreach(x => x.join)
+    tasks.map(x => x.join)
 
   }
 

@@ -45,9 +45,9 @@ object VerticalBoxBlur extends VerticalBoxBlurInterface {
     // TODO implement this method using the `boxBlurKernel` method
     // from and end are x coordinates
     var xx = from
-    while (xx < end -1) {
+    while (xx < end) {
       var yy =0
-      while (yy < src.height -1){
+      while (yy < src.height){
         dst(xx,yy) = boxBlurKernel(src, xx, yy, radius)
         yy += 1
       }
