@@ -128,6 +128,88 @@ def segmentRec(a: Array[Int],p: Double,s: Int,t: Int) = {
 \end{lstlisting}
 Again, note that as the ending index on slice is exclusive, we can specify $m$ as both the end index for the first segment and the start index for the second segment.
 
+\section{first class tasks}
+Previously considered a construct, parallel, that would evaluate expressions in parallel
+\begin{lstlisting}
+val (v1,v2) = parallel(e1,e2)
+\end{lstlisting}
+
+Alternatively, we could use a task construct.
+\begin{lstlisting}
+
+val t1 = task(e1) // spawns a new thread computing e1
+val t2 = task(e2) // spawns a new thread computing e2
+val v1 = t1.join // joins t1, obtaining result v1 (waits till t1 thread completes)
+val v2 = t2.join // joins t2 with result v2
+
+\end{lstlisting}
+
+When creating the tasks, the current computation (presumably the main thread) continues. The join calls are \textem{blocking} - the main thread above will wait until task t1 concludes. Subsequent calls to t1.join quickly return the same result.
 
 
+parallel can be expressed in terms of task
+\begin{lstlisting}
+def parallel[A,B](cA: => A, cB: => B): (A,B) = {
+    //val ta = task cA
+    val tb = task cB
+    //(ta.join, tb.join)
+    val aa = cA
+    (aa,tb.join)
+
+    }
+
+\end{lstlisting}
+
+
+Note that the "task" construct that is mentioned here is implemented in the assignment. The task and parallel implemtations wrap functionality from \lstinline|java.util.concurrent| (ForkJoinTask).
+
+\section{complexity of parallel programs}
+W(e) - the work of a sequential program (single thread)
+treat parallel as pair - parallel(e1,e2) -> (e1,e2)
+D(e) - the depth of a parallel program - the number of steps it iwould be broken into given unbounded parallelism.
+
+W(parallel(e1,e2)) = W(e1) + W(e2) + c1
+D(parallel(e1,e2)) = max(D(e1),D(e2)) + c2
+
+If work is divided into equal parts, for depth we only count one part.
+for parts where we do not explicitly call parallel, we add the constituents
+\section{parallel sorting}
+
+\subsection{Merge sort}
+This is interesting, as it's not a pure merge sort. Paralleisation is a function of the depth at which we're operating - if we are up high, then we split the array and create new threads. Once a sufficient depth has been reached, we stop spawning new threads. However, instead of doing a mergesort sequentially, we change the algorithm to a quickSort, which operates sequentially.
+
+Sorting is done in place, but auxillary storage is used for merging. At each depth level, we alternate between merging from xs into ys with merging from ys into xs.
+
+\begin{lstlisting}
+
+def parMergeSort(xs: Array[Int, maxDepth:Int): Unit = {
+    // aux storage
+    val ys = new Array[Int](xs.length)
+
+    def sort(from: Int, until: Int, depth:Int) = {
+        if (depth == maxDepth) {
+            quickSort(xs, from, until - from)
+        } else {
+            val mid = (from + until)/2
+            parallel(sort(from,mid,depth+1),sort(mid,until,depth+1))
+
+            val flip = depth %2 == 0
+            val src = if (flip) ys else xs
+            val dst = if (flip) xs else ys
+            merge(src,dst,from,mid,until)
+        }
+    }
+}
+\end{lstlisting}
+
+\subsection{parrallel operations on collections}
+
+operations on collections (such as map, fold, scan) are pretty foundational to functional programming.
+
+scan 
+List(1,3,8).scan(100)((s,x) => s + x ) == List(100, 101, 104, 112)
+
+like zip + fold? can think of scan as applying fold to all list prefixes, or storing the intermediate results of fold
+
+List is not an ideal data structure for parallel computations, as we need to search through the list to find the middle. concatenation also takes linear time.
 

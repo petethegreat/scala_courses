@@ -62,8 +62,8 @@ object HorizontalBoxBlur extends HorizontalBoxBlurInterface {
    */
   def parBlur(src: Img, dst: Img, numTasks: Int, radius: Int): Unit = {
   // TODO implement using the `task` construct and the `blur` method
-    val barHeight = math.min(1.0,src.height/numTasks).toInt
-    val froms = (0 to src.width by barHeight)
+    val barHeight = math.max(1.0,src.height/numTasks).toInt
+    val froms = (0 to src.height by barHeight)
     val fromEnds = froms.zip(froms.tail)
 
     val tasks = fromEnds.map(x => task(blur(src,dst,x._1,math.min(x._2,src.height),radius)))
