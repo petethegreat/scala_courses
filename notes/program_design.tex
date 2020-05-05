@@ -261,7 +261,7 @@ two half adders can be combined (with an or gate) to form a full one-bit adder
 
 \subsection{event handling}
 
-Oberver pattern, also called publish/subscribe or model/view/controller. Views \textem{subscribe} to the model. When the something in the model changes, it \textem{publishes} an update, sending the update to all subscribed views. 
+Oberver pattern, also called publish/subscribe or model/view/controller. Views { \em subscribe} to the model. When the something in the model changes, it { \em publishes} an update, sending the update to all subscribed views. 
 
 \begin{lstlisting}
 trait Publisher {
@@ -280,7 +280,7 @@ trait Publisher {
 
 Our BanAccount class could extend from Publisher, and then it would be able to inform other parts of the application when changes to the balance occur
 
-\begin{lstlinsing}
+\begin{lstlisting}
 class BankAccount extends Publisher {
 	private var balance = 0
 	def currentBalance:Int = balance
@@ -366,7 +366,7 @@ Updates can be written as assignments (syntactic sugar).
 Variable signals look a bit like mutable variable, but we can map over them. If we define a signal b to be equal to 2 time a, then updates to a automatically propagate to b. With mutable variables this is not the case, b would need to be redefined after a is changed.
 
 bank account with signals looks much simpler. no need to explicitly publish stuff.
-\begin{lstlinsing}
+\begin{lstlisting}
 class BankAccount {
 	val balance = Var(0)
 	
@@ -417,12 +417,12 @@ moose.update(expr2)
 \end{lstlisting}
 
 \subsection{Syntatic sugar}
-\lstinline|moose() = expr2| is equivalent to \lstinline|moose.update(expr2)|, just as \lstilnine|moose(expr)| is syntatic sugar for \lstinline|moose.apply(expr)|.
+\lstinline|moose() = expr2| is equivalent to \lstinline|moose.update(expr2)|, just as \lstinline|moose(expr)| is syntatic sugar for \lstinline|moose.apply(expr)|.
 
 
 signal maintains:
-begin{itemize}
-\item it's current value
+\begin{itemize}
+\item it\'s current value
 \item the expression that defines the signal value
 \item a set of observers - other signals that depend on value.
 \end{itemize}

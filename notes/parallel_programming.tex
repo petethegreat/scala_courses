@@ -144,7 +144,7 @@ val v2 = t2.join // joins t2 with result v2
 
 \end{lstlisting}
 
-When creating the tasks, the current computation (presumably the main thread) continues. The join calls are \textem{blocking} - the main thread above will wait until task t1 concludes. Subsequent calls to t1.join quickly return the same result.
+When creating the tasks, the current computation (presumably the main thread) continues. The join calls are { \em blocking} - the main thread above will wait until task t1 concludes. Subsequent calls to t1.join quickly return the same result.
 
 
 parallel can be expressed in terms of task
@@ -166,13 +166,31 @@ Note that the "task" construct that is mentioned here is implemented in the assi
 \section{complexity of parallel programs}
 W(e) - the work of a sequential program (single thread)
 treat parallel as pair - parallel(e1,e2) -> (e1,e2)
-D(e) - the depth of a parallel program - the number of steps it iwould be broken into given unbounded parallelism.
+D(e) - the depth of a parallel program (or span) - the number of steps it would be broken into given unbounded parallelism.
 
 W(parallel(e1,e2)) = W(e1) + W(e2) + c1
 D(parallel(e1,e2)) = max(D(e1),D(e2)) + c2
 
 If work is divided into equal parts, for depth we only count one part.
 for parts where we do not explicitly call parallel, we add the constituents
+
+Suppose our platform has P processors. The fastest we could do all the work is W(e)/P
+Suppose we had unbounded parallelism (infinite threads). The fastest we could do everything is D(e)
+
+D(e) + W(e)/P is often used as an estimate for running time. Given W and D, we can estimate how performance time will behave for different P. If P is constant but inputs grow, then the running time scales linearly with the size of the inputs.
+Even with infinite resources, we are still bounded by D(e).
+
+\subsection{Amahl's law}
+
+Suppose a program has two parts. part $p_1$ takes 40\% of the time, while part $p_2$ takes the reamining 60\% of the time, but can be sped up. If we make part 2 faster by $P$ times, the speedup for the entire program is
+
+\begin{equation}
+S = \frac{1}{f + \frac{1-f}{p}}
+\end{equation}
+
+which tends to $1/f$ as $P \rightarrow \infty$.
+
+
 \section{parallel sorting}
 
 \subsection{Merge sort}
