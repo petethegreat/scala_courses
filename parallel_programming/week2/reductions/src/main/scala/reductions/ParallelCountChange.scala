@@ -83,7 +83,10 @@ object ParallelCountChange extends ParallelCountChangeInterface {
    *  specified list of coins for the specified amount of money.
    */
   def parCountChange(money: Int, coins: List[Int], threshold: Threshold): Int = {
-    ???
+    if (threshold(money,coins))
+      countChange(money,coins)
+    
+
   }
 
   /** Threshold heuristic based on the starting money. */
