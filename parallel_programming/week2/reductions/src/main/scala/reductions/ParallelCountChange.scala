@@ -85,7 +85,7 @@ object ParallelCountChange extends ParallelCountChangeInterface {
   def parCountChange(money: Int, coins: List[Int], threshold: Threshold): Int = {
     if (threshold(money,coins))
       countChange(money,coins)
-    
+
 
   }
 
