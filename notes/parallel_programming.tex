@@ -231,7 +231,7 @@ like zip + fold? can think of scan as applying fold to all list prefixes, or sto
 
 List is not an ideal data structure for parallel computations, as we need to search through the list to find the middle. concatenation also takes linear time.
 
-\subsection{Fold Operations}
+\subsection{Fold Operations and Associativity}
 
 Map applies an operation to each element in the sequence. Fold uses a reduction operator (and an initial value) to combine elements, returning a single result. FoldLeft and FoldRight start at the beginning and end of the sequence, respectively. 
 
@@ -249,4 +249,20 @@ f(a,f(b,c)) & = & f(f(a,b),c) \\
 \end{eqnarray*}
 Addition (and multiplication) are associative, whereas subtraction and division are not. Multiplication is commutative also, in that $ f(a,b) = f(b,a)$, whereas division and subtraction are not. String concatenation is also associative.
 
-The operation $f(a,b)$ can be written in infix form $ a \circlex b$. A sequence of these operations can be written in the form of a tree, where the leaves are values and nodes are $\circledot$. 
+The operation $f(a,b)$ can be written in infix form $ a \otimes b$. A sequence of these operations can be written in the form of a tree, where the leaves are values and nodes are $\otimes$. If the operation is associative, then two expressions with the same list of operands, but parentheses placed in different locations, will evaluate to the same result. 
+
+A reduce operation on any tree with this list of operands will yield the same result.
+
+\subsubsection{commutative but not associative} Think of the operation that yields the winning move in a game of rock, paper, scissors, $r \otimes p = p$. As $p \otimes r = p$, this operation commutes. but $ (r \otimes s) \otimes p = r \otimes p = p$, whereas $r \otimes (s \otimes p) = r \otimes s = r$, so the operation is not associative.
+
+\subsubsection{associative but not commutative}
+\begin{itemize}
+    \item concatenation of strings, lists
+    \item matrix multiplication
+    \item composition of relations
+    \item composition of functions 
+\end{itemize}
+
+Associativity is not always preserved by mapping. When combining and optimising map/reduce operations, we need to be careful that the operations given to reduce remain associative (otherwise the result depends on the order in which computations run, which may be more or less random).
+
+Floating point addition and multiplication may not be associative, due to precision/rounding errors.

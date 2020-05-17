@@ -56,8 +56,14 @@ object ParallelParenthesesBalancing extends ParallelParenthesesBalancingInterfac
    */
   def parBalance(chars: Array[Char], threshold: Int): Boolean = {
 
-    def traverse(idx: Int, until: Int, arg1: Int, arg2: Int) /*: ???*/ = {
-      ???
+    def traverse(idx: Int, until: Int, delta: Int, min: Int) /*: ???*/ = {
+      //traverse counts the difference ( opens minus close), as well as the min difference
+      // ((())) is balanced
+      // )))((( is not
+      val i = idx
+      while (i < until) {
+
+      }
     }
 
     def reduce(from: Int, until: Int) /*: ???*/ = {
