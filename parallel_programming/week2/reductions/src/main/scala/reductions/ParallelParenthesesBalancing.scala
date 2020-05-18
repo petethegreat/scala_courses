@@ -67,7 +67,7 @@ object ParallelParenthesesBalancing extends ParallelParenthesesBalancingInterfac
     }
 
     def reduce(from: Int, until: Int) /*: ???*/ = {
-      ???
+      if from()
     }
 
     reduce(0, chars.length) == ???
