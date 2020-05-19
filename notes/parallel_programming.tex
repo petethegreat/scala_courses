@@ -266,3 +266,40 @@ A reduce operation on any tree with this list of operands will yield the same re
 Associativity is not always preserved by mapping. When combining and optimising map/reduce operations, we need to be careful that the operations given to reduce remain associative (otherwise the result depends on the order in which computations run, which may be more or less random).
 
 Floating point addition and multiplication may not be associative, due to precision/rounding errors.
+
+\subsection{parallel scan and prefix sums}
+
+Scan is an operation that  reduces a collection, but returns the intermediate results of the reduction. Instead of just keeping track of the total (the final result), the cumulative results of the reduction are stored in an array.
+
+\begin{lstlisting}
+def scanLeft[A](inp: Array[A], a0: A, f: (A,A) => A, out: Array[A]): Unit = {
+    
+    out(0) = 0
+    var a = a0
+    var i = 0
+    while (i < inp.length) {
+        a = f(a, inp(i))
+        i = i+1
+        out(i) = a
+    }
+}
+\end{lstlisting}
+
+Parallelising scanLeft seems like a problem, as ordering is important. We assume that each element of the output requires the preceding element to be computed. This isn't strictly true, We can have pieces run independantly if we give up on using the intermediate results. We call the reduction function f many more times, but the gains from parallelism make up for this.
+
+\begin{lstlisting}
+def reduceSeg1[A](inp: Array[A], left: Int, right: Int, a0:A, f: (A,A) => A ) :A = {
+    
+}
+def mapSeg[A,B] (inp: Array[A], left: Int, right: Int, fi: (int,A) => B, out: Array[B] ) :Unit = {}
+
+
+def scanLeft[A](inp: Array[A], a0: A, f: (A,A) => A, out: Array[A]): Unit = {
+val fi = { (i: Int, v: A) => reduceSeg1(inp1,0,i,a0,f)} // like currying? fi is a function
+mapSeg(inp,0,inp.length,fi,out)
+val last = inp1.length -1
+out(last+1) = f(out(last),inp(last))
+}
+\end{lstlisting}
+
+
