@@ -302,4 +302,84 @@ out(last+1) = f(out(last),inp(last))
 }
 \end{lstlisting}
 
+This implementation does not keep track of "the preceding element". \lstinline|fi| is a function that takes an index $i$ and carries out the mapping (of \lstinline|f| on \lstinline|inp|) for the first $i$ elements of \lstinline|inp|. \lstinline|mapSeq| carries out the mapping of \lstinline|fi| on \lstinline|inp|. Lots of computation could be saved by using an intermediate/output array for storage, but there is io associated with this. if the mapping function f is fast, or if things can be implemented tail recursively, then the additional computation (running in parallel) may be faster than the sequential version. In fact, as the parallelised map has $\mathrm{log}(n)$ complexity, the overall complexity of the scan is $\mathrm{log|(n)}$.
 
+Can use trees to keep track of what has already been computed, so we are not doing the same thing over and over (and over).
+
+define a couple of tree structures:
+\begin{lstlisting}
+// data structure for our initial input collection
+sealed abstract class Tree[A]
+case class Leaf[A] (val a:A) extends Tree[A]
+case class Node[A] (l: Tree[A], r: Tree[A]) extends Tree[A]
+
+// result tree, here nodes have values also, not just leafs
+sealed abstract class TreeRes[A](val res:A)
+case class LeafRes[A] (override val res:A) extends TreeRes[A]
+case class NodeRes[A] (l: TreeRes[A], override val res:A, r: TreeRes[A], ) extends TreeRes[A]
+
+// reduction that preserves computation tree
+// sequential
+def reduceRes[A](t :Tree[A], f: (A,A) => A): TreeRes[A] = t match {
+    case Leaf(v): LeafRes(v)
+    case Node(l,r): {
+        val (tL,tR) = (reduceRes(l,f),reduceRes(r,f))
+        NodeRes(tL, f(tL.res,tR.res),tR)
+        }
+    }
+\end{lstlisting}
+
+We can easily parallelise this. The function upsweep carries this out (bottom-up computation of the result tree). For scans, would like to move through the result tree in a particular order. In Downsweep, we move through the result tree, and output a tree containing the scan results.
+
+\begin{lstlisting}
+def upsweep(t: Tree[A],f: (A,A) => A) = t match {
+    case Leaf(v): LeafRes(v)
+    case Node(l,r): {
+        val (tL,tR) = parallel(upsweep(l,f),upsweep(r,f))
+        NodeRes(tL, f(tL.res,tR.res),tR)
+        }
+    }
+//a0 is the reduce of all elements to the left
+def downsweep(t: Tree[A], a0: A, f: (A,A) => A):Tree[A] = t match {
+    case LeafRes(a): Leaf(f(a0),a)
+    case NodeRes(l,a,r): {
+        val (tL,tR) = parallel(downsweep[A](l,a0,f),downsweep[A](r,f(a0,l.res),f))
+        Node(tL,tR)
+        }
+    }
+
+\end{lstlisting}
+
+To do scanleft, we build the result tree (with upsweep), then downsweep.
+\begin{lstlisting}
+def scanLeft[A](t: Tree[A], f: (A,A) =>A): Tree[A] = {
+    val tRes = upsweep(t,f)
+    val scanl = downsweep(tRes,a0,f)
+    prepend(a0,scanl)
+}
+
+def prepend[A](x: A, t: Tree[A]) = t match {
+    case Node(l,r): Node(prepend[A](x,l))
+    case Leaf(v): Node(Leaf(x), Leaf(v))
+
+}
+\end{lstlisting}
+
+Extend this to work with collections that are initially arrays. Will still use a tree for the intermediate results (because trees are awesome). We don't keep track of array elements, instead we track ranges and pass around a reference to the array.
+
+\begin{lstlisting}
+sealed abstract class TreeRes[A](val res:A)
+case class LeafRes[A] (from: Int, to: Int, override val res:A) extends TreeRes[A]
+case class NodeRes[A] (l: TreeRes[A], override val res:A, r: TreeRes[A], ) extends TreeRes[A]
+
+def upsweep(inp: Array[A], from: Int, to: Int, f: (A,A) => A): TreeRes[A] = {
+    if (to - from < threshold)
+        LeafRes(from,to,reduceSeg1(inp, from+1, to, inp(from),f))
+    else {
+        val mid = from + (from - to)/2
+        val (tL,tR) = parallel(upsweep(inp,from,mid,f),upsweep(inp,mid,to,f))
+        NodeRes(tL,f(tL.res,tR.res),tR)}
+    }
+
+}
+\end{lstlisting}
