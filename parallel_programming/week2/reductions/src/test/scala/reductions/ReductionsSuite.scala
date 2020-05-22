@@ -85,6 +85,7 @@ class ReductionsSuite {
 
   import ParallelParenthesesBalancing._
 
+
   @Test def `balance should work for empty string`: Unit = {
     def check(input: String, expected: Boolean) =
       assert(balance(input.toArray) == expected,
@@ -117,6 +118,41 @@ class ReductionsSuite {
     check("(.", false)
     check(").", false)
   }
+
+
+  @Test def `parBalance should work for empty string`: Unit = {
+    def check(input: String, expected: Boolean) =
+      assert(parBalance(input.toArray, 2) == expected,
+        s"parBalance($input) should be $expected")
+
+    check("", true)
+  }
+
+  @Test def `parBalance should work for string of length 1`: Unit = {
+    def check(input: String, expected: Boolean) =
+      assert(parBalance(input.toArray, 2) == expected,
+        s"parBalance($input) should be $expected")
+
+    check("(", false)
+    check(")", false)
+    check(".", true)
+  }
+
+  @Test def `parBalance should work for string of length 2`: Unit = {
+    def check(input: String, expected: Boolean) =
+      assert(parBalance(input.toArray, 2) == expected,
+        s"parBalance($input) should be $expected")
+
+    check("()", true)
+    check(")(", false)
+    check("((", false)
+    check("))", false)
+    check(".)", false)
+    check(".(", false)
+    check("(.", false)
+    check(").", false)
+  }
+
 
 
   @Rule def individualTestTimeout = new org.junit.rules.Timeout(10 * 1000)
