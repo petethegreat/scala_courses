@@ -88,7 +88,8 @@ object LineOfSight extends LineOfSightInterface {
    */
   def upsweep(input: Array[Float], from: Int, end: Int,
     threshold: Int): Tree = {
-    if (end - from < threshold) Leaf(from,end,upsweepSequential(input,from,end))
+    if (from == 0) upsweep(input,1,end,threshold)
+    else if (end - from <= threshold) Leaf(from,end,upsweepSequential(input,from,end))
     else {
       val mid = from + (end - from)/2
       val (tL,tR) = parallel(
