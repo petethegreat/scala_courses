@@ -383,3 +383,20 @@ def upsweep(inp: Array[A], from: Int, to: Int, f: (A,A) => A): TreeRes[A] = {
 
 }
 \end{lstlisting}
+\chapter{Data Parallelism}
+Task parallelism is a form of parallisation that distributes execution processes across computing nodes.
+data parallelism is a form of parallelism that distributes data across copmuting nodes.
+
+\begin{lstlisting}
+def initializeArray(xs: Array[Int])(v: Int): Unit = {
+    for (i <- (0 until xs.length).par) {
+    xs(i) = v
+    }
+}
+\end{lstlisting}
+
+The par makes use of scala parallel collections.
+
+The amount of processing required by each element of data is the workload. In the case of initializeArray, the workload is uniform, which means that the data-parallel processing works well (all elements take the same time, good speedup, linear performance).
+For the case of the Mandelbrot set processing, some pixels take more iterations than others (pixels in the set compared to those that are determined to be out of the set almost immediately). This means that the workload is unbalanced/irregular.
+
