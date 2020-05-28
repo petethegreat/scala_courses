@@ -400,3 +400,15 @@ The par makes use of scala parallel collections.
 The amount of processing required by each element of data is the workload. In the case of initializeArray, the workload is uniform, which means that the data-parallel processing works well (all elements take the same time, good speedup, linear performance).
 For the case of the Mandelbrot set processing, some pixels take more iterations than others (pixels in the set compared to those that are determined to be out of the set almost immediately). This means that the workload is unbalanced/irregular.
 
+\section{parallel collections}
+
+the \lstinline|.par| call converts a sequential collection into a parallel collection.
+\begin{lstlisting}
+(1 untill 1000).par
+.filter(n => n%3 ==0)
+.count(n => n.toString == n.toString.reverse)
+\end{lstlisting}
+
+Not everything can be parallelised. FoldLeft requires that the reduction operation be carried out in a specific order (as the collection's element type and the reduction type may be dfferent). For the fold operation, the result type is the same as the element type, so there are mulitple ways in which the element-wise reductions can be ordered. This can be parallelised, as different processes can reduce different chunks of the data, and then the "subtotals" may be merged.
+
+

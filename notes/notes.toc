@@ -72,3 +72,5 @@
 \contentsline {subsubsection}{commutative but not associative}{46}{section*.2}
 \contentsline {subsubsection}{associative but not commutative}{46}{section*.3}
 \contentsline {subsection}{\numberline {7.8.4}parallel scan and prefix sums}{47}{subsection.7.8.4}
+\contentsline {chapter}{\numberline {8}Data Parallelism}{50}{chapter.8}
+\contentsline {section}{\numberline {8.1}parallel collections}{50}{section.8.1}
