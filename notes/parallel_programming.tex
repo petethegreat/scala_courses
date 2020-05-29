@@ -412,3 +412,15 @@ the \lstinline|.par| call converts a sequential collection into a parallel colle
 Not everything can be parallelised. FoldLeft requires that the reduction operation be carried out in a specific order (as the collection's element type and the reduction type may be dfferent). For the fold operation, the result type is the same as the element type, so there are mulitple ways in which the element-wise reductions can be ordered. This can be parallelised, as different processes can reduce different chunks of the data, and then the "subtotals" may be merged.
 
 
+\subsection{fold}
+For fold to work consistently on a parallel collection, there are a couple of conditions that must be satisfied:
+\begin{itemize}
+    \item the folding operation must be associative - \lstinline|f(a, f(b,c)) == f(f(a,b),c)|
+    \item the neutral element must be ignored - \lstinline|f(a,z) == f(z,a) == a|
+\end{itemize}
+We say that the neutral element and the function $f$ form a { \em monoid}.
+
+The signature of of the function given to fold must be of the form \lstinline| f: (A,A) => A |, with the neutral element of type \lstinline|A|. This is fairly rigid. foldLeft was more flexible, but is not assciative \lstinline|f: (B,A) => B|, where A is the type of the collection element and B is the type of the reduction.
+
+Aggregate is like fold, but is more flexible. It takes a neutral element, and two combination operations, one for combinig two subtotals, and one for adding a collection element to a subtotal.
+collection.par.aggregate
