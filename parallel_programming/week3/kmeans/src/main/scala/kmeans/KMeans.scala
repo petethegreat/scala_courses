@@ -6,7 +6,8 @@ import scala.collection.parallel.CollectionConverters._
 import scala.collection.parallel.{ParMap, ParSeq}
 import scala.util.Random
 import org.scalameter._
-
+// PT
+//import scala.collection.immutable
 class KMeans extends KMeansInterface {
 
   def generatePoints(k: Int, num: Int): Seq[Point] = {
@@ -44,11 +45,13 @@ class KMeans extends KMeansInterface {
   }
 
   def classify(points: Seq[Point], means: Seq[Point]): Map[Point, Seq[Point]] = {
-    ???
+    if (points.isEmpty) means.map( x => (x,List())).toMap
+    points.groupBy(x => findClosest(x,means))
   }
 
   def classify(points: ParSeq[Point], means: ParSeq[Point]): ParMap[Point, ParSeq[Point]] = {
-    ???
+    if (points.isEmpty) means.map( x => (x,List[Point]())).toMap
+    points.groupBy(x => findClosest(x,means))
   }
 
   def findAverage(oldMean: Point, points: Seq[Point]): Point = if (points.isEmpty) oldMean else {

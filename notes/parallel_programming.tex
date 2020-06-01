@@ -424,3 +424,25 @@ The signature of of the function given to fold must be of the form \lstinline| f
 
 Aggregate is like fold, but is more flexible. It takes a neutral element, and two combination operations, one for combinig two subtotals, and one for adding a collection element to a subtotal.
 collection.par.aggregate
+
+\section{collections - hierarchy review}
+
+\begin{itemize}
+    \item \lstinline|Traversable[T]| - collection of elements of type T, with operations implemented using foreach
+    \item \lstinline|Iterable[T]| - collection of elements of type T, with operations implemented using iterator
+    \item \lstinline|Seq[T]| an ordered sequence of elements of type T
+    \item \lstinline|Set[T]| a set of elements of type T, no duplicates.
+    \item \lstinline|Map[K,V]| a mapping from keys of type K to values of type V, no duplicate keys.
+\end{itemize}
+
+\lstinline|ParIterable, ParSet, ParMap, ParSeq| are the parallel analogs of the above.
+Generic collections \lstinline|GenIterable, GenSet, GenMap, GenSeq| are types for code that is agnostic about parallelism.
+
+Generic collections allow us to write code that is unaware of parallelism.
+
+Need to use parallel collections with care:
+\begin{itemize}
+    \item Never read from a parallel collection that is concurrently modified.
+    \item Never write to a parallel collection that is concurrently traversed
+\end{itemize}
+TrieMap is an exception, can create a snapshot of the current map state, and then update the map based off the snapshot.
