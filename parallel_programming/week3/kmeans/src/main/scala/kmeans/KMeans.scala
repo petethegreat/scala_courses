@@ -80,24 +80,29 @@ class KMeans extends KMeansInterface {
   }
 
   def update(classified: Map[Point, Seq[Point]], oldMeans: Seq[Point]): Seq[Point] = {
-    ???
+    oldMeans.map(x => findAverage(x,classified.getOrElse(x,List())))
   }
 
   def update(classified: ParMap[Point, ParSeq[Point]], oldMeans: ParSeq[Point]): ParSeq[Point] = {
-    ???
+    oldMeans.map(x => findAverage(x,classified.getOrElse(x,List().par)))
   }
 
   def converged(eta: Double, oldMeans: Seq[Point], newMeans: Seq[Point]): Boolean = {
-    ???
+    oldMeans
+      .zip(newMeans).map[Double]( x => x._1.squareDistance(x._2)).reduce((a:Double,b:Double) => math.max(a,b)) < eta
+
+//      .map((x,y) => x.squareDistance(y))
+//      .reduce( (x,y) => math.max(x,y)) < eta
   }
 
   def converged(eta: Double, oldMeans: ParSeq[Point], newMeans: ParSeq[Point]): Boolean = {
-    ???
+    oldMeans
+      .zip(newMeans).map( x => x._1.squareDistance(x._2)).reduce((a:Double,b:Double) => math.max(a,b)) < eta
   }
 
   @tailrec
   final def kMeans(points: Seq[Point], means: Seq[Point], eta: Double): Seq[Point] = {
-    if (???) kMeans(???, ???, ???) else ??? // your implementation need to be tail recursive
+    if (!(converged(eta,means,))) kMeans(???, ???, ???) else means // your implementation need to be tail recursive
   }
 
   @tailrec
