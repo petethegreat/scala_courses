@@ -88,26 +88,28 @@ class KMeans extends KMeansInterface {
   }
 
   def converged(eta: Double, oldMeans: Seq[Point], newMeans: Seq[Point]): Boolean = {
-    oldMeans
-      .zip(newMeans).map[Double]( x => x._1.squareDistance(x._2)).reduce((a:Double,b:Double) => math.max(a,b)) < eta
+    if (newMeans.isEmpty || oldMeans.isEmpty) true
+    else oldMeans.zip(newMeans).map( x => x._1.squareDistance(x._2)).max < eta
 
 //      .map((x,y) => x.squareDistance(y))
 //      .reduce( (x,y) => math.max(x,y)) < eta
   }
 
   def converged(eta: Double, oldMeans: ParSeq[Point], newMeans: ParSeq[Point]): Boolean = {
-    oldMeans
-      .zip(newMeans).map( x => x._1.squareDistance(x._2)).reduce((a:Double,b:Double) => math.max(a,b)) < eta
+    if (newMeans.isEmpty || oldMeans.isEmpty) true
+    else oldMeans.zip(newMeans).map( x => x._1.squareDistance(x._2)).max < eta
   }
 
   @tailrec
   final def kMeans(points: Seq[Point], means: Seq[Point], eta: Double): Seq[Point] = {
-    if (!(converged(eta,means,))) kMeans(???, ???, ???) else means // your implementation need to be tail recursive
+    lazy val updated = update(classify(points,means),means)
+    if (!converged(eta,means,updated)) kMeans(points, updated, eta) else means // your implementation need to be tail recursive
   }
 
   @tailrec
   final def kMeans(points: ParSeq[Point], means: ParSeq[Point], eta: Double): ParSeq[Point] = {
-    if (???) kMeans(???, ???, ???) else ??? // your implementation need to be tail recursive
+    lazy val updated = update(classify(points,means),means)
+    if (!converged(eta,means,updated)) kMeans(points, updated, eta) else means
   }
 }
 
