@@ -446,3 +446,17 @@ Need to use parallel collections with care:
     \item Never write to a parallel collection that is concurrently traversed
 \end{itemize}
 TrieMap is an exception, can create a snapshot of the current map state, and then update the map based off the snapshot.
+
+\section{ builders and combiners}
+transformer operations take collections and return collections (map, flatmap, filter, groupBy)
+fold, sub, aggregate are not transformer operations
+
+Builder is a trait that is used in sequential collection methods
+Elements can be added to the builder, and when the result method is called it returns the desired collection.
+
+Parallel collections cannot use builders, but instead can make use of combiners. Multiple combiners can be combined.
+
+When the collection (repr) is a set or map, combine represents the union.
+when the collection is a sequence, combine represents concatenation.
+
+
