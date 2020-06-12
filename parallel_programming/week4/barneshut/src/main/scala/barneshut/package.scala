@@ -71,8 +71,8 @@ package object barneshut {
 
   case class Leaf(centerX: Float, centerY: Float, size: Float, bodies: coll.Seq[Body])
   extends Quad {
-    val (mass, massX, massY) = (??? : Float, ??? : Float, ??? : Float)
-    val total: Int = ???
+    val (mass, massX, massY) = (bodies.map(x=> x.mass).sum : Float, bodies.map(b=> b.mass*b.x).sum/mass : Float, bodies.map(b=> b.mass*b.y).sum/this.mass : Float)
+    val total: Int = bodies.length
     def insert(b: Body): Quad = ???
   }
 
