@@ -56,25 +56,48 @@ package object barneshut {
   case class Fork(
     nw: Quad, ne: Quad, sw: Quad, se: Quad
   ) extends Quad {
-    val centerX: Float = nw.centerX + nw.size/2
-    val centerY: Float = nw.centerY + nw.size/2
-    val size: Float = nw.size*2
-    val mass: Float = Seq(nw,ne,sw,se).map(x => x.mass).sum
-    val massX: Float = Seq(nw,ne,sw,se).map(x => x.massX*x.mass).sum/mass
-    val massY: Float = Seq(nw,ne,sw,se).map(x => x.massY*x.mass).sum/mass
-    val total: Int = Seq(nw,ne,sw,se).map(x => x.total).sum
+    val centerX: Float = nw.centerX + nw.size / 2
+    val centerY: Float = nw.centerY + nw.size / 2
+    val size: Float = nw.size * 2
+    val mass: Float = Seq(nw, ne, sw, se).map(x => x.mass).sum
+    val massX: Float = Seq(nw, ne, sw, se).map(x => x.massX * x.mass).sum / mass
+    val massY: Float = Seq(nw, ne, sw, se).map(x => x.massY * x.mass).sum / mass
+    val total: Int = Seq(nw, ne, sw, se).map(x => x.total).sum
 
     def insert(b: Body): Fork = {
-      ???
+      (b.x, b.y) match {
+        case (xx,yy) if xx < centerX && yy < centerY => nw
+        case (xx,yy) if xx >= centerX && yy < centerY => ne
+        case (xx,yy) if xx < centerX && yy >= centerY => sw
+        case (xx,yy) if xx >= centerX && yy >= centerY => se
+      }
+      insert(b)
     }
   }
 
   case class Leaf(centerX: Float, centerY: Float, size: Float, bodies: coll.Seq[Body])
   extends Quad {
-    val (mass, massX, massY) = (bodies.map(x=> x.mass).sum : Float, bodies.map(b=> b.mass*b.x).sum/mass : Float, bodies.map(b=> b.mass*b.y).sum/this.mass : Float)
+    val (mass, massX, massY) = (
+      bodies.map(x=> x.mass).sum : Float,
+      bodies.map(b=> b.mass*b.x).sum/bodies.map(b=> b.mass).sum : Float,
+      bodies.map(b=> b.mass*b.y).sum/bodies.map(b=> b.mass).sum : Float)
+
     val total: Int = bodies.length
-    def insert(b: Body): Quad = ???
-  }
+
+    def insert(b: Body): Quad =
+      if (total > minimumSize ) {
+      var child = Fork(
+        Empty(centerX - size / 2, centerY - size / 2, size / 2),
+        Empty(centerX + size / 2, centerY - size / 2, size / 2),
+        Empty(centerX - size / 2, centerY + size / 2, size / 2),
+        Empty(centerX + size / 2, centerY + size / 2, size / 2)
+      ).insert(b)
+      for (x <- bodies) {child = child.insert(x)}
+      child
+    }
+    else Leaf(centerX, centerY, size, bodies:+b)
+    }
+
 
   def minimumSize = 0.00001f
 
