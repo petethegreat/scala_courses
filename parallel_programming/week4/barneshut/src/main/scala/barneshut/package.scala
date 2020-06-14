@@ -144,11 +144,13 @@ package object barneshut {
       }
 
       def traverse(quad: Quad): Unit = (quad: Quad) match {
-        case Empty(_, _, _) =>
+        case Empty(_, _, _) => {}
           // no force
-        case Leaf(_, _, _, bodies) =>
+        case Leaf(_, _, _, bodies) => bodies.foreach(x => addForce(x.mass,x.x,x.y))
           // add force contribution of each body by calling addForce
-        case Fork(nw, ne, sw, se) =>
+        case forkQuad @ Fork(nw, ne, sw, se) => if (forkQuad.size/distance(forkQuad.centerX, forkQuad.centerY, x,y)  < theta )
+          addForce(forkQuad.mass,forkQuad.massX,forkQuad.massY)
+          else Seq(nw,ne,sw,se).map(traverse)
           // see if node is far enough from the body,
           // or recursion is needed
       }
@@ -173,14 +175,18 @@ package object barneshut {
     for (i <- 0 until matrix.length) matrix(i) = new ConcBuffer
 
     def +=(b: Body): SectorMatrix = {
-      ???
+      val bx = (math.min(math.max(b.x - boundaries.minX,0),boundaries.size) /sectorSize).toInt
+      val by = (math.min(math.max(b.y - boundaries.minY,0),boundaries.size) /sectorSize).toInt
+      matrix(bx + by*sectorPrecision) += b
       this
     }
 
     def apply(x: Int, y: Int) = matrix(y * sectorPrecision + x)
 
     def combine(that: SectorMatrix): SectorMatrix = {
-      ???
+      val result = new SectorMatrix(boundaries,sectorPrecision)
+      for (i <- 0 until matrix.length) result.matrix(i).combine(that.matrix(i))
+      result
     }
 
     def toQuad(parallelism: Int): Quad = {
