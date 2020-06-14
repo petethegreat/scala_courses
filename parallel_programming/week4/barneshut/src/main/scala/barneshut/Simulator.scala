@@ -12,11 +12,20 @@ import scala.collection.parallel.CollectionConverters._
 class Simulator(val taskSupport: TaskSupport, val timeStats: TimeStatistics) {
 
   def updateBoundaries(boundaries: Boundaries, body: Body): Boundaries = {
-    ???
+    if (body.x < boundaries.minX ) boundaries.minX = body.x
+    if (body.x > boundaries.maxX ) boundaries.maxX = body.x
+    if (body.y < boundaries.minX ) boundaries.minY = body.y
+    if (body.y > boundaries.maxY ) boundaries.maxY = body.y
+    boundaries
   }
 
   def mergeBoundaries(a: Boundaries, b: Boundaries): Boundaries = {
-    ???
+    val result = new Boundaries
+    result.minX = math.min(a.minX,b.minX)
+    result.minY = math.min(a.minY,b.minY)
+    result.maxX = math.max(a.maxX,b.maxX)
+    result.maxY = math.max(a.maxY,b.maxY)
+    result
   }
 
   def computeBoundaries(bodies: coll.Seq[Body]): Boundaries = timeStats.timed("boundaries") {
