@@ -141,7 +141,19 @@ import FloatOps._
     val expected = (a.minX,a.minY,4f,6f)
     assert( res == expected, s" expected $expected, got $res")
   }
+@Test def `check quad insertion`: Unit = {
+  //var quad = Empty(0,0,20)
+  val xpos =Seq(-4f,5f,2f,3f,4f,6f,0f,4f)
+  val bodies = xpos.map( x => new Body(1f,x,0f,0f,0f))
+  var quad = bodies.foldLeft(new Empty(0,0,20): Quad) ((q,b) => q.insert(b))
+  println(s"inserted = ${quad.total} bodies")
 
+  //for (b <- bodies) {quad = quad.insert(b)}
+
+  val total = quad.total
+  val expected = xpos.length
+  assert(expected == total, s" expected bodies: $expected, actual total: $total")
+}
 
 @Test def `computeSectorMatrix should work correctly`: Unit = {
 

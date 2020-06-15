@@ -66,12 +66,13 @@ package object barneshut {
 
     def insert(b: Body): Fork = {
       (b.x, b.y) match {
-        case (xx,yy) if xx < centerX && yy < centerY => nw
-        case (xx,yy) if xx >= centerX && yy < centerY => ne
-        case (xx,yy) if xx < centerX && yy >= centerY => sw
-        case (xx,yy) if xx >= centerX && yy >= centerY => se
+        case (xx,yy) if xx < centerX && yy < centerY => Fork(nw.insert(b),ne,sw,se)
+        case (xx,yy) if xx >= centerX && yy < centerY => Fork(nw,ne.insert(b),sw,se)
+        case (xx,yy) if xx < centerX && yy >= centerY => Fork(nw,ne,sw.insert(b),se)
+        case (xx,yy) if xx >= centerX && yy >= centerY => Fork(nw,ne,sw,se.insert(b))
       }
-      insert(b)
+
+//      if b.x < centerX && b.y < centerY nw.insert(b)
     }
   }
 
@@ -85,7 +86,7 @@ package object barneshut {
     val total: Int = bodies.length
 
     def insert(b: Body): Quad =
-      if (total > minimumSize ) {
+      if (size > minimumSize ) {
       var child = Fork(
         Empty(centerX - size / 2, centerY - size / 2, size / 2),
         Empty(centerX + size / 2, centerY - size / 2, size / 2),
