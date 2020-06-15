@@ -108,6 +108,41 @@ import FloatOps._
     assert(res, s"Body not found in the right sector")
   }
 
+  // pete tests
+  @Test def `mergeboundaries should produce a rectangle from (-1,1) to (4,6) when two rectangles are merged`: Unit = {
+    val a = new Boundaries()
+    val b = new Boundaries()
+    a.minX = -1
+    a.maxX = 2
+    a.minY = 1
+    a.maxY = 3
+    b.minX = 5
+    b.maxX = 6
+    b.minY = 4
+    b.maxY = 6
+    val simulator = new Simulator(defaultTaskSupport,new TimeStatistics)
+    val merged = simulator.mergeBoundaries(a,b)
+    val res = (merged.minX,merged.minY,merged.maxX,merged.maxY)
+    val expected = (a.minX,a.minY,b.maxX,b.maxY)
+
+    assert( res == expected, s" expected $expected, got $res")
+  }
+
+  @Test def `updateBoundaries should produce a rectangle from (-1,1) to (4,6) when a body is added`: Unit = {
+    val a = new Boundaries()
+    a.minX = -1
+    a.maxX = 2
+    a.minY = 1
+    a.maxY = 3
+    var b = new Body(2.2f,4f,6f,1,1)
+    val simulator = new Simulator(defaultTaskSupport,new TimeStatistics)
+    val updated = simulator.updateBoundaries(a,b)
+    val res = (updated.minX,updated.minY,updated.maxX,updated.maxY)
+    val expected = (a.minX,a.minY,4f,6f)
+    assert( res == expected, s" expected $expected, got $res")
+  }
+
+
   @Rule def individualTestTimeout = new org.junit.rules.Timeout(10 * 1000)
 }
 
