@@ -209,10 +209,10 @@ package object barneshut {
               quad(x, y + nspan, nspan, nAchievedParallelism),
               quad(x + nspan, y + nspan, nspan, nAchievedParallelism)
             ) else (
-              quad(x, y, nspan, nAchievedParallelism),
+              (quad(x, y, nspan, nAchievedParallelism),
               quad(x + nspan, y, nspan, nAchievedParallelism),
               quad(x, y + nspan, nspan, nAchievedParallelism),
-              quad(x + nspan, y + nspan, nspan, nAchievedParallelism)
+              quad(x + nspan, y + nspan, nspan, nAchievedParallelism))
             )
           Fork(nw, ne, sw, se)
         }

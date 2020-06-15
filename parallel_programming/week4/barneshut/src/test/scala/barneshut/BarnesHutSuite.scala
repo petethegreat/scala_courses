@@ -143,6 +143,10 @@ import FloatOps._
   }
 
 
+@Test def `computeSectorMatrix should work correctly`: Unit = {
+
+}
+
   @Rule def individualTestTimeout = new org.junit.rules.Timeout(10 * 1000)
 }
 
