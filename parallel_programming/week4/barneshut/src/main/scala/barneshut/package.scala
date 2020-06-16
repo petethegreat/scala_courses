@@ -71,7 +71,6 @@ package object barneshut {
         case (xx,yy) if xx < centerX && yy >= centerY => Fork(nw,ne,sw.insert(b),se)
         case (xx,yy) if xx >= centerX && yy >= centerY => Fork(nw,ne,sw,se.insert(b))
       }
-
 //      if b.x < centerX && b.y < centerY nw.insert(b)
     }
   }
@@ -88,10 +87,10 @@ package object barneshut {
     def insert(b: Body): Quad =
       if (size > minimumSize ) {
       var child = Fork(
-        Empty(centerX - size / 2, centerY - size / 2, size / 2),
-        Empty(centerX + size / 2, centerY - size / 2, size / 2),
-        Empty(centerX - size / 2, centerY + size / 2, size / 2),
-        Empty(centerX + size / 2, centerY + size / 2, size / 2)
+        Empty(centerX - size / 4, centerY - size / 4, size / 2),
+        Empty(centerX + size / 4, centerY - size / 4, size / 2),
+        Empty(centerX - size / 4, centerY + size / 4, size / 2),
+        Empty(centerX + size / 4, centerY + size / 4, size / 2)
       ).insert(b)
       for (x <- bodies) {child = child.insert(x)}
       child

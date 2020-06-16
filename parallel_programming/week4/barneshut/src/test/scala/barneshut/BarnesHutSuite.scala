@@ -178,10 +178,22 @@ import FloatOps._
 
   assert(expected == result, s"expected $expected bodies in quadtree, total of $result bodies instead")
 
-
-
-
 }
+
+//  @Test def `quadtree_recursive insertion`: Unit = {
+//    val thesize = 10
+//    val body = new Body(100f,0f,0f,0f,0f)
+//    var quad:Quad = new Empty(5,5,thesize)
+//    val nbodies = 4
+//    for (i <- 0 to nbodies) quad = quad.insert(body)
+////    i = 0 -> leaf
+////    i = 1 -> fork (size 5)
+//    val expected = thesize/nbodies.toFloat
+//    println(quad)
+//    println(quad.total)
+//    println(s"expected size $expected, got ${quad.centerX}")
+//    assert (quad.centerX == expected,s"expected size $expected, got ${quad.centerX}")
+//  }
 
   @Rule def individualTestTimeout = new org.junit.rules.Timeout(10 * 1000)
 }
