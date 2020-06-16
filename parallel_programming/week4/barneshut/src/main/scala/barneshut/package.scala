@@ -186,7 +186,7 @@ package object barneshut {
 
     def combine(that: SectorMatrix): SectorMatrix = {
       val result = new SectorMatrix(boundaries,sectorPrecision)
-      for (i <- 0 until matrix.length) result.matrix(i).combine(that.matrix(i))
+      for (i <- 0 until matrix.length) result.matrix(i) = matrix(i).combine(that.matrix(i))
       result
     }
 

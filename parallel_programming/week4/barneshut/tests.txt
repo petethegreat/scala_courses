@@ -1,0 +1,11 @@
+Test Description] Fork.insert(b) should insert recursively in the appropriate quadrant (2pts)(barneshut.BarnesHutSuite)
+[Observed Error] nw of the Fork, Empty(15.0,25.0,5.0), should be a Leaf
+
+[Test Description] Fork with 4 empty quadrants (2pts)(barneshut.BarnesHutSuite)
+[Observed Error] assertion failed: NaN should be 20f
+
+[Test Description] 'insert' should work correctly on a leaf with center (1,1) and size 2 (2pts)(barneshut.BarnesHutSuite)
+[Observed Error] assertion failed: expected Fork(Leaf(0.5,0.5,1.0,List(barneshut.package$Body@57c08bf5)),Leaf(1.5,0.5,1.0,List(barneshut.package$Body@53ff15d5)),Empty(0.5,1.5,1.0),Empty(1.5,1.5,1.0)) found Fork(Leaf(0.0,0.0,1.0,List(barneshut.package$Body@57c08bf5)),Leaf(2.0,0.0,1.0,List(barneshut.package$Body@53ff15d5)),Empty(0.0,2.0,1.0),Empty(2.0,2.0,1.0))
+
+[Test Description] Leaf.insert(b) should return a new Fork if size $greater minimumSize (2pts)(barneshut.BarnesHutSuite)
+[Observed Error] nw of the Fork, Empty(15.0,25.0,5.0), should be a Leaf

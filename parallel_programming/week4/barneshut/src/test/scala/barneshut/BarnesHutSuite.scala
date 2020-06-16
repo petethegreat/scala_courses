@@ -156,6 +156,30 @@ import FloatOps._
 }
 
 @Test def `computeSectorMatrix should work correctly`: Unit = {
+  // boundaries
+  val b = new Boundaries
+  b.minX = -10f
+  b.maxX = 10f
+  b.minY = -10f
+  b.maxY = 10f
+
+  // add some bodies
+  val xpos =Seq(-4f,5f,2f,3f,4f,6f,0f,4f)
+  val bodies = xpos.map( x => new Body(1f,x,x,0f,0f))
+
+  val simulator = new Simulator(defaultTaskSupport,new TimeStatistics)
+  val sm = simulator.computeSectorMatrix(bodies,b)
+  println(sm)
+  val quad = sm.toQuad(4)
+
+  val expected = xpos.length
+  val result = quad.total
+  println(quad)
+
+  assert(expected == result, s"expected $expected bodies in quadtree, total of $result bodies instead")
+
+
+
 
 }
 
