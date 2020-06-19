@@ -438,7 +438,7 @@ collection.par.aggregate
 \lstinline|ParIterable, ParSet, ParMap, ParSeq| are the parallel analogs of the above.
 Generic collections \lstinline|GenIterable, GenSet, GenMap, GenSeq| are types for code that is agnostic about parallelism.
 
-Generic collections allow us to write code that is unaware of parallelism.
+Generic collections allow us to write code that is unaware of parallelism. {\bf These were apparently deprecated in later versions of scala.}
 
 Need to use parallel collections with care:
 \begin{itemize}
@@ -458,5 +458,8 @@ Parallel collections cannot use builders, but instead can make use of combiners.
 
 When the collection (repr) is a set or map, combine represents the union.
 when the collection is a sequence, combine represents concatenation.
+
+In order for combiners to be efficient, the combine operation must have complexity $O( \log n + \log m)$, where $n$ and $m$ are the size of the component combiners. 
+
 
 
