@@ -462,4 +462,11 @@ when the collection is a sequence, combine represents concatenation.
 In order for combiners to be efficient, the combine operation must have complexity $O( \log n + \log m)$, where $n$ and $m$ are the size of the component combiners. 
 
 
+\subsection{two phase construction}
+
+As mentioned above, the combiner must have a a sufficiently efficient implementation for parallelism to be worthwhile. This can be difficult if we assume that the combiner internally stores data using the same structure as it operates on (e.g. a combiner that returns arrays using arrays internally). Two-phase construction is a method in which the internal data structure differs from the resulting data structure. Obviously, the internal data structure must have an efficient combine method ($O( \log n + \log m)$ or better). The conversion from the internal structure to the result structure must be able to take place in $O(n/p)$ time, where n is the number of elements and p is the number of processors (level of parallelism). In other words, the internal structure must be able to be copied in parallel.
+
+In the first phase, different processors build intermediate structures in parallel, invoking the \listinline|+=| method. The these component structures are combined in (in parallel) using a reduction tree.
+
+When result is invoked, the final structure is built in parallel.
 
