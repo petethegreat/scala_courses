@@ -470,3 +470,17 @@ In the first phase, different processors build intermediate structures in parall
 
 When result is invoked, the final structure is built in parallel.
 
+\subsection{conc-trees}
+Lists are sequential containers, \lstinline| x::xs |. They are unsuited for parallel computation. Trees are better. When we reach a node, we can launch two computations in parallel, one recursing down the left subtree, the other down the right.
+
+Trees are only good for parallism if they are balanced. If we apply a filter operation to a tree structure, we may be left with a tree that is imbalanced. This can defeat the purpose of parallism, as most (all) of the work may be done by one thread.
+
+\begin{lstlisting}
+sealed trait Conc[+T] {
+    def level: Int
+    def size: Int
+    def left: Conc[T]
+    def right Conc[T]
+}
+\end{lstlisting}
+
