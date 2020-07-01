@@ -1,76 +1,82 @@
-\contentsline {part}{I\hspace {1em}Functional Principles}{4}{part.1}
-\contentsline {chapter}{\numberline {1}Functional Paradigms}{5}{chapter.1}
-\contentsline {section}{\numberline {1.1}Functional Programming}{5}{section.1.1}
-\contentsline {section}{\numberline {1.2}call-by-name, call-by-value}{5}{section.1.2}
-\contentsline {section}{\numberline {1.3}Conditionals}{6}{section.1.3}
-\contentsline {section}{\numberline {1.4}Recursion}{7}{section.1.4}
-\contentsline {subsection}{\numberline {1.4.1}Tail Recursion}{7}{subsection.1.4.1}
-\contentsline {section}{\numberline {1.5}Blocks and Scope}{7}{section.1.5}
-\contentsline {section}{\numberline {1.6}higher order functions}{8}{section.1.6}
-\contentsline {section}{\numberline {1.7}anonymous functions}{8}{section.1.7}
-\contentsline {chapter}{\numberline {2}currying}{10}{chapter.2}
-\contentsline {section}{\numberline {2.1}multiple parameter lists}{11}{section.2.1}
-\contentsline {section}{\numberline {2.2}Aside - functional implementation of sets}{12}{section.2.2}
-\contentsline {chapter}{\numberline {3}Classes}{13}{chapter.3}
-\contentsline {section}{\numberline {3.1} Aside - require and assert}{13}{section.3.1}
-\contentsline {section}{\numberline {3.2}Alternate constructors}{14}{section.3.2}
-\contentsline {section}{\numberline {3.3}Objects}{14}{section.3.3}
-\contentsline {subsection}{\numberline {3.3.1}companion objects}{14}{subsection.3.3.1}
-\contentsline {section}{\numberline {3.4}Defining operators/ infix notation}{15}{section.3.4}
-\contentsline {section}{\numberline {3.5}operator precedence}{15}{section.3.5}
-\contentsline {section}{\numberline {3.6}Classes, hierarchies, and dynamic binding}{15}{section.3.6}
-\contentsline {subsection}{\numberline {3.6.1}abstract classes}{16}{subsection.3.6.1}
-\contentsline {subsection}{\numberline {3.6.2}traits}{16}{subsection.3.6.2}
-\contentsline {subsection}{\numberline {3.6.3}subtyping}{16}{subsection.3.6.3}
-\contentsline {subsection}{\numberline {3.6.4}dynamic binding}{17}{subsection.3.6.4}
-\contentsline {chapter}{\numberline {4}Scala class Hierarchy and Packages}{18}{chapter.4}
-\contentsline {chapter}{\numberline {5}placeholder}{20}{chapter.5}
-\contentsline {section}{\numberline {5.1} for comprehension}{20}{section.5.1}
-\contentsline {section}{\numberline {5.2}list functionality}{20}{section.5.2}
-\contentsline {section}{\numberline {5.3}Pairs and Tuples}{21}{section.5.3}
-\contentsline {section}{\numberline {5.4}Implicit Parameters}{21}{section.5.4}
-\contentsline {section}{\numberline {5.5}More Lists}{22}{section.5.5}
-\contentsline {subsection}{\numberline {5.5.1}Higher order List functions}{22}{subsection.5.5.1}
-\contentsline {section}{\numberline {5.6}Higher order List functions}{22}{section.5.6}
-\contentsline {subsection}{\numberline {5.6.1}reduction of lists}{23}{subsection.5.6.1}
-\contentsline {subsection}{\numberline {5.6.2}(}{23}{subsection.5.6.2}
-\contentsline {section}{\numberline {5.7}logic}{24}{section.5.7}
-\contentsline {subsection}{\numberline {5.7.1}S}{24}{subsection.5.7.1}
-\contentsline {subsection}{\numberline {5.7.2} further equational proofs}{25}{subsection.5.7.2}
-\contentsline {section}{\numberline {5.8} Other Collections}{26}{section.5.8}
-\contentsline {subsection}{\numberline {5.8.1}Vectors}{26}{subsection.5.8.1}
-\contentsline {section}{\numberline {5.9}for expressions}{26}{section.5.9}
-\contentsline {subsection}{\numberline {5.9.1}combinatorial search}{26}{subsection.5.9.1}
-\contentsline {part}{II\hspace {1em}Program Design}{27}{part.2}
-\contentsline {chapter}{\numberline {6}more with for}{28}{chapter.6}
-\contentsline {section}{\numberline {6.1}queries with for}{28}{section.6.1}
-\contentsline {section}{\numberline {6.2}translating for-expressions}{28}{section.6.2}
-\contentsline {section}{\numberline {6.3}Monads}{30}{section.6.3}
-\contentsline {section}{\numberline {6.4}Structural Induction}{30}{section.6.4}
-\contentsline {section}{\numberline {6.5}streams}{31}{section.6.5}
-\contentsline {section}{\numberline {6.6}State}{31}{section.6.6}
-\contentsline {section}{\numberline {6.7}Loops}{32}{section.6.7}
-\contentsline {section}{\numberline {6.8}event simulation}{32}{section.6.8}
-\contentsline {subsection}{\numberline {6.8.1}event handling}{33}{subsection.6.8.1}
-\contentsline {subsection}{\numberline {6.8.2}functional reactive programming}{35}{subsection.6.8.2}
-\contentsline {subsection}{\numberline {6.8.3}Syntatic sugar}{36}{subsection.6.8.3}
-\contentsline {section}{\numberline {6.9}latency/asynchoronicity}{37}{section.6.9}
-\contentsline {part}{III\hspace {1em}Parallel Programming}{39}{part.3}
-\contentsline {chapter}{\numberline {7}parallel programming}{40}{chapter.7}
-\contentsline {section}{\numberline {7.1}paralleism in the jvm}{40}{section.7.1}
-\contentsline {section}{\numberline {7.2}threading in the jvm}{41}{section.7.2}
-\contentsline {section}{\numberline {7.3}deadlock}{41}{section.7.3}
-\contentsline {section}{\numberline {7.4}memory model}{42}{section.7.4}
-\contentsline {section}{\numberline {7.5}running computations in parallel}{42}{section.7.5}
-\contentsline {section}{\numberline {7.6}first class tasks}{43}{section.7.6}
-\contentsline {section}{\numberline {7.7}complexity of parallel programs}{44}{section.7.7}
-\contentsline {subsection}{\numberline {7.7.1}Amahl's law}{44}{subsection.7.7.1}
-\contentsline {section}{\numberline {7.8}parallel sorting}{44}{section.7.8}
-\contentsline {subsection}{\numberline {7.8.1}Merge sort}{44}{subsection.7.8.1}
-\contentsline {subsection}{\numberline {7.8.2}parrallel operations on collections}{45}{subsection.7.8.2}
-\contentsline {subsection}{\numberline {7.8.3}Fold Operations and Associativity}{45}{subsection.7.8.3}
-\contentsline {subsubsection}{commutative but not associative}{46}{section*.2}
-\contentsline {subsubsection}{associative but not commutative}{46}{section*.3}
-\contentsline {subsection}{\numberline {7.8.4}parallel scan and prefix sums}{47}{subsection.7.8.4}
-\contentsline {chapter}{\numberline {8}Data Parallelism}{50}{chapter.8}
-\contentsline {section}{\numberline {8.1}parallel collections}{50}{section.8.1}
+\contentsline {part}{I\hspace {1em}Functional Principles}{2}{part.1}%
+\contentsline {chapter}{\numberline {1}Functional Paradigms}{3}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Functional Programming}{3}{section.1.1}%
+\contentsline {section}{\numberline {1.2}call-by-name, call-by-value}{3}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Conditionals}{4}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Recursion}{5}{section.1.4}%
+\contentsline {subsection}{\numberline {1.4.1}Tail Recursion}{5}{subsection.1.4.1}%
+\contentsline {section}{\numberline {1.5}Blocks and Scope}{5}{section.1.5}%
+\contentsline {section}{\numberline {1.6}higher order functions}{6}{section.1.6}%
+\contentsline {section}{\numberline {1.7}anonymous functions}{6}{section.1.7}%
+\contentsline {chapter}{\numberline {2}currying}{8}{chapter.2}%
+\contentsline {section}{\numberline {2.1}multiple parameter lists}{9}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Aside - functional implementation of sets}{10}{section.2.2}%
+\contentsline {chapter}{\numberline {3}Classes}{11}{chapter.3}%
+\contentsline {section}{\numberline {3.1} Aside - require and assert}{11}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Alternate constructors}{12}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Objects}{12}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}companion objects}{12}{subsection.3.3.1}%
+\contentsline {section}{\numberline {3.4}Defining operators/ infix notation}{13}{section.3.4}%
+\contentsline {section}{\numberline {3.5}operator precedence}{13}{section.3.5}%
+\contentsline {section}{\numberline {3.6}Classes, hierarchies, and dynamic binding}{13}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}abstract classes}{14}{subsection.3.6.1}%
+\contentsline {subsection}{\numberline {3.6.2}traits}{14}{subsection.3.6.2}%
+\contentsline {subsection}{\numberline {3.6.3}subtyping}{14}{subsection.3.6.3}%
+\contentsline {subsection}{\numberline {3.6.4}dynamic binding}{15}{subsection.3.6.4}%
+\contentsline {chapter}{\numberline {4}Scala class Hierarchy and Packages}{16}{chapter.4}%
+\contentsline {chapter}{\numberline {5}placeholder}{18}{chapter.5}%
+\contentsline {section}{\numberline {5.1} for comprehension}{18}{section.5.1}%
+\contentsline {section}{\numberline {5.2}list functionality}{18}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Pairs and Tuples}{19}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Implicit Parameters}{19}{section.5.4}%
+\contentsline {section}{\numberline {5.5}More Lists}{20}{section.5.5}%
+\contentsline {subsection}{\numberline {5.5.1}Higher order List functions}{20}{subsection.5.5.1}%
+\contentsline {section}{\numberline {5.6}Higher order List functions}{20}{section.5.6}%
+\contentsline {subsection}{\numberline {5.6.1}reduction of lists}{21}{subsection.5.6.1}%
+\contentsline {subsection}{\numberline {5.6.2}(}{21}{subsection.5.6.2}%
+\contentsline {section}{\numberline {5.7}logic}{22}{section.5.7}%
+\contentsline {subsection}{\numberline {5.7.1}S}{22}{subsection.5.7.1}%
+\contentsline {subsection}{\numberline {5.7.2} further equational proofs}{23}{subsection.5.7.2}%
+\contentsline {section}{\numberline {5.8} Other Collections}{24}{section.5.8}%
+\contentsline {subsection}{\numberline {5.8.1}Vectors}{24}{subsection.5.8.1}%
+\contentsline {section}{\numberline {5.9}for expressions}{24}{section.5.9}%
+\contentsline {subsection}{\numberline {5.9.1}combinatorial search}{24}{subsection.5.9.1}%
+\contentsline {part}{II\hspace {1em}Program Design}{25}{part.2}%
+\contentsline {chapter}{\numberline {6}more with for}{26}{chapter.6}%
+\contentsline {section}{\numberline {6.1}queries with for}{26}{section.6.1}%
+\contentsline {section}{\numberline {6.2}translating for-expressions}{26}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Monads}{28}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Structural Induction}{28}{section.6.4}%
+\contentsline {section}{\numberline {6.5}streams}{29}{section.6.5}%
+\contentsline {section}{\numberline {6.6}State}{29}{section.6.6}%
+\contentsline {section}{\numberline {6.7}Loops}{30}{section.6.7}%
+\contentsline {section}{\numberline {6.8}event simulation}{30}{section.6.8}%
+\contentsline {subsection}{\numberline {6.8.1}event handling}{31}{subsection.6.8.1}%
+\contentsline {subsection}{\numberline {6.8.2}functional reactive programming}{33}{subsection.6.8.2}%
+\contentsline {subsection}{\numberline {6.8.3}Syntatic sugar}{34}{subsection.6.8.3}%
+\contentsline {section}{\numberline {6.9}latency/asynchoronicity}{35}{section.6.9}%
+\contentsline {part}{III\hspace {1em}Parallel Programming}{37}{part.3}%
+\contentsline {chapter}{\numberline {7}parallel programming}{38}{chapter.7}%
+\contentsline {section}{\numberline {7.1}paralleism in the jvm}{38}{section.7.1}%
+\contentsline {section}{\numberline {7.2}threading in the jvm}{39}{section.7.2}%
+\contentsline {section}{\numberline {7.3}deadlock}{39}{section.7.3}%
+\contentsline {section}{\numberline {7.4}memory model}{40}{section.7.4}%
+\contentsline {section}{\numberline {7.5}running computations in parallel}{40}{section.7.5}%
+\contentsline {section}{\numberline {7.6}first class tasks}{41}{section.7.6}%
+\contentsline {section}{\numberline {7.7}complexity of parallel programs}{42}{section.7.7}%
+\contentsline {subsection}{\numberline {7.7.1}Amahl's law}{42}{subsection.7.7.1}%
+\contentsline {section}{\numberline {7.8}parallel sorting}{42}{section.7.8}%
+\contentsline {subsection}{\numberline {7.8.1}Merge sort}{42}{subsection.7.8.1}%
+\contentsline {subsection}{\numberline {7.8.2}parrallel operations on collections}{43}{subsection.7.8.2}%
+\contentsline {subsection}{\numberline {7.8.3}Fold Operations and Associativity}{43}{subsection.7.8.3}%
+\contentsline {subsubsection}{commutative but not associative}{44}{section*.2}%
+\contentsline {subsubsection}{associative but not commutative}{44}{section*.3}%
+\contentsline {subsection}{\numberline {7.8.4}parallel scan and prefix sums}{45}{subsection.7.8.4}%
+\contentsline {chapter}{\numberline {8}Data Parallelism}{48}{chapter.8}%
+\contentsline {section}{\numberline {8.1}parallel collections}{48}{section.8.1}%
+\contentsline {subsection}{\numberline {8.1.1}fold}{49}{subsection.8.1.1}%
+\contentsline {section}{\numberline {8.2}collections - hierarchy review}{49}{section.8.2}%
+\contentsline {section}{\numberline {8.3} builders and combiners}{50}{section.8.3}%
+\contentsline {subsection}{\numberline {8.3.1}two phase construction}{50}{subsection.8.3.1}%
+\contentsline {subsection}{\numberline {8.3.2}conc-trees}{50}{subsection.8.3.2}%
+\contentsline {subsection}{\numberline {8.3.3}amortized conc-trees}{51}{subsection.8.3.3}%

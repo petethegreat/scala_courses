@@ -466,7 +466,7 @@ In order for combiners to be efficient, the combine operation must have complexi
 
 As mentioned above, the combiner must have a a sufficiently efficient implementation for parallelism to be worthwhile. This can be difficult if we assume that the combiner internally stores data using the same structure as it operates on (e.g. a combiner that returns arrays using arrays internally). Two-phase construction is a method in which the internal data structure differs from the resulting data structure. Obviously, the internal data structure must have an efficient combine method ($O( \log n + \log m)$ or better). The conversion from the internal structure to the result structure must be able to take place in $O(n/p)$ time, where n is the number of elements and p is the number of processors (level of parallelism). In other words, the internal structure must be able to be copied in parallel.
 
-In the first phase, different processors build intermediate structures in parallel, invoking the \listinline|+=| method. The these component structures are combined in (in parallel) using a reduction tree.
+In the first phase, different processors build intermediate structures in parallel, invoking the \lstinline|+=| method. The these component structures are combined in (in parallel) using a reduction tree.
 
 When result is invoked, the final structure is built in parallel.
 
@@ -483,4 +483,56 @@ sealed trait Conc[+T] {
     def right Conc[T]
 }
 \end{lstlisting}
+
+concrete implemetations of conc contain the following
+
+\begin{lstlisting}
+
+class object Empty extends Conc[Nothing] {
+    def level = 0
+    def size =0
+}
+class Single[T] (val x: T) extends Conc[T]{
+    def size = 1
+    def level = 0
+}
+
+// node/fork
+case class <>[T] (left: Conc[T], right: Conc[T]) extends Conc[T] {
+    val level = 1 + math.max(left.level,right.level)
+    val size = left.size + right.size
+}
+\end{lstlisting}
+
+Tree invariants:
+\begin{itemize}
+    \item A $<>$ node can never contain Empty as a subtree
+    \item the level difference between the left and right subtree of a $<>$ node must be 1 or less
+\end{itemize}
+These constrain the depth of a tree to be at most log N. Consequently, operations on the tree will follow this bound.
+
+\subsection{amortized conc-trees}
+conc trees are awesome. We can use them to implement a combiner. 
+This requires a += method
+\begin{lstlisting}
+var xs: Conc[T] = Empty
+def +=(elem: T){
+    xs  = xs <> Single(elem)
+}
+\end{lstlisting}
+This would work, and would allow insertion in log(N) complexity. But we can do better. If we extend the conc-tree to allow a new append node type.
+
+\begin{lstlisting}
+case class Append[T](left: Conc[t], right: Conc[T]) extends Conc[T] { 
+val level = 1 + math.max(left.level,right.level)
+val size = left.size + right.size
+}
+\end{lstlisting}
+We relax the earlier assumptions, and allow arbitrary height differences between left and right trees. This no longer guarantees that concatenation can be carried out with logarithmic complexity. We could manage this if we could eliminate append nodes in log(n) time, but this is not possible. Instead, we ensure that for a tree of size n, there are never more than log(n) append nodes. This results in O(1) appends and O(log n) concatenation. \hyperref[Fuckin' Hurray!]{https://myfavoritemurder.com/}
+
+
+
+
+
+
 
