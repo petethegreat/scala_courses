@@ -7,3 +7,22 @@ hyperref[mastering apache spark 2 - Jacek Laskowski]{https://books.japila.pl/apa
 
 the books "high performance spark" and "advanced analytics with spark" are also recommeded.
 
+
+\section{data parallel to distributed data parallelism}
+
+\begin{itemize}
+	\item data is in a collection
+	\item data is split into shards
+	\item workers/threads operate on shards in parallel
+	\item results are combined when done (if neccasary)
+\end{itemize}
+
+A lot of this is just done under the hood, using the parallel collections api.
+
+extending to multiple nodes:
+\begin{itemize}
+	\item data is in a collection
+	\item data is split over several nodes
+	\item nodes independantly work on data shards in parallel
+	\item results are combined when done (if neccasary)
+\end{itemize}
