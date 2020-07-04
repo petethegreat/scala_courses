@@ -39,12 +39,15 @@ object WikipediaRanking extends WikipediaRankingInterface {
    *   Note: this operation is long-running. It can potentially run for
    *   several seconds.
    */
-  def rankLangs(langs: List[String], rdd: RDD[WikipediaArticle]): List[(String, Int)] = ???
+  def rankLangs(langs: List[String], rdd: RDD[WikipediaArticle]): List[(String, Int)] = langs.map(x=> (x,occurrencesOfLang(x,rdd))).sortBy(_._2)(Ordering[Int].reverse)
 
   /* Compute an inverted index of the set of articles, mapping each language
    * to the Wikipedia pages in which it occurs.
    */
-  def makeIndex(langs: List[String], rdd: RDD[WikipediaArticle]): RDD[(String, Iterable[WikipediaArticle])] = ???
+  def makeIndex(langs: List[String], rdd: RDD[WikipediaArticle]): RDD[(String, Iterable[WikipediaArticle])] =
+    rdd.map(x => (x,langs)).flatMap(x => x._2)
+  // want rdd[(seq[String],wiki)] to rdd[(string,wiki)]
+  // flatmap a function that goes (seq[String],w) => Seq(string,w)
 
   /* (2) Compute the language ranking again, but now using the inverted index. Can you notice
    *     a performance improvement?
