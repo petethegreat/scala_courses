@@ -20,7 +20,7 @@ object WikipediaRanking extends WikipediaRankingInterface {
     "JavaScript", "Java", "PHP", "Python", "C#", "C++", "Ruby", "CSS",
     "Objective-C", "Perl", "Scala", "Haskell", "MATLAB", "Clojure", "Groovy")
 
-  val conf: SparkConf = new SparkConf().setMaster("local[4]").setAppName("sparkWiki")
+  val conf: SparkConf = new SparkConf().setMaster("local").setAppName("sparkWiki")
   val sc: SparkContext = new SparkContext(conf)
   // Hint: use a combination of `sc.parallelize`, `WikipediaData.lines` and `WikipediaData.parse`
   val wikiRdd: RDD[WikipediaArticle] = sc.parallelize(WikipediaData.lines).map(WikipediaData.parse)
@@ -45,7 +45,9 @@ object WikipediaRanking extends WikipediaRankingInterface {
    * to the Wikipedia pages in which it occurs.
    */
   def makeIndex(langs: List[String], rdd: RDD[WikipediaArticle]): RDD[(String, Iterable[WikipediaArticle])] =
-    rdd.map(x => (x,langs)).flatMap(x => x._2)
+    rdd.flatMap(x => langs.toSeq.map(y => (y,x)))
+    .filter(x => x._2.mentionsLanguage(x._1)).groupByKey
+
   // want rdd[(seq[String],wiki)] to rdd[(string,wiki)]
   // flatmap a function that goes (seq[String],w) => Seq(string,w)
 
@@ -55,7 +57,7 @@ object WikipediaRanking extends WikipediaRankingInterface {
    *   Note: this operation is long-running. It can potentially run for
    *   several seconds.
    */
-  def rankLangsUsingIndex(index: RDD[(String, Iterable[WikipediaArticle])]): List[(String, Int)] = ???
+  def rankLangsUsingIndex(index: RDD[(String, Iterable[WikipediaArticle])]): List[(String, Int)] = index.mapValues(x => x.size).collectAsMap.toList
 
   /* (3) Use `reduceByKey` so that the computation of the index and the ranking are combined.
    *     Can you notice an improvement in performance compared to measuring *both* the computation of the index
@@ -64,7 +66,8 @@ object WikipediaRanking extends WikipediaRankingInterface {
    *   Note: this operation is long-running. It can potentially run for
    *   several seconds.
    */
-  def rankLangsReduceByKey(langs: List[String], rdd: RDD[WikipediaArticle]): List[(String, Int)] = ???
+  def rankLangsReduceByKey(langs: List[String], rdd: RDD[WikipediaArticle]): List[(String, Int)] = rdd.flatMap(x => langs.map(y => (y,x)))
+    .filter(x => x._2.mentionsLanguage(x._1)).mapValues(x => 1).reduceByKey( _ + _).collectAsMap.toList.sortBy(_._2)(Ordering[Int].reverse)
 
   def main(args: Array[String]): Unit = {
 
