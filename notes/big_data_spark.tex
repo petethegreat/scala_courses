@@ -60,3 +60,8 @@ Send packet CA->Netherlands->CA    &150,000,000   ns &  150,000 us &  150 ms &  
 Things involving network are {\textbf slow}. 
 
 spark minimizes network traffic by keeping all data immutable and in memory. All operations are functional transformations. Fault tolerance is acheived by reapplying the set of transformations to the original dataset (or partition).
+
+\section{RDDs}
+
+Rdds implement map, flatmap, filter, and reduce. The api is much the same as lists, or other sequential or parallel collections. Fold and aggregate also. Aggregate is slightly different, in that for rdds it is call by value, whereas with scala collections it is call by name 
+
