@@ -65,3 +65,14 @@ spark minimizes network traffic by keeping all data immutable and in memory. All
 
 Rdds implement map, flatmap, filter, and reduce. The api is much the same as lists, or other sequential or parallel collections. Fold and aggregate also. Aggregate is slightly different, in that for rdds it is call by value, whereas with scala collections it is call by name 
 
+\subsection{transformations and actions}
+
+scala has transformers and accessors. Transformers return new collections as results (instead of single values): map, flatmap, filter, groupBy.
+
+accessors return single values: reduce, fold, aggregate.
+
+in spark, transformations return new rdds, actions compute a result (either saved or written to storage).
+
+transformations are lazy, actions are eager.
+
+Anything that returns a value that is not an RDD is an action, and will be eagerly executed.
