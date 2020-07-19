@@ -14,7 +14,9 @@ case class Posting(postingType: Int, id: Int, acceptedAnswer: Option[Int], paren
 /** The main class */
 object StackOverflow extends StackOverflow {
 
-  @transient lazy val conf: SparkConf = new SparkConf().setMaster("local").setAppName("StackOverflow")
+//  @transient lazy val conf: SparkConf = new SparkConf().setMaster("local").setAppName("StackOverflow")
+  @transient lazy val conf: SparkConf = new SparkConf().setMaster("local[4]").setAppName("StackOverflow")
+
   @transient lazy val sc: SparkContext = new SparkContext(conf)
 
   /** Main function */
@@ -77,7 +79,12 @@ class StackOverflow extends StackOverflowInterface with Serializable {
 
   /** Group the questions and answers together */
   def groupedPostings(postings: RDD[Posting]): RDD[(QID, Iterable[(Question, Answer)])] = {
-    ???
+//    def getQID(y:Posting): QID = if (y.postingType == 1) y.id else y.parentId
+    val questions = postings.filter(x => x.postingType == 1).map(y => (y.id,y))
+    val answers = postings.filter(x => x.postingType == 2).map(y => (y.parentId,y)).collect { case (Some(a),b) => (a,b)}
+
+    questions.join(answers).groupByKey
+
   }
 
 
@@ -96,7 +103,9 @@ class StackOverflow extends StackOverflowInterface with Serializable {
       highScore
     }
 
-    ???
+    val q_a = grouped.mapValues( x => x.unzip)
+    q_a.map( ((u,v:Tuple2[Iterable[Question],Iterable[Answer]])) => (v._1.head ,answerHighScore(v._2.toArray)))
+
   }
 
 
