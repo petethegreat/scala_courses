@@ -125,7 +125,7 @@ class StackOverflow extends StackOverflowInterface with Serializable {
       }
     }
 
-    ???
+    scored.map(x => (firstLangInTag(x._1.tags,langs) , x._2)).collect {case (Some(a),b) =>  (a*langSpread,b)}
   }
 
 
