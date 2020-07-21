@@ -104,7 +104,7 @@ class StackOverflow extends StackOverflowInterface with Serializable {
     }
 
     val q_a = grouped.mapValues( x => x.unzip)
-    q_a.map( ((u,v:Tuple2[Iterable[Question],Iterable[Answer]])) => (v._1.head ,answerHighScore(v._2.toArray)))
+    q_a.map( v => ((v._2)._1.head ,answerHighScore((v._2)._2.toArray)))
 
   }
 
