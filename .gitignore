@@ -18,3 +18,5 @@ notes/*.aux
 notes/*.log
 notes/*.out
 
+# python virtual envs
+**/venv/
