@@ -298,8 +298,11 @@ class StackOverflow extends StackOverflowInterface with Serializable {
     val closestGrouped = closest.groupByKey()
 
     val median = closestGrouped.mapValues { vs =>
-      val langLabel: String   = ??? // most common language in the cluster
-      val langPercent: Double = ??? // percent of the questions in the most common language
+      val langLabel: String   = langs(vs.groupBy(x => x._1).mapValues(y => y.size).toList.sortBy(z => -z._2).head._1)
+      // most common language in the cluster
+      val langPercent: Double = vs.groupBy(x => x._1).mapValues(y => y.size).aggregate((0,0))( (b,t) => (math.max(b._1,t._2),b._2 + t._2 ))
+      // this seems garbagey. Maybe add some midpoints. We can get the most common language index (and it's count), then lookup the language and quickly get the denominator. denom is clustersize
+      // toList.sortBy(z => -z._2).head._1 // percent of the questions in the most common language
       val clusterSize: Int    = ???
       val medianScore: Int    = ???
 
