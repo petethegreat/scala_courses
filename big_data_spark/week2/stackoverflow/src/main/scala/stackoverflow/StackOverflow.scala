@@ -188,8 +188,8 @@ class StackOverflow extends StackOverflowInterface with Serializable {
     val newMeans = means.clone() // you need to compute newMeans
     if (iter == 1) vectors.persist()
     val vmap = vectors.map(x => (findClosest(x,means),x)).groupByKey.mapValues(x => averageVectors(x)).collectAsMap()
-    for (ii <- 0 to newMeans.length){
-      newMeans(ii) = vmap(ii)
+    for ((k,v) <- vmap.toSeq){
+      newMeans(k) = v
     }
 
 
@@ -298,13 +298,15 @@ class StackOverflow extends StackOverflowInterface with Serializable {
     val closestGrouped = closest.groupByKey()
 
     val median = closestGrouped.mapValues { vs =>
-      val langLabel: String   = langs(vs.groupBy(x => x._1).mapValues(y => y.size).toList.sortBy(z => -z._2).head._1)
+      val lang_count: (LangIndex,Int) = vs.groupBy(x => x._1).mapValues(y => y.size).toList.sortBy(z => z._2)(Ordering.Int.reverse).head
+      val langLabel: String   = langs(lang_count._1/langSpread)
       // most common language in the cluster
-      val langPercent: Double = vs.groupBy(x => x._1).mapValues(y => y.size).aggregate((0,0))( (b,t) => (math.max(b._1,t._2),b._2 + t._2 ))
+
       // this seems garbagey. Maybe add some midpoints. We can get the most common language index (and it's count), then lookup the language and quickly get the denominator. denom is clustersize
       // toList.sortBy(z => -z._2).head._1 // percent of the questions in the most common language
-      val clusterSize: Int    = ???
-      val medianScore: Int    = ???
+      val clusterSize: Int    = vs.size
+      val medianScore: Int    = vs.toSeq.sortBy(x => x._2).apply(clusterSize/2)._2
+      val langPercent: Double = lang_count._2.toDouble/clusterSize
 
       (langLabel, langPercent, clusterSize, medianScore)
     }
