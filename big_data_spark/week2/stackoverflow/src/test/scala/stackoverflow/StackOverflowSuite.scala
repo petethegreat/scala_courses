@@ -106,5 +106,15 @@ class StackOverflowSuite {
     assert(compare(result,expected_vector_elements), "filtered vector results agree")
   }
 
+  @Test def `check_scored_count`: Unit = {
+    val lines = sc.textFile("src/main/resources/stackoverflow/stackoverflow.csv")
+    val raw     = testObject.rawPostings(lines)
+    val grouped = testObject.groupedPostings(raw)
+    val scored  = testObject.scoredPostings(grouped)
+
+
+    assert(scored.count == 2121822, "scored count should be 2121822")
+  }
+
   @Rule def individualTestTimeout = new org.junit.rules.Timeout(100 * 1000)
 }

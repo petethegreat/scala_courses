@@ -28,10 +28,15 @@ object StackOverflow extends StackOverflow {
     val scored  = scoredPostings(grouped)
     val vectors = vectorPostings(scored)
 //    assert(vectors.count() == 2121822, "Incorrect number of vectors: " + vectors.count())
+    // PT
+//    vectors.persist()
+
 
     val means   = kmeans(sampleVectors(vectors), vectors, debug = true)
     val results = clusterResults(means, vectors)
     printResults(results)
+    // PT
+//    vectors.unpersist()
   }
 }
 
@@ -181,6 +186,13 @@ class StackOverflow extends StackOverflowInterface with Serializable {
   /** Main kmeans computation */
   @tailrec final def kmeans(means: Array[(Int, Int)], vectors: RDD[(Int, Int)], iter: Int = 1, debug: Boolean = false): Array[(Int, Int)] = {
     val newMeans = means.clone() // you need to compute newMeans
+    if (iter == 1) vectors.persist()
+    val vmap = vectors.map(x => (findClosest(x,means),x)).groupByKey.mapValues(x => averageVectors(x)).collectAsMap()
+    for (ii <- 0 to newMeans.length){
+      newMeans(ii) = vmap(ii)
+    }
+
+
 
     // TODO: Fill in the newMeans array
     val distance = euclideanDistance(means, newMeans)
@@ -195,14 +207,17 @@ class StackOverflow extends StackOverflowInterface with Serializable {
               f"  distance: ${euclideanDistance(means(idx), newMeans(idx))}%8.0f")
     }
 
-    if (converged(distance))
+    if (converged(distance)) {
+      vectors.unpersist()
       newMeans
+    }
     else if (iter < kmeansMaxIterations)
       kmeans(newMeans, vectors, iter + 1, debug)
     else {
       if (debug) {
         println("Reached max iterations!")
       }
+      vectors.unpersist()
       newMeans
     }
   }
