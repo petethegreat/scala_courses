@@ -116,5 +116,28 @@ class StackOverflowSuite {
     assert(scored.count == 2121822, "scored count should be 2121822")
   }
 
+  @Test def `check_cluster_results`: Unit = {
+
+    val small_data:Seq[(LangIndex,HighScore)] = Seq(
+      (0,2000),(0,3000),(0,4000),
+      (testObject.langSpread,10),
+      (testObject.langSpread,20),
+      (testObject.langSpread,30),
+      (testObject.langSpread*2,500),
+      (testObject.langSpread*2,600),
+      (testObject.langSpread*2,700),
+      (testObject.langSpread*2,800),
+      (testObject.langSpread*2,900)
+    )
+    val means:Array[(Int,Int)] = Array(
+      (0,10),
+      (testObject.langSpread,20),
+      (testObject.langSpread*2,700)
+    )
+    val vectors = sc.parallelize(small_data)
+    val cluster_stats = testObject.clusterResults(means,vectors)
+    cluster_stats.foreach(println)
+
+  }
   @Rule def individualTestTimeout = new org.junit.rules.Timeout(100 * 1000)
 }

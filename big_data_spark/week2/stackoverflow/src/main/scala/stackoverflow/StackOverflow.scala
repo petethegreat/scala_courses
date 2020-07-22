@@ -62,6 +62,9 @@ class StackOverflow extends StackOverflowInterface with Serializable {
   /** K-means parameter: Maximum iterations */
   def kmeansMaxIterations = 120
 
+  def cluster_outpath = "output/cluster_sample.csv"
+  def cluster_mean_outpath = "output/cluster_means.csv"
+
 
   //
   //
@@ -293,12 +296,21 @@ class StackOverflow extends StackOverflowInterface with Serializable {
   //  Displaying results:
   //
   //
+
+  def writeClusters(grouped:RDD[(Int,(LangIndex,HighScore))], path:String, sampleFrac:Double = 0.1) = {
+    grouped.sample(false,sampleFrac).map(x => s"${x._1}, ${x._2._1}, ${x._2._2}").saveAsTextFile(path)
+  }
+
+
   def clusterResults(means: Array[(Int, Int)], vectors: RDD[(LangIndex, HighScore)]): Array[(String, Double, Int, Int)] = {
+
     val closest = vectors.map(p => (findClosest(p, means), p))
     val closestGrouped = closest.groupByKey()
+    closest.persist()
+    writeClusters(closest, cluster_outpath)
 
     val median = closestGrouped.mapValues { vs =>
-      val lang_count: (LangIndex,Int) = vs.groupBy(x => x._1).mapValues(y => y.size).toList.sortBy(z => z._2)(Ordering.Int.reverse).head
+      val lang_count: (LangIndex,Int) = vs.groupBy(x => x._1).mapValues(y => y.size).toSeq.sortBy(z => z._2)(Ordering.Int.reverse)(0)
       val langLabel: String   = langs(lang_count._1/langSpread)
       // most common language in the cluster
 
@@ -306,7 +318,7 @@ class StackOverflow extends StackOverflowInterface with Serializable {
       // toList.sortBy(z => -z._2).head._1 // percent of the questions in the most common language
       val clusterSize: Int    = vs.size
       val medianScore: Int    = vs.toSeq.sortBy(x => x._2).apply(clusterSize/2)._2
-      val langPercent: Double = lang_count._2.toDouble/clusterSize
+      val langPercent: Double = lang_count._2*100.0/clusterSize
 
       (langLabel, langPercent, clusterSize, medianScore)
     }
