@@ -12,6 +12,7 @@
 **/.history
 **/.cache
 **/.lib/
+**/resources/
 
 # tex stuff
 notes/*.aux
