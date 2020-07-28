@@ -129,17 +129,20 @@ object TimeUsage extends TimeUsageInterface {
     // more sense for our use case
     // Hint: you can use the `when` and `otherwise` Spark functions
     // Hint: don’t forget to give your columns the expected name with the `as` method
-    val workingStatusProjection: Column = ???
-    val sexProjection: Column = ???
-    val ageProjection: Column = ???
+    val workingStatusProjection: Column = when('telfs >= 1 && 'telfs < 3,"working").otherwise("not working").alias("working")
+    val sexProjection: Column = when('tesex == 1,"male").otherwise("female").alias("sex")
+    val ageProjection: Column = when('teage >= 15 && 'teage <= 22, "young")
+      .otherwise(when('teage >=23 && 'teage <= 55,"active").otherwise("elder"))
+      .alias("age")
 
     // Create columns that sum columns of the initial dataset
     // Hint: you want to create a complex column expression that sums other columns
     //       by using the `+` operator between them
     // Hint: don’t forget to convert the value to hours
-    val primaryNeedsProjection: Column = ???
-    val workProjection: Column = ???
-    val otherProjection: Column = ???
+    val minsPerHour: Double= 60.0
+    val primaryNeedsProjection: Column = (primaryNeedsColumns.reduce(_ + _)/minsPerHour).alias("primaryNeeds")
+    val workProjection: Column = (workColumns.reduce(_ + _)/minsPerHour).alias("work")
+    val otherProjection: Column = (otherColumns.reduce(_ + _)/minsPerHour).alias("other")
     df
       .select(workingStatusProjection, sexProjection, ageProjection, primaryNeedsProjection, workProjection, otherProjection)
       .where($"telfs" <= 4) // Discard people who are not in labor force
