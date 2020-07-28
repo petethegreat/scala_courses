@@ -166,8 +166,11 @@ object TimeUsage extends TimeUsageInterface {
     * Finally, the resulting DataFrame should be sorted by working status, sex and age.
     */
   def timeUsageGrouped(summed: DataFrame): DataFrame = {
-    ???
-  }
+    summed.groupBy('working,'sex,'age).agg(
+      round(mean('primaryNeeds),1).alias("primaryNeeds"),
+      round(mean('work),1).alias("work"),
+      round(mean('other),1).alias("other")
+    )  }
 
   /**
     * @return Same as `timeUsageGrouped`, but using a plain SQL query instead
