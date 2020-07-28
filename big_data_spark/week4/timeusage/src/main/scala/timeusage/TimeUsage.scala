@@ -82,6 +82,7 @@ object TimeUsage extends TimeUsageInterface {
       case x if x.startsWith("t15") => (x,"leisure")
       case x if x.startsWith("t16") => (x,"leisure")
       case x if x.startsWith("t18") => (x,"leisure")
+      case x => (x,"ignore")
     }
     ( mapped.filter(_._2 == "primary").map(x => col(x._1)),
       mapped.filter(_._2 == "working").map(x => col(x._1)),
@@ -130,7 +131,7 @@ object TimeUsage extends TimeUsageInterface {
     // Hint: you can use the `when` and `otherwise` Spark functions
     // Hint: don’t forget to give your columns the expected name with the `as` method
     val workingStatusProjection: Column = when('telfs >= 1 && 'telfs < 3,"working").otherwise("not working").alias("working")
-    val sexProjection: Column = when('tesex == 1,"male").otherwise("female").alias("sex")
+    val sexProjection: Column = when('tesex === 1,"male").otherwise("female").alias("sex")
     val ageProjection: Column = when('teage >= 15 && 'teage <= 22, "young")
       .otherwise(when('teage >=23 && 'teage <= 55,"active").otherwise("elder"))
       .alias("age")
@@ -170,7 +171,7 @@ object TimeUsage extends TimeUsageInterface {
       round(mean('primaryNeeds),1).alias("primaryNeeds"),
       round(mean('work),1).alias("work"),
       round(mean('other),1).alias("other")
-    )  }
+    ).orderBy('sex,'working,'age)  }
 
   /**
     * @return Same as `timeUsageGrouped`, but using a plain SQL query instead
@@ -186,7 +187,7 @@ object TimeUsage extends TimeUsageInterface {
     * @param viewName Name of the SQL view to use
     */
   def timeUsageGroupedSqlQuery(viewName: String): String =
-    ???
+    s"select working, sex, age, round(mean(work),1) as work, round(mean(primaryNeeds),1) as primaryNeeds, round(mean(other),1) as other from  from ${viewName} group by working, sex, age order by working, sex, age "
 
   /**
     * @return A `Dataset[TimeUsageRow]` from the “untyped” `DataFrame`
