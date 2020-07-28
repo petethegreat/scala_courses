@@ -43,7 +43,7 @@ object TimeUsage extends TimeUsageInterface {
     * @param line Raw fields
     */
   def row(line: List[String]): Row =
-    ???
+    Row.fromSeq(line.head::line.tail.map(x => x.toDouble))
 
   /** @return The initial data frame columns partitioned in three groups: primary needs (sleeping, eating, etc.),
     *         work and other (leisure activities)
@@ -61,7 +61,32 @@ object TimeUsage extends TimeUsageInterface {
     *    “t10”, “t12”, “t13”, “t14”, “t15”, “t16” and “t18” (those which are not part of the previous groups only).
     */
   def classifiedColumns(columnNames: List[String]): (List[Column], List[Column], List[Column]) = {
-    ???
+    val mapped = columnNames.map {
+      case x if x.startsWith("t01") => (x,"primary")
+      case x if x.startsWith("t03") => (x,"primary")
+      case x if x.startsWith("t11") => (x,"primary")
+      case x if x.startsWith("t1801") => (x,"primary")
+      case x if x.startsWith("t1803") => (x,"primary")
+      case x if x.startsWith("t05") => (x,"working")
+      case x if x.startsWith("t1805") => (x,"working")
+      case x if x.startsWith("t02") => (x,"leisure")
+      case x if x.startsWith("t04") => (x,"leisure")
+      case x if x.startsWith("t06") => (x,"leisure")
+      case x if x.startsWith("t07") => (x,"leisure")
+      case x if x.startsWith("t08") => (x,"leisure")
+      case x if x.startsWith("t09") => (x,"leisure")
+      case x if x.startsWith("t10") => (x,"leisure")
+      case x if x.startsWith("t12") => (x,"leisure")
+      case x if x.startsWith("t13") => (x,"leisure")
+      case x if x.startsWith("t14") => (x,"leisure")
+      case x if x.startsWith("t15") => (x,"leisure")
+      case x if x.startsWith("t16") => (x,"leisure")
+      case x if x.startsWith("t18") => (x,"leisure")
+    }
+    ( mapped.filter(_._2 == "primary").map(x => col(x._1)),
+      mapped.filter(_._2 == "working").map(x => col(x._1)),
+      mapped.filter(_._2 == "leisure").map(x => col(x._1)),
+    )
   }
 
   /** @return a projection of the initial DataFrame such that all columns containing hours spent on primary needs
