@@ -22,7 +22,8 @@ object TimeUsage extends TimeUsageInterface {
   /** Main function */
   def main(args: Array[String]): Unit = {
     timeUsageByLifePeriod()
-    timeUsageByLifePeriodSql()
+//    timeUsageByLifePeriodSql()
+    timeUsageByLifePeriodDataSet()
 
 
       spark.close()
@@ -43,6 +44,21 @@ object TimeUsage extends TimeUsageInterface {
     val finalDf = timeUsageGroupedSql(summaryDf)
     finalDf.show()
   }
+
+  def timeUsageByLifePeriodDataSet(): Unit = {
+    val (columns, initDf) = read("src/main/resources/timeusage/atussum.csv")
+    val (primaryNeedsColumns, workColumns, otherColumns) = classifiedColumns(columns)
+    val summaryDf = timeUsageSummary(primaryNeedsColumns, workColumns, otherColumns, initDf)
+    val summaryDS = timeUsageSummaryTyped(summaryDf)
+    summaryDS.persist()
+    summaryDS.printSchema()
+    summaryDS.show(20,false)
+    val finalDS = timeUsageGroupedTyped(summaryDS)
+    // this fails
+    finalDS.show()
+  }
+
+
 
   /** @return The read DataFrame along with its column names. */
   def read(path: String): (List[String], DataFrame) = {
@@ -208,7 +224,7 @@ object TimeUsage extends TimeUsageInterface {
     * cast them at the same time.
     */
   def timeUsageSummaryTyped(timeUsageSummaryDf: DataFrame): Dataset[TimeUsageRow] =
-    timeUsageSummaryDf.rdd.map(x => TimeUsageRow())
+    timeUsageSummaryDf.as[TimeUsageRow]
 
   /**
     * @return Same as `timeUsageGrouped`, but using the typed API when possible
@@ -223,7 +239,7 @@ object TimeUsage extends TimeUsageInterface {
     */
   def timeUsageGroupedTyped(summed: Dataset[TimeUsageRow]): Dataset[TimeUsageRow] = {
     import org.apache.spark.sql.expressions.scalalang.typed
-    ???
+    summed.groupByKey(x => (x.working,x.sex,x.age)).agg(avg('primaryNeeds).as[Double],avg('work).as[Double],avg('other).as[Double]).as[TimeUsageRow]
   }
 }
 
