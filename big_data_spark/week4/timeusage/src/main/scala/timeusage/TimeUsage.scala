@@ -22,7 +22,10 @@ object TimeUsage extends TimeUsageInterface {
   /** Main function */
   def main(args: Array[String]): Unit = {
     timeUsageByLifePeriod()
-    spark.close()
+    timeUsageByLifePeriodSql()
+
+
+      spark.close()
   }
 
   def timeUsageByLifePeriod(): Unit = {
@@ -30,6 +33,14 @@ object TimeUsage extends TimeUsageInterface {
     val (primaryNeedsColumns, workColumns, otherColumns) = classifiedColumns(columns)
     val summaryDf = timeUsageSummary(primaryNeedsColumns, workColumns, otherColumns, initDf)
     val finalDf = timeUsageGrouped(summaryDf)
+    finalDf.show()
+  }
+
+  def timeUsageByLifePeriodSql(): Unit = {
+    val (columns, initDf) = read("src/main/resources/timeusage/atussum.csv")
+    val (primaryNeedsColumns, workColumns, otherColumns) = classifiedColumns(columns)
+    val summaryDf = timeUsageSummary(primaryNeedsColumns, workColumns, otherColumns, initDf)
+    val finalDf = timeUsageGroupedSql(summaryDf)
     finalDf.show()
   }
 
@@ -187,7 +198,7 @@ object TimeUsage extends TimeUsageInterface {
     * @param viewName Name of the SQL view to use
     */
   def timeUsageGroupedSqlQuery(viewName: String): String =
-    s"select working, sex, age, round(mean(work),1) as work, round(mean(primaryNeeds),1) as primaryNeeds, round(mean(other),1) as other from  from ${viewName} group by working, sex, age order by working, sex, age "
+    s"select working, sex, age, round(mean(work),1) as work, round(mean(primaryNeeds),1) as primaryNeeds, round(mean(other),1) as other from ${viewName} group by working, sex, age order by working, sex, age "
 
   /**
     * @return A `Dataset[TimeUsageRow]` from the “untyped” `DataFrame`
@@ -197,7 +208,7 @@ object TimeUsage extends TimeUsageInterface {
     * cast them at the same time.
     */
   def timeUsageSummaryTyped(timeUsageSummaryDf: DataFrame): Dataset[TimeUsageRow] =
-    ???
+    timeUsageSummaryDf.rdd.map(x => TimeUsageRow())
 
   /**
     * @return Same as `timeUsageGrouped`, but using the typed API when possible
