@@ -22,7 +22,39 @@ object TimeUsage extends TimeUsageInterface {
   /** Main function */
   def main(args: Array[String]): Unit = {
     timeUsageByLifePeriod()
+//    +-----------+------+------+------------+----+-----+
+//    |    working|   sex|   age|primaryNeeds|work|other|
+//    +-----------+------+------+------------+----+-----+
+//    |not working|female|active|        12.4| 0.5| 10.8|
+//      |not working|female| elder|        10.9| 0.4| 12.4|
+//      |not working|female| young|        12.5| 0.2| 11.1|
+//      |    working|female|active|        11.5| 4.2|  8.1|
+//      |    working|female| elder|        10.6| 3.9|  9.3|
+//      |    working|female| young|        11.6| 3.3|  8.9|
+//      |not working|  male|active|        11.4| 0.9| 11.4|
+//      |not working|  male| elder|        10.7| 0.7| 12.3|
+//      |not working|  male| young|        11.6| 0.2| 11.9|
+//      |    working|  male|active|        10.8| 5.2|  7.8|
+//      |    working|  male| elder|        10.4| 4.8|  8.6|
+//      |    working|  male| young|        10.9| 3.7|  9.2|
+//      +-----------+------+------+------------+----+-----+
 //    timeUsageByLifePeriodSql()
+//    +-----------+------+------+------------+----+-----+
+//    |    working|   sex|   age|primaryNeeds|work|other|
+//    +-----------+------+------+------------+----+-----+
+//    |not working|female|active|        12.4| 0.5| 10.8|
+//      |not working|female| elder|        10.9| 0.4| 12.4|
+//      |not working|female| young|        12.5| 0.2| 11.1|
+//      |not working|  male|active|        11.4| 0.9| 11.4|
+//      |not working|  male| elder|        10.7| 0.7| 12.3|
+//      |not working|  male| young|        11.6| 0.2| 11.9|
+//      |    working|female|active|        11.5| 4.2|  8.1|
+//      |    working|female| elder|        10.6| 3.9|  9.3|
+//      |    working|female| young|        11.6| 3.3|  8.9|
+//      |    working|  male|active|        10.8| 5.2|  7.8|
+//      |    working|  male| elder|        10.4| 4.8|  8.6|
+//      |    working|  male| young|        10.9| 3.7|  9.2|
+//      +-----------+------+------+------------+----+-----+
 //    timeUsageByLifePeriodDataSet()
 
 
@@ -50,9 +82,9 @@ object TimeUsage extends TimeUsageInterface {
     val (primaryNeedsColumns, workColumns, otherColumns) = classifiedColumns(columns)
     val summaryDf = timeUsageSummary(primaryNeedsColumns, workColumns, otherColumns, initDf)
     val summaryDS = timeUsageSummaryTyped(summaryDf)
-    summaryDS.persist()
-    summaryDS.printSchema()
-    summaryDS.show(20,false)
+//    summaryDS.persist()
+//    summaryDS.printSchema()
+//    summaryDS.show()
 
     val moose = summaryDS.groupByKey(x => (x.working,x.sex,x.age)).agg(
       round(mean('primaryNeeds),1).as[Double],
@@ -60,10 +92,9 @@ object TimeUsage extends TimeUsageInterface {
       round(mean('other),1).as[Double]
     )
 
-    moose.show(5,false)
+//    moose.show(5,false)
     val moose2 = moose.map( k => TimeUsageRow(k._1._1,k._1._2,k._1._3, k._2,k._3,k._4))
-    moose2.orderBy('working,'sex,'age).show(5,false)
-
+    moose2.orderBy('working,'sex,'age).show(false)
   }
 
 
@@ -223,7 +254,8 @@ object TimeUsage extends TimeUsageInterface {
     * @param viewName Name of the SQL view to use
     */
   def timeUsageGroupedSqlQuery(viewName: String): String =
-    s"select working, sex, age, round(mean(work),1) as work, round(mean(primaryNeeds),1) as primaryNeeds, round(mean(other),1) as other from ${viewName} group by working, sex, age order by working, sex, age "
+    s"select working, sex, age, round(mean(primaryNeeds),1) as primaryNeeds, round(mean(work),1) as work, " +
+      s"round(mean(other),1) as other from ${viewName} group by working, sex, age order by working, sex, age "
 
   /**
     * @return A `Dataset[TimeUsageRow]` from the “untyped” `DataFrame`
