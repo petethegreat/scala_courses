@@ -23,7 +23,7 @@ object TimeUsage extends TimeUsageInterface {
   def main(args: Array[String]): Unit = {
     timeUsageByLifePeriod()
 //    timeUsageByLifePeriodSql()
-    timeUsageByLifePeriodDataSet()
+//    timeUsageByLifePeriodDataSet()
 
 
       spark.close()
@@ -54,17 +54,16 @@ object TimeUsage extends TimeUsageInterface {
     summaryDS.printSchema()
     summaryDS.show(20,false)
 
-    val moose = summaryDS.groupByKey(x => (x.working,x.sex,x.age))
-    moose
-//      .(
-//        avg($"primaryNeeds").as[Double].alias("primaryNeeds"),
-//        avg($"work").as[Double].alias("work"),
-//        avg($"other").as[Double].alias("other")).show(20,false)
+    val moose = summaryDS.groupByKey(x => (x.working,x.sex,x.age)).agg(
+      round(mean('primaryNeeds),1).as[Double],
+      round(mean('work),1).as[Double],
+      round(mean('other),1).as[Double]
+    )
 
+    moose.show(5,false)
+    val moose2 = moose.map( k => TimeUsageRow(k._1._1,k._1._2,k._1._3, k._2,k._3,k._4))
+    moose2.orderBy('working,'sex,'age).show(5,false)
 
-//    val finalDS = timeUsageGroupedTyped(summaryDS)
-//    // this fails
-//    finalDS.show()
   }
 
 
@@ -249,12 +248,12 @@ object TimeUsage extends TimeUsageInterface {
     */
   def timeUsageGroupedTyped(summed: Dataset[TimeUsageRow]): Dataset[TimeUsageRow] = {
     import org.apache.spark.sql.expressions.scalalang.typed
-    summed.groupByKey(x => (x.working,x.sex,x.age))
-      .agg(
-        avg($"primaryNeeds").as[Double].alias("primaryNeeds"),
-        avg($"work").as[Double].alias("work"),
-        avg($"other").as[Double].alias("other"))
-
+    summed.groupByKey(x => (x.working,x.sex,x.age)).agg(
+      round(mean('primaryNeeds),1).as[Double],
+      round(mean('work),1).as[Double],
+      round(mean('other),1).as[Double]
+      ).map( k => TimeUsageRow(k._1._1,k._1._2,k._1._3, k._2,k._3,k._4))
+        .orderBy('working,'sex,'age)
   }
 }
 
