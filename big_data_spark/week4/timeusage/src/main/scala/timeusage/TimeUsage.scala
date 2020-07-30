@@ -53,10 +53,20 @@ object TimeUsage extends TimeUsageInterface {
     summaryDS.persist()
     summaryDS.printSchema()
     summaryDS.show(20,false)
-    val finalDS = timeUsageGroupedTyped(summaryDS)
-    // this fails
-    finalDS.show()
+
+    val moose = summaryDS.groupByKey(x => (x.working,x.sex,x.age))
+    moose
+//      .(
+//        avg($"primaryNeeds").as[Double].alias("primaryNeeds"),
+//        avg($"work").as[Double].alias("work"),
+//        avg($"other").as[Double].alias("other")).show(20,false)
+
+
+//    val finalDS = timeUsageGroupedTyped(summaryDS)
+//    // this fails
+//    finalDS.show()
   }
+
 
 
 
@@ -239,7 +249,12 @@ object TimeUsage extends TimeUsageInterface {
     */
   def timeUsageGroupedTyped(summed: Dataset[TimeUsageRow]): Dataset[TimeUsageRow] = {
     import org.apache.spark.sql.expressions.scalalang.typed
-    summed.groupByKey(x => (x.working,x.sex,x.age)).agg(avg('primaryNeeds).as[Double],avg('work).as[Double],avg('other).as[Double]).as[TimeUsageRow]
+    summed.groupByKey(x => (x.working,x.sex,x.age))
+      .agg(
+        avg($"primaryNeeds").as[Double].alias("primaryNeeds"),
+        avg($"work").as[Double].alias("work"),
+        avg($"other").as[Double].alias("other"))
+
   }
 }
 
