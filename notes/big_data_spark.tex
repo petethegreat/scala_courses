@@ -90,3 +90,13 @@ fold, reduce, aggregate walk through the collection, and combine neighbouring el
 As mentioned earlier, foldleft is not paralisable as the types change - we can aggregate partitions individually, but foldleft doesn't have an operation defined to reduce/merge across partitions. If our foldLeft operation is \lstinline| f(a:A,b:A) :B| (takes two inputs of type A and returns one of type B), each partition could be reduced, but the results of these are of type B, and we do not have a \lstinline| f(a:B,b:B) :B| operation. Aggregate solves this, as there it takes arguments for a reduction operation as well as a combination operation.
 
 \subsecton{pair RDDs}
+any rdd in which the elements are of type tuple2 can be considered a key value pair. Pair rdds have some specific operations available, similar to Maps in scala. map, mapvalues, groupByKey, reduceByKey. ReduceByKey should be preferred to a groupByKey followed by a reduce.
+
+\subsection{pairRDD transformations and actions}
+
+With ScalaCollections, groupBy has the following signature
+\begin{lstlisting}
+def gruopBy[K](f: A => K): Map[K,Traversable[A]]
+\end{lstlisting}
+
+THe function maps an element to a key value, then collects all elements with the same key into a traversable collection. The Map maps the key value to the traversable of corresponding elements.
