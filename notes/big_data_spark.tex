@@ -99,4 +99,6 @@ With ScalaCollections, groupBy has the following signature
 def gruopBy[K](f: A => K): Map[K,Traversable[A]]
 \end{lstlisting}
 
-THe function maps an element to a key value, then collects all elements with the same key into a traversable collection. The Map maps the key value to the traversable of corresponding elements.
+The function maps an element to a key value, then collects all elements with the same key into a traversable collection. The Map maps the key value to the traversable of corresponding elements.
+
+MapValues is handy. preserves the key, but transforms the values.
