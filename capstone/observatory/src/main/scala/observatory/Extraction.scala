@@ -3,7 +3,10 @@ package observatory
 import java.time.LocalDate
 import org.apache.spark.sql._
 import org.apache.spark.sql.types._
+import org.apache.spark.rdd.RDD
 import org.apache.log4j.{Level, Logger}
+import scala.io.Source
+
 
 /**
   * 1st milestone: data extraction
@@ -11,7 +14,8 @@ import org.apache.log4j.{Level, Logger}
 object Extraction extends ExtractionInterface {
 
 
-  Logger.getLogger("org.apache.spark").setLevel(Level.WARN)
+//  Logger.getLogger("org.apache.spark").setLevel(Level.WARN)
+
 
   val spark: SparkSession =
     SparkSession
@@ -35,6 +39,11 @@ object Extraction extends ExtractionInterface {
     locateTemperaturesSpark(year, stationsFile, temperaturesFile)
   }
 
+  def getRDDFromResource(path:String):RDD[String] = {
+    val lines = Source.fromInputStream(getClass.getResourceAsStream(path)).getLines.toList
+    spark.sparkContext.parallelize(lines)
+  }
+
   def locateTemperaturesSpark(year: Year, stationsFile: String, temperaturesFile: String): Iterable[(LocalDate, Location, Temperature)] = {
 
     // https://www.coursera.org/learn/scala-capstone/programming/NXfKi/scaffolding-material/discussions/threads/gOcSupeYROCnErqXmMTg2g
@@ -44,6 +53,16 @@ object Extraction extends ExtractionInterface {
 
     // maybe some sort of global spark handler? singleton?
     // what does that solve? when would we call close()?
+    println("extraction locateTemperaturesSpark")
+    val temp_rdd = getRDDFromResource(temperaturesFile)
+    temp_rdd.take(5).foreach(println)
+
+    val station_rdd = getRDDFromResource(stationsFile)
+    station_rdd.take(5).foreach(println)
+
+    ???
+
+
 
   }
 
@@ -54,5 +73,9 @@ object Extraction extends ExtractionInterface {
   def locationYearlyAverageRecords(records: Iterable[(LocalDate, Location, Temperature)]): Iterable[(Location, Temperature)] = {
     ???
   }
+
+//  def main(args: Array[String]): Unit = {
+//    locateTemperatures(1981,"/stations.csv","/1981.csv") //.take(10).foreach(println)
+//  }
 
 }
