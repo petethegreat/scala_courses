@@ -40,8 +40,8 @@ object Extraction extends ExtractionInterface {
   }
 
   def getRDDFromResource(path:String):RDD[String] = {
-    val lines = Source.fromInputStream(getClass.getResourceAsStream(path)).getLines.toList
-    spark.sparkContext.parallelize(lines)
+    val lines = Source.fromInputStream(getClass.getResourceAsStream(path)).getLines.toStream
+    spark.sparkContext.parallelize(lines).map(x => x.toString)
   }
 
   def locateTemperaturesSpark(year: Year, stationsFile: String, temperaturesFile: String): Iterable[(LocalDate, Location, Temperature)] = {
