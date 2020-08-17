@@ -6,6 +6,7 @@ import org.apache.spark.sql.types._
 import org.apache.spark.rdd.RDD
 import org.apache.log4j.{Level, Logger}
 import scala.io.Source
+import scala.util.Try
 
 
 /**
@@ -14,7 +15,7 @@ import scala.io.Source
 object Extraction extends ExtractionInterface {
 
 
-//  Logger.getLogger("org.apache.spark").setLevel(Level.WARN)
+  Logger.getLogger("org.apache.spark").setLevel(Level.WARN)
 
 
   val spark: SparkSession =
@@ -44,19 +45,37 @@ object Extraction extends ExtractionInterface {
     spark.sparkContext.parallelize(lines).map(x => x.toString)
   }
 
-  case class temperatureRecord(stationID: STN, WBANID: WBAN, month: Int, day: Int, tempF: Double)
-  case class stationRecord(stationID: STN, WBANID: WBAN, lat: Double, lon: Double)
+  case class temperatureRecord(stationID: STN, WBANID: WBAN, month: Option[Int], day: Option[Int], tempF: Option[Double])
+  case class stationRecord(stationID: STN, WBANID: WBAN, lat: Option[Double], lon: Option[Double])
 
+  // Try - https://stackoverflow.com/a/23811475
   def convertStringToTempRecord(in:String): temperatureRecord = {
     val fields = in.split(',')
-    temperatureRecord(fields(0).asInstanceOf[STN],fields(1).asInstanceOf[WBAN],fields(2).toInt,fields(3).toInt,fields(4).toDouble)
+    temperatureRecord(
+      Try(fields(0)).getOrElse("").asInstanceOf[STN],
+      Try(fields(1)).getOrElse("").asInstanceOf[WBAN],
+      Try(fields(2).toInt).toOption,
+      Try(fields(3).toInt).toOption,
+      Try(fields(4).toDouble).toOption)
   }
 
+// Try - https://stackoverflow.com/a/23811475
   def convertStringToStationRecord(in:String): stationRecord = {
     val fields = in.split(',')
-    stationRecord(fields(0).asInstanceOf[STN],fields(1).asInstanceOf[WBAN],fields(2).toDouble,fields(3).toDouble)
+    stationRecord(
+      Try(fields(0)).getOrElse("").asInstanceOf[STN],
+      Try(fields(1)).getOrElse("").asInstanceOf[WBAN],
+      Try(fields(2).toDouble).toOption,
+      Try(fields(3).toDouble).toOption)
   }
 
+  def temperatureDatasetFromRDD(input: RDD[String]): Dataset[temperatureRecord] = {
+    input.map(convertStringToTempRecord).toDS
+  }
+
+  def stationDatasetFromRDD(input: RDD[String]): Dataset[stationRecord] = {
+    input.map(convertStringToStationRecord).toDS
+  }
 
   def locateTemperaturesSpark(year: Year, stationsFile: String, temperaturesFile: String): Iterable[(LocalDate, Location, Temperature)] = {
 
