@@ -41,4 +41,3 @@ case class CellPoint(x: Double, y: Double)
 case class Color(red: Int, green: Int, blue: Int)
 
 // PT
-case class StationIdentifier

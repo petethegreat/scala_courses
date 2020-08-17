@@ -3,8 +3,8 @@ package object observatory {
   type Year = Int // Calendar year, introduced in Week 1
 
   // PT
-  type STN = Int
-  type WBAN = Int
+  type STN = String
+  type WBAN = String
   type StationIdentifier = (STN, WBAN)
 
 }

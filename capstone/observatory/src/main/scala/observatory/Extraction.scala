@@ -49,14 +49,14 @@ object Extraction extends ExtractionInterface {
 
   def convertStringToTempRecord(in:String): temperatureRecord = {
     val fields = in.split(',')
-    temperatureRecord(fields(0).asInstanceOf[STN],fields(1).asInstanceOf[WBAN],fields(2).toInt,fields(3).toInt,fields(5).toDouble)
+    temperatureRecord(fields(0).asInstanceOf[STN],fields(1).asInstanceOf[WBAN],fields(2).toInt,fields(3).toInt,fields(4).toDouble)
   }
 
-  def convertStringTostationRecord(in:String): stationRecord = {
+  def convertStringToStationRecord(in:String): stationRecord = {
     val fields = in.split(',')
     stationRecord(fields(0).asInstanceOf[STN],fields(1).asInstanceOf[WBAN],fields(2).toDouble,fields(3).toDouble)
   }
-  
+
 
   def locateTemperaturesSpark(year: Year, stationsFile: String, temperaturesFile: String): Iterable[(LocalDate, Location, Temperature)] = {
 
