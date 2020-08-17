@@ -14,5 +14,5 @@ trait ExtractionTest extends MilestoneSuite {
     val expected = "010010,,01,01,2.1"
     assert(line == expected, s"expected ${expected}, actual ${line}")
   }
-  
+
 }
