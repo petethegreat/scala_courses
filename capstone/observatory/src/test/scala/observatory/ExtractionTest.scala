@@ -2,7 +2,9 @@ package observatory
 
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.Assert._
+import org.apache.spark.sql._
 import org.junit.Test
+import org.apache.spark.sql.functions._
 
 trait ExtractionTest extends MilestoneSuite {
   private val milestoneTest = namedMilestoneTest("data extraction", 1) _
@@ -50,6 +52,28 @@ trait ExtractionTest extends MilestoneSuite {
     // "010010,,01,01,2.1"
     val actual = tempDS.first
     assert(expected == actual, s"expected ${expected}, actual ${actual}")
+  }
+
+  @Test def `check dataset join` = {
+    val statlines = Seq(
+      "008268,,+32.950,+065.567",
+      "008269,,+32.950,+063.567",
+      "008270,,+32.950,+066.567"
+    )
+    val templines = Seq(
+      "008268,,01,07,26.4",
+      "008269,,01,07,26.5",
+      "008269,,01,08,26.6"
+    )
+    val tempDS = Extraction.temperatureDatasetFromRDD(Extraction.spark.sparkContext.parallelize(templines))
+    val statDS = Extraction.stationDatasetFromRDD(Extraction.spark.sparkContext.parallelize(statlines))
+
+    val actual1 = Extraction.joinTempStationDataSets(tempDS,statDS).collect()
+//    actual1.foreach(println)
+    val actual2 = actual1.groupBy(x => x._1.stationID).mapValues(x => x.size)
+    val actual3 = actual2.toSeq.sortBy(x => x._1).toList
+    val expected = Seq(("008268",1),("008269",2))
+    assert( actual3 == expected,s"joined result count: $actual3, expected: $expected")
   }
 
 

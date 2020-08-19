@@ -77,6 +77,18 @@ object Extraction extends ExtractionInterface {
     input.map(convertStringToStationRecord).toDS
   }
 
+  def joinTempStationDataSets(tempDS: Dataset[temperatureRecord], statDS: Dataset[stationRecord]): Dataset[(temperatureRecord,stationRecord)] = {
+    tempDS.filter('stationID.isNotNull || 'WBANID.isNotNull).joinWith(statDS, tempDS("stationID") === statDS("stationID") && tempDS("WBANID") === statDS("WBANID"), "inner")
+  }
+
+//  def collectJoinedResults(inDS: Dataset[(temperatureRecord,stationRecord)], year: Int ): Iterable[(LocalDate, Location, Temperature)] = {
+//    inDS.map( x => (x._1.month, x._1.day,x._1.tempF
+//
+//
+//
+//    ))
+//  }
+
   def locateTemperaturesSpark(year: Year, stationsFile: String, temperaturesFile: String): Iterable[(LocalDate, Location, Temperature)] = {
 
     // https://www.coursera.org/learn/scala-capstone/programming/NXfKi/scaffolding-material/discussions/threads/gOcSupeYROCnErqXmMTg2g
@@ -86,7 +98,7 @@ object Extraction extends ExtractionInterface {
 
     // maybe some sort of global spark handler? singleton?
     // what does that solve? when would we call close()?
-    println("extraction locateTemperaturesSpark")
+//    println("extraction locateTemperaturesSpark")
     val temp_rdd = getRDDFromResource(temperaturesFile)
     temp_rdd.take(5).foreach(println)
 
