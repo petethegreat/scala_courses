@@ -75,6 +75,23 @@ trait ExtractionTest extends MilestoneSuite {
     val expected = Seq(("008268",1),("008269",2))
     assert( actual3 == expected,s"joined result count: $actual3, expected: $expected")
   }
+  @Test def `check dataset join mapped to resultRecord` = {
+    val results = Seq(
+      (Extraction.temperatureRecord("moose", "duck", Some(2), Some(20), Some(32.0)), Extraction.stationRecord("moose", "duck", Some(43.660512), Some(-79.398082))),
+      (Extraction.temperatureRecord("moose", "duck", Some(8), Some(2), Some(65.0)), Extraction.stationRecord("moose", "duck", Some(43.660512), Some(-79.398082)))
+    )
+    import Extraction.spark.implicits._
 
+    val rds = Extraction.spark.sparkContext.parallelize(results).toDS
 
+    val resultrecordds = Extraction.mapJoinedRecords(rds, 1979)
+    resultrecordds.collect.foreach(println)
+  }
+
+//      .as[(Extraction.temperatureRecord,Extraction.stationRecord)]
+//    case class temperatureRecord(stationID: STN, WBANID: WBAN, month: Option[Int], day: Option[Int], tempF: Option[Double])
+//    case class stationRecord(stationID: STN, WBANID: WBAN, lat: Option[Double], lon: Option[Double])
+//    case class resultRecord(date:LocalDate,loc: Location,temp:Temperature)
 }
+
+

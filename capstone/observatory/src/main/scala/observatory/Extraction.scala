@@ -47,6 +47,8 @@ object Extraction extends ExtractionInterface {
 
   case class temperatureRecord(stationID: STN, WBANID: WBAN, month: Option[Int], day: Option[Int], tempF: Option[Double])
   case class stationRecord(stationID: STN, WBANID: WBAN, lat: Option[Double], lon: Option[Double])
+  case class resultRecord(date:LocalDate,loc: Location,temp:Temperature)
+
 
   // Try - https://stackoverflow.com/a/23811475
   def convertStringToTempRecord(in:String): temperatureRecord = {
@@ -80,6 +82,17 @@ object Extraction extends ExtractionInterface {
   def joinTempStationDataSets(tempDS: Dataset[temperatureRecord], statDS: Dataset[stationRecord]): Dataset[(temperatureRecord,stationRecord)] = {
     tempDS.filter('stationID.isNotNull || 'WBANID.isNotNull).joinWith(statDS, tempDS("stationID") === statDS("stationID") && tempDS("WBANID") === statDS("WBANID"), "inner")
   }
+
+  def convertFahrenheitToSensible(t:Double):Temperature = (t -32.0)*5.0/9.0
+
+  def mapJoinedRecords(inDS: Dataset[(temperatureRecord,stationRecord)],year:Year) : Dataset[resultRecord] = {
+    inDS.map{ case (temperatureRecord(a,b,Some(month), Some(day), Some(t)),stationRecord(c,d,Some(lat),Some(lon))) => resultRecord(
+      LocalDate.of(year,month,day),
+      Location(lat,lon),
+      convertFahrenheitToSensible(t)
+    )}.as[resultRecord]
+  }
+
 
 //  def collectJoinedResults(inDS: Dataset[(temperatureRecord,stationRecord)], year: Int ): Iterable[(LocalDate, Location, Temperature)] = {
 //    inDS.map( x => (x._1.month, x._1.day,x._1.tempF
