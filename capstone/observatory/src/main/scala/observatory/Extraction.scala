@@ -7,6 +7,9 @@ import org.apache.spark.rdd.RDD
 import org.apache.log4j.{Level, Logger}
 import scala.io.Source
 import scala.util.Try
+import scala.collection.JavaConverters._
+import org.apache.spark.sql.expressions.scalalang.typed
+import org.apache.spark.sql.functions._
 
 
 /**
@@ -45,9 +48,13 @@ object Extraction extends ExtractionInterface {
     spark.sparkContext.parallelize(lines).map(x => x.toString)
   }
 
+  //   Haven't used datasets much, so I'm gonna do that
+  // some case classes to build datasets out of
   case class temperatureRecord(stationID: STN, WBANID: WBAN, month: Option[Int], day: Option[Int], tempF: Option[Double])
   case class stationRecord(stationID: STN, WBANID: WBAN, lat: Option[Double], lon: Option[Double])
-  case class resultRecord(date:LocalDate,loc: Location,temp:Temperature)
+  case class resultRecord(date: (Int,Int,Int),loc: Location,temp:Temperature)
+  case class LocTempRecord(loc:Location, temp:Temperature)
+
 
 
   // Try - https://stackoverflow.com/a/23811475
@@ -76,7 +83,7 @@ object Extraction extends ExtractionInterface {
   }
 
   def stationDatasetFromRDD(input: RDD[String]): Dataset[stationRecord] = {
-    input.map(convertStringToStationRecord).toDS
+    input.map(convertStringToStationRecord).toDS.filter(col("lat").isNotNull && col("lon").isNotNull)
   }
 
   def joinTempStationDataSets(tempDS: Dataset[temperatureRecord], statDS: Dataset[stationRecord]): Dataset[(temperatureRecord,stationRecord)] = {
@@ -87,20 +94,16 @@ object Extraction extends ExtractionInterface {
 
   def mapJoinedRecords(inDS: Dataset[(temperatureRecord,stationRecord)],year:Year) : Dataset[resultRecord] = {
     inDS.map{ case (temperatureRecord(a,b,Some(month), Some(day), Some(t)),stationRecord(c,d,Some(lat),Some(lon))) => resultRecord(
-      LocalDate.of(year,month,day),
+      (year,month,day),
       Location(lat,lon),
       convertFahrenheitToSensible(t)
     )}.as[resultRecord]
   }
 
-
-//  def collectJoinedResults(inDS: Dataset[(temperatureRecord,stationRecord)], year: Int ): Iterable[(LocalDate, Location, Temperature)] = {
-//    inDS.map( x => (x._1.month, x._1.day,x._1.tempF
-//
-//
-//
-//    ))
-//  }
+//  https://stackoverflow.com/questions/43529513/how-to-convert-dataset-to-a-scala-iterable
+def resultDStoIterable(inDS: Dataset[resultRecord]): Iterable[(LocalDate, Location, Temperature)] = {
+  inDS.map(x => (x.date, x.loc, x.temp)).toLocalIterator.asScala.toIterable.map(x => (LocalDate.of(x._1._1,x._1._2,x._1._3),x._2,x._3))
+}
 
   def locateTemperaturesSpark(year: Year, stationsFile: String, temperaturesFile: String): Iterable[(LocalDate, Location, Temperature)] = {
 
@@ -112,28 +115,32 @@ object Extraction extends ExtractionInterface {
     // maybe some sort of global spark handler? singleton?
     // what does that solve? when would we call close()?
 //    println("extraction locateTemperaturesSpark")
-    val temp_rdd = getRDDFromResource(temperaturesFile)
-    temp_rdd.take(5).foreach(println)
+    val temp_ds = temperatureDatasetFromRDD(getRDDFromResource(temperaturesFile))
+    val station_ds = stationDatasetFromRDD(getRDDFromResource(stationsFile))
 
-    val station_rdd = getRDDFromResource(stationsFile)
-    station_rdd.take(5).foreach(println)
-
-    ???
-
-
-
+    val joined = joinTempStationDataSets(temp_ds,station_ds)
+    val result_DS = mapJoinedRecords(joined, year)
+    resultDStoIterable(result_DS)
   }
 
   /**
     * @param records A sequence containing triplets (date, location, temperature)
     * @return A sequence containing, for each location, the average temperature over the year.
     */
-  def locationYearlyAverageRecords(records: Iterable[(LocalDate, Location, Temperature)]): Iterable[(Location, Temperature)] = {
-    ???
+    def location_iterable_to_dataset(records: Iterable[(LocalDate, Location, Temperature)]): Dataset[LocTempRecord] = {
+      spark.sparkContext.parallelize(records.toList).map(x => LocTempRecord(x._2,x._3)).toDS
+    }
+  def aggregateLocTempDS(inds:Dataset[LocTempRecord]): Dataset[LocTempRecord] = {
+    inds.groupByKey(x => x.loc).agg(mean('temp).as[Temperature]).map(x => LocTempRecord(x._1,x._2)).as[LocTempRecord]
   }
 
-//  def main(args: Array[String]): Unit = {
-//    locateTemperatures(1981,"/stations.csv","/1981.csv") //.take(10).foreach(println)
-//  }
+  def locTempDStoIterable(inDS: Dataset[LocTempRecord]) : Iterable[(Location, Temperature)] = {
+    inDS.map(x => (x.loc,x.temp)).toLocalIterator.asScala.toIterable
+  }
+  def locationYearlyAverageRecords(records: Iterable[(LocalDate, Location, Temperature)]): Iterable[(Location, Temperature)] = {
+    val ds = location_iterable_to_dataset(records)
+    val aggregated = aggregateLocTempDS(ds)
+    locTempDStoIterable(aggregated)
+  }
 
 }

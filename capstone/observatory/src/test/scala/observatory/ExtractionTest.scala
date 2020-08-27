@@ -1,10 +1,14 @@
 package observatory
 
+import java.time.LocalDate
+
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.Assert._
 import org.apache.spark.sql._
 import org.junit.Test
 import org.apache.spark.sql.functions._
+import Extraction.spark.implicits._
+
 
 trait ExtractionTest extends MilestoneSuite {
   private val milestoneTest = namedMilestoneTest("data extraction", 1) _
@@ -41,7 +45,8 @@ trait ExtractionTest extends MilestoneSuite {
     val statRDD = Extraction.getRDDFromResource("/stations.csv")
     val statDS = Extraction.stationDatasetFromRDD(statRDD)
 //    statDS.printSchema()
-    val expected = Extraction.stationRecord("007005".asInstanceOf[STN],"".asInstanceOf[WBAN],None,None)
+    statDS.show(10,false)
+    val expected = Extraction.stationRecord("007018".asInstanceOf[STN],"".asInstanceOf[WBAN],Some(0.0),Some(0.0))
     val actual = statDS.first
     assert(expected == actual, s"expected ${expected}, actual ${actual}")
   }
@@ -80,7 +85,6 @@ trait ExtractionTest extends MilestoneSuite {
       (Extraction.temperatureRecord("moose", "duck", Some(2), Some(20), Some(32.0)), Extraction.stationRecord("moose", "duck", Some(43.660512), Some(-79.398082))),
       (Extraction.temperatureRecord("moose", "duck", Some(8), Some(2), Some(65.0)), Extraction.stationRecord("moose", "duck", Some(43.660512), Some(-79.398082)))
     )
-    import Extraction.spark.implicits._
 
     val rds = Extraction.spark.sparkContext.parallelize(results).toDS
 
@@ -88,10 +92,62 @@ trait ExtractionTest extends MilestoneSuite {
     resultrecordds.collect.foreach(println)
   }
 
-//      .as[(Extraction.temperatureRecord,Extraction.stationRecord)]
-//    case class temperatureRecord(stationID: STN, WBANID: WBAN, month: Option[Int], day: Option[Int], tempF: Option[Double])
-//    case class stationRecord(stationID: STN, WBANID: WBAN, lat: Option[Double], lon: Option[Double])
-//    case class resultRecord(date:LocalDate,loc: Location,temp:Temperature)
+  @Test def `check dataset to iterable` = {
+    val resultrecords = Seq(
+      Extraction.resultRecord((2019,8,2), Location(23.5,26.2), 27.2),
+      Extraction.resultRecord((2019,8,2), Location(23.6,26.1), 27.5),
+      Extraction.resultRecord((2019,8,2), Location(23.7,26.0), 36.4)
+    )
+    val res_ds = Extraction.spark.sparkContext.parallelize(resultrecords).toDS
+
+    val local = Extraction.resultDStoIterable(res_ds)
+
+    local.foreach(println)
+    val actual = local.map(x => x._3).toList.sorted
+    val expected = List[Temperature](27.2,27.5,36.4)
+
+    assert(actual == expected, s"expected ${expected}, actual ${actual}")
+  }
+
+//  @Test def `convert iterable to DS` = {
+//    val theIterable = Iterable(
+//      (LocalDate.of(2019,8,2), Location(23.5,26.2), 27.2),
+//      (LocalDate.of(2019,8,2), Location(23.6,26.1), 27.5),
+//      (LocalDate.of(2019,8,2), Location(23.7,26.0), 36.4)
+//    )
+//    val result = Extraction.location_iterable_to_dataset(theIterable)
+//    result.show(20,false)
+//
+//  }
+
+  @Test def `aggregateLocTemp DS` = {
+    val theIterable = Iterable(
+      (LocalDate.of(2019,8,2), Location(23.5,26.1), 27.2),
+      (LocalDate.of(2019,8,2), Location(23.5,26.1), 27.8),
+      (LocalDate.of(2019,8,2), Location(23.7,26.0), 36.2),
+      (LocalDate.of(2019,8,2), Location(23.7,26.0), 36.8)
+
+    )
+    val locTempDS = Extraction.location_iterable_to_dataset(theIterable)
+    val actual = Extraction.aggregateLocTempDS(locTempDS).orderBy('temp).collect()
+    val expected = Array(Extraction.LocTempRecord(Location(23.5,26.1),27.5), Extraction.LocTempRecord(Location(23.7,26.0),36.5))
+    // this is checking for floating point equality, which is sketchball
+    assert(expected.zip(actual).forall(x => x._1 == x._2), s"expected ${expected.mkString(",")}, actual ${actual.mkString(",")}")
+  }
+
+  @Test def `test average yearly` = {
+    val theIterable = Iterable(
+      (LocalDate.of(2019,8,2), Location(23.5,26.1), 27.2),
+      (LocalDate.of(2019,8,2), Location(23.5,26.1), 27.8),
+      (LocalDate.of(2019,8,2), Location(23.7,26.0), 36.2),
+      (LocalDate.of(2019,8,2), Location(23.7,26.0), 36.8)
+    )
+    val result = Extraction.locationYearlyAverageRecords(theIterable)
+    val expected = Iterable((Location(23.5,26.1),27.5), (Location(23.7,26.0),36.5))
+    assert(expected.zip(result).forall(x => x._1 == x._2), s"expected ${expected.mkString(",")}, result ${result.mkString(",")}")
+  }
+
+
 }
 
 
