@@ -4,6 +4,8 @@ import com.sksamuel.scrimage.{Image, Pixel}
 
 import scala.annotation.tailrec
 import scala.math.{Pi, abs, acos, cos, sin, toRadians, pow}
+import scala.util.Try
+
 
 /**
   * 2nd milestone: basic visualization
@@ -32,7 +34,7 @@ object Visualization extends VisualizationInterface {
         acos( sin(l1.lat.toRadians)*sin(l2.lat.toRadians) + cos(l1.lat.toRadians)*cos(l2.lat.toRadians)*(l1.lon.toRadians - l2.lon.toRadians))
       }
 
-    def getDeltaThetas(temperatures: Iterable[(Location, Temperature)],location:Location) : Iterable[(Double, Temperature)] = {
+    def getDeltaSigmas(temperatures: Iterable[(Location, Temperature)],location:Location) : Iterable[(Double, Temperature)] = {
 //      compute difference in angles between locations
       temperatures.map( x => (getLocationDifference(x._1,location),x._2))
     }
@@ -43,19 +45,20 @@ object Visualization extends VisualizationInterface {
     inverseDistanceSums._1/inverseDistanceSums._2
   }
 
-  def computeMeanTemperature(dsigmaTemp: Iterable[(Double, Temperature)]): Temperature = {
+  def computeMeanTemperature(dSigmaTemp: Iterable[(Double, Temperature)]): Temperature = {
     // check if there is a zeroish distance observation
 
-    val here = dsigmaTemp.collectFirst({case a if abs(a._1) < closeEnough => a._2})
+    val here = dSigmaTemp.collectFirst({case a if abs(a._1) < closeEnough => a._2})
     here match {
       case Some(temp) => temp
-      case None => aggDeltaSigmaTemp(dsigmaTemp)
+      case None => aggDeltaSigmaTemp(dSigmaTemp)
     }
   }
 
 
   def predictTemperature(temperatures: Iterable[(Location, Temperature)], location: Location): Temperature = {
-    ???
+    val dSigmaTemp = getDeltaSigmas(temperatures,location)
+    computeMeanTemperature(dSigmaTemp)
   }
 
   /**
@@ -63,8 +66,31 @@ object Visualization extends VisualizationInterface {
     * @param value The value to interpolate
     * @return The color that corresponds to `value`, according to the color scale defined by `points`
     */
+    def getColourPoints(points_sorted: Iterable[(Temperature, Color)], value: Temperature): ((Temperature, Color),(Temperature, Color))= {
+      points match {
+        case x::xs if value < x._1
+        case x::y::ys if x._1 < value & y._1 > value => (x,y)
+
+      }
+
+    }
   def interpolateColor(points: Iterable[(Temperature, Color)], value: Temperature): Color = {
-    ???
+
+    val lower = Try({points.filter(x => x._1 <= value).maxBy(_._1)}).toOption
+    val upper = Try({points.filter(x => x._1 >= value).minBy(_._1)}).toOption
+
+    
+
+    lazy val sorted_points = points.sortBy(x => x._1)
+    if (value <= points.head._1 ) points.head._2
+//    if (value >= points.last._1) points.last._2
+    points match {
+      case x::y::ys  if
+    }
+
+
+
+
   }
 
   /**

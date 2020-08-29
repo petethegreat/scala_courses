@@ -53,7 +53,19 @@ trait VisualizationTest extends MilestoneSuite {
     assert(abs(actual - expected) < TOLERANCE, s"expected ${expected}, actual ${actual}")
   }
 
+  @Test def `visualisation: check predictTemperature` = {
+    val observations = Iterable(
+      (Location(2.0, 90.0), 38.5),
+      (Location(-2.0, 90.0), 36.5),
+      (Location(3.0, 90.0), 40.0),
+      (Location(-3.0, 90.0), 35.0)
+    )
+    val ref_loc =  Location(0.0, 90.0)
 
+    val actual = Visualization.predictTemperature(observations, ref_loc)
+    val expected = 37.5
+    assert(abs(actual - expected) < TOLERANCE, s"expected ${expected}, actual ${actual}")
+  }
 
 
 
