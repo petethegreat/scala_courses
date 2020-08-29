@@ -79,7 +79,9 @@ object Visualization extends VisualizationInterface {
     val lower = Try({points.filter(x => x._1 <= value).maxBy(_._1)}).toOption
     val upper = Try({points.filter(x => x._1 >= value).minBy(_._1)}).toOption
 
-    
+    (lower,upper) match { case Some((t1,c1)), Some((t2,c2)) => (c1 + c2)/2}
+
+
 
     lazy val sorted_points = points.sortBy(x => x._1)
     if (value <= points.head._1 ) points.head._2
