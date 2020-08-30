@@ -78,6 +78,9 @@ object Visualization extends VisualizationInterface {
 
     val lower = Try({points.filter(x => x._1 <= value).maxBy(_._1)}).toOption
     val upper = Try({points.filter(x => x._1 >= value).minBy(_._1)}).toOption
+    // can do the option without Try
+    // points.filter . match case isEmpty None, case not empty mminBy
+    
 
     (lower,upper) match { case Some((t1,c1)), Some((t2,c2)) => (c1 + c2)/2}
 
