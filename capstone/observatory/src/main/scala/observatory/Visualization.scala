@@ -20,6 +20,7 @@ object Visualization extends VisualizationInterface {
     val TOLERANCE = 1.0e-9
   val closeEnough = 1/6400.0 // should be 1km
   val inverseDistanceP = 2.0
+  val DEFAULTCOLOUR = Color(85,57,204) // blurple - xkcd
 
 
     def getLocationDifference(l1: Location, l2:Location): Double = {
@@ -66,36 +67,35 @@ object Visualization extends VisualizationInterface {
     * @param value The value to interpolate
     * @return The color that corresponds to `value`, according to the color scale defined by `points`
     */
-    def getColourPoints(points_sorted: Iterable[(Temperature, Color)], value: Temperature): ((Temperature, Color),(Temperature, Color))= {
-      points match {
-        case x::xs if value < x._1
-        case x::y::ys if x._1 < value & y._1 > value => (x,y)
 
-      }
+  def linearColourInterp(t1: Temperature, c1: Color, t2: Temperature, c2: Color, value: Temperature): Color = {
+    val frac = (value - t1) / (t2 - t1)
 
-    }
+    Color(
+      ((1 - frac) * c1.red + frac * c2.red).toInt,
+      ((1 - frac) * c1.green + frac * c2.green).toInt,
+      ((1 - frac) * c1.blue + frac * c2.blue).toInt)
+  }
+
+
   def interpolateColor(points: Iterable[(Temperature, Color)], value: Temperature): Color = {
 
-    val lower = Try({points.filter(x => x._1 <= value).maxBy(_._1)}).toOption
-    val upper = Try({points.filter(x => x._1 >= value).minBy(_._1)}).toOption
-    // can do the option without Try
-    // points.filter . match case isEmpty None, case not empty mminBy
-    
+    val lower = points.filter(x => x._1 <= value) match {
+      case x if x.isEmpty => None
+      case y => Some(y.maxBy( _._1))}
 
-    (lower,upper) match { case Some((t1,c1)), Some((t2,c2)) => (c1 + c2)/2}
+    val upper = points.filter(x => x._1 <= value) match {
+      case x if x.isEmpty => None
+      case y => Some(y.minBy( _._1))}
 
 
-
-    lazy val sorted_points = points.sortBy(x => x._1)
-    if (value <= points.head._1 ) points.head._2
-//    if (value >= points.last._1) points.last._2
-    points match {
-      case x::y::ys  if
+    (lower,upper) match {
+      case (Some((t1,c1)), None) => c1
+      case (None, Some((t1,c1))) => c1
+      case (Some((t1,c1)), Some((t2,c2))) if (t1 == t2 ) => c1
+      case (Some((t1,c1)), Some((t2,c2))) => linearColourInterp(t1, c1, t2, c2, value)
+      case _ => DEFAULTCOLOUR
     }
-
-
-
-
   }
 
   /**
