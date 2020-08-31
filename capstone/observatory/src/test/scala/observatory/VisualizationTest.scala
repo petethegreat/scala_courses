@@ -67,6 +67,30 @@ trait VisualizationTest extends MilestoneSuite {
     assert(abs(actual - expected) < TOLERANCE, s"expected ${expected}, actual ${actual}")
   }
 
+  @Test def `visualisation: correct lat/lon values`: Unit = {
+
+    val nPix = (360, 180)
+    val lat_dims = (-90.0,89.0)
+    val lon_dims = (-180.0,179.0)
+
+    val lat_expected = Seq.iterate[Double](lat_dims._1, nPix._2)(_ + 1.0)
+    val lon_expected = Seq.iterate[Double](lon_dims._1, nPix._1)(_ + 1.0)
+
+    val (lat_actual, lon_actual) = Visualization.getPixLocations(nPix, lat_dims, lon_dims)
+
+//    println(s"lat size: ${lat_actual.size}")
+//    println(lat_actual)
+//
+//    println(s"\nlon size: ${lon_actual.size}")
+//    println(lon_actual)
+
+
+
+    assert ((lat_actual == lat_expected) & (lon_actual == lon_expected), s"expected and actual lat/lon values differ")
+
+
+  }
+
 
 
 

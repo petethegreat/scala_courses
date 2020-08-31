@@ -103,9 +103,77 @@ object Visualization extends VisualizationInterface {
     * @param colors Color scale
     * @return A 360×180 image where each pixel shows the predicted temperature at its location
     */
+    def getPixLocations(nPix: (Int,Int), LatDims: (Double,Double), LonDims: (Double,Double)): (Seq[Double], Seq[Double]) = {
+      // take number of pixels and lat/long boundaries, return iterables of lat/lon coordinates
+      // npix is in x/y, so nPix._1 corresponds to lon dimension
+      val dlon = (LonDims._2 - LonDims._1) /(nPix._1 -1)
+      val dlat = (LatDims._2 - LatDims._1) /(nPix._2 -1)
+
+      val LonVals = Seq.iterate[Double](LonDims._1, nPix._1)(_ + dlon)
+      val LatVals = Seq.iterate[Double](LatDims._1, nPix._2)(_ + dlat)
+
+      (LatVals,LonVals)
+    }
+def getColours(): Iterable[(Temperature, Color)] = {
+  Seq(
+    (-60.0, Color(0, 0, 0)),
+    (-50.0, Color(33, 0, 107)),
+    (-27.0, Color(255, 0, 255)),
+    (-15.0, Color(0, 0, 255)),
+    (0.0, Color(0, 255, 255)),
+    (12.0, Color(255, 255, 0)),
+    (32.0, Color(255, 0, 0)),
+    (60.0, Color(255, 255, 255))
+  )
+
+}
+
+
   def visualize(temperatures: Iterable[(Location, Temperature)], colors: Iterable[(Temperature, Color)]): Image = {
-    ???
+    val nPix = (360, 180)
+    val lat_dims = (-90.0,89.0)
+    val lon_dims = (-180.0,179.0)
+
+    val colormap = getColours()
+
+
+    val (lats, lons) = getPixLocations(nPix, lat_dims, lon_dims)
+
+    val arr_pix = new Array[Pixel](nPix._1*nPix._2)
+
+    // parallelise on lat dimension, as we move across lon
+    // as we move across x memory is adjacent. (lon)
+    // parallelise across lat (y)
+
+    val ix_lon = lons.zipWithIndex
+    val iy_lat = lats.reverse.zipWithIndex.par
+
+
+    iy_lat.foreach( iy =>  for (jx <- ix_lon){
+      val temp = predictTemperature(temperatures, Location(iy._1, jx._1))
+      val cc = interpolateColor(colormap, temp)
+      arr_pix(iy._2 + nPix._1*jx._2) = Pixel(cc.red, cc.green, cc.blue,255)
+    })
+
+    Image(nPix._1, nPix._2, arr_pix)
+  }
+
+  def WriteTestImage():Unit = {
+
+    val outPath = "target/test_image.png"
+    val temps = Seq(
+      (Location(43.650381, -79.417962), 45.0),
+      (Location(-22.412246, 132.394754), 73.3),
+      (Location(-45.763782, 170.317367),-4.2),
+      (Location(-45.218830, 169.354580),37.5)
+    )
+    val colours = getColours()
+    val image = visualize(temps,colours)
+
+    // write
+    image.output(new java.io.File(outPath))
   }
 
 }
+
 
