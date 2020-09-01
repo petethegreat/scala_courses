@@ -84,11 +84,30 @@ trait VisualizationTest extends MilestoneSuite {
 //    println(s"\nlon size: ${lon_actual.size}")
 //    println(lon_actual)
 
-
-
     assert ((lat_actual == lat_expected) & (lon_actual == lon_expected), s"expected and actual lat/lon values differ")
+  }
+  @Test def `visualisation: check color interpolation`: Unit = {
+
+    val colours = Visualization.getDefaultColours()
+    val inputTemps = Seq(-70.0,-60.0,-55.0, -50.0,-27.0,22.0,60.0,70.0)
+//    val results = inputTemps.map(x => (x, Visualization.interpolateColor(colours,x)))
+//    def colourDiff(c1: Color, c2:Color): Double = abs(c1.red - c2.red) + abs(c1.green - c2.green) + abs(c1.blue - c2.blue)
+    val expected = Seq(
+      Color(0,0,0),
+      Color(0,0,0),
+      Color(16,0,53),
+      Color(33,0,107),
+      Color(255,0,255),
+      Color(255,127,0),
+      Color(255,255,255),
+      Color(255,255,255))
+    val actual = inputTemps.map(Visualization.interpolateColor(colours,_))
+    assert(expected == actual, "interpolated colours differ from expected")
 
 
+    println()
+    println("colour interpolation results")
+    results.foreach(println)
   }
 
 

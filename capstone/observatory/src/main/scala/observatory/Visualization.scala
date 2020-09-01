@@ -84,7 +84,7 @@ object Visualization extends VisualizationInterface {
       case x if x.isEmpty => None
       case y => Some(y.maxBy( _._1))}
 
-    val upper = points.filter(x => x._1 <= value) match {
+    val upper = points.filter(x => x._1 >= value) match {
       case x if x.isEmpty => None
       case y => Some(y.minBy( _._1))}
 
@@ -114,7 +114,7 @@ object Visualization extends VisualizationInterface {
 
       (LatVals,LonVals)
     }
-def getColours(): Iterable[(Temperature, Color)] = {
+def getDefaultColours(): Iterable[(Temperature, Color)] = {
   Seq(
     (-60.0, Color(0, 0, 0)),
     (-50.0, Color(33, 0, 107)),
@@ -134,7 +134,7 @@ def getColours(): Iterable[(Temperature, Color)] = {
     val lat_dims = (-90.0,89.0)
     val lon_dims = (-180.0,179.0)
 
-    val colormap = getColours()
+    val colormap = getDefaultColours()
 
 
     val (lats, lons) = getPixLocations(nPix, lat_dims, lon_dims)
@@ -167,7 +167,7 @@ def getColours(): Iterable[(Temperature, Color)] = {
       (Location(-45.763782, 170.317367),-4.2),
       (Location(-45.218830, 169.354580),37.5)
     )
-    val colours = getColours()
+    val colours = getDefaultColours()
     val image = visualize(temps,colours)
 
     // write
