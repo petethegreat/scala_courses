@@ -84,12 +84,14 @@ object Visualization extends VisualizationInterface {
 
   def interpolateColor(points: Iterable[(Temperature, Color)], value: Temperature): Color = {
 
-    var lower: Option[(Temperature,Color)] = None
-    var upper: Option[(Temperature,Color)] = None
-    for (tc <- points) {
-      
-    }
-
+//    var lower: Option[(Temperature,Color)] = None
+//    var upper: Option[(Temperature,Color)] = None
+//    for (tc <- points) {
+//
+//    }
+    val lower = points.filter(x => x._1 <= value) match {
+      case x if x.isEmpty => None
+      case y => Some(y.maxBy( _._1))}
 
     val upper = points.filter(x => x._1 >= value) match {
       case x if x.isEmpty => None

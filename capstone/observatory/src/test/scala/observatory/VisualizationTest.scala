@@ -60,12 +60,43 @@ trait VisualizationTest extends MilestoneSuite {
       (Location(3.0, 90.0), 40.0),
       (Location(-3.0, 90.0), 35.0)
     )
+
     val ref_loc =  Location(0.0, 90.0)
 
     val actual = Visualization.predictTemperature(observations, ref_loc)
     val expected = 37.5
     assert(abs(actual - expected) < TOLERANCE, s"expected ${expected}, actual ${actual}")
   }
+  @Test def `visualisation: check predictTemperature again` = {
+
+    // for a given set of observations, make sure we can get predictions at all locations
+    val temps = Seq(
+      (Location(43.650381, -79.417962), 45.0),
+      (Location(-22.412246, 132.394754), 73.3),
+      (Location(-45.763782, 170.317367),-4.2),
+      (Location(-45.218830, 169.354580),37.5)
+    )
+
+    val min_t = temps.minBy(_._2)._2
+    val max_t = temps.maxBy(_._2)._2
+    val nPix = (720, 360)
+    val lat_dims = (-90.0,89.0)
+    val lon_dims = (-180.0,179.0)
+
+    val (lats, lons) = Visualization.getPixLocations(nPix, lat_dims, lon_dims)
+
+    val locations = for (lat <- lats; lon <- lons) yield Location(lat,lon)
+
+    val predictions = locations.map(Visualization.predictTemperature(temps, _))
+
+    var bads = locations.zip(predictions).filter(x => (x._2 < min_t) | (x._2 > max_t))
+    println(s"bads length: ${bads.size}")
+    bads.take(20).foreach(println)
+
+
+    assert(predictions.forall( x => (x >= min_t) & (x <= max_t) ), s"obtained prediction out of bounds")
+  }
+
 
   @Test def `visualisation: getPixelValues correct lat/lon values`: Unit = {
 
