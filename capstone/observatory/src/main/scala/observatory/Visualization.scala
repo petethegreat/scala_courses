@@ -18,8 +18,8 @@ object Visualization extends VisualizationInterface {
     * @return The predicted temperature at `location`
     */
     val TOLERANCE = 1.0e-9
-  val closeEnough = 1/6400.0 // should be 1km
-  val inverseDistanceP = 2.0
+  val closeEnough = 1/3000.0 // should be 1km
+  val inverseDistanceP = 4.0
   val DEFAULTCOLOUR = Color(85,57,204) // blurple - xkcd
 
 
@@ -42,6 +42,10 @@ object Visualization extends VisualizationInterface {
 
   def aggDeltaSigmaTemp(dsigmaTemp: Iterable[(Double, Temperature)]): Temperature = {
     val inverseDistances = dsigmaTemp.map( k => (pow(k._1,-inverseDistanceP), k._2))
+//    id_t - (inverse distance, temperature) tuple
+    // uw_u._1 - sum of inverse_distance * temp
+    // uw_u._2 - sum of inverse_distance
+
     val inverseDistanceSums = inverseDistances.foldLeft((0.0,0.0))( (uw_u, id_t) => (uw_u._1 + id_t._1 * id_t._2, uw_u._2 + id_t._1))
     inverseDistanceSums._1/inverseDistanceSums._2
   }
@@ -94,6 +98,7 @@ object Visualization extends VisualizationInterface {
       case (None, Some((t1,c1))) => c1
       case (Some((t1,c1)), Some((t2,c2))) if (t1 == t2 ) => c1
       case (Some((t1,c1)), Some((t2,c2))) => linearColourInterp(t1, c1, t2, c2, value)
+      case(None,None) => Color(0,0,0) // This seems to happen
       case _ => DEFAULTCOLOUR
     }
   }
@@ -127,15 +132,20 @@ def getDefaultColours(): Iterable[(Temperature, Color)] = {
   )
 
 }
+def getHiTempRangeColours(): Iterable[(Temperature, Color)] = {
+  Seq(
+    (-100.0, Color(255, 0, 0)),
+    (0.0, Color(255, 255, 255)),
+    (100.0, Color(0, 0, 255))
+  )
 
+}
 
   def visualize(temperatures: Iterable[(Location, Temperature)], colors: Iterable[(Temperature, Color)]): Image = {
-    val nPix = (360, 180)
+//    val nPix = (360, 180)
+    val nPix = (720, 360)
     val lat_dims = (-90.0,89.0)
     val lon_dims = (-180.0,179.0)
-
-    val colormap = getDefaultColours()
-
 
     val (lats, lons) = getPixLocations(nPix, lat_dims, lon_dims)
 
@@ -146,13 +156,13 @@ def getDefaultColours(): Iterable[(Temperature, Color)] = {
     // parallelise across lat (y)
 
     val ix_lon = lons.zipWithIndex
-    val iy_lat = lats.reverse.zipWithIndex.par
+    val iy_lat = lats.reverse.zipWithIndex
 
 
     iy_lat.foreach( iy =>  for (jx <- ix_lon){
       val temp = predictTemperature(temperatures, Location(iy._1, jx._1))
-      val cc = interpolateColor(colormap, temp)
-      arr_pix(iy._2 + nPix._1*jx._2) = Pixel(cc.red, cc.green, cc.blue,255)
+      val cc = interpolateColor(colors, temp)
+      arr_pix(jx._2 + nPix._1*iy._2) = Pixel(cc.red, cc.green, cc.blue,255)
     })
 
     Image(nPix._1, nPix._2, arr_pix)
@@ -167,7 +177,7 @@ def getDefaultColours(): Iterable[(Temperature, Color)] = {
       (Location(-45.763782, 170.317367),-4.2),
       (Location(-45.218830, 169.354580),37.5)
     )
-    val colours = getDefaultColours()
+    val colours = getHiTempRangeColours() // getDefaultColours()
     val image = visualize(temps,colours)
 
     // write

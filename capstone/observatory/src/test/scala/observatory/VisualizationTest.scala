@@ -67,7 +67,7 @@ trait VisualizationTest extends MilestoneSuite {
     assert(abs(actual - expected) < TOLERANCE, s"expected ${expected}, actual ${actual}")
   }
 
-  @Test def `visualisation: correct lat/lon values`: Unit = {
+  @Test def `visualisation: getPixelValues correct lat/lon values`: Unit = {
 
     val nPix = (360, 180)
     val lat_dims = (-90.0,89.0)
@@ -104,10 +104,9 @@ trait VisualizationTest extends MilestoneSuite {
     val actual = inputTemps.map(Visualization.interpolateColor(colours,_))
     assert(expected == actual, "interpolated colours differ from expected")
 
-
-    println()
-    println("colour interpolation results")
-    results.foreach(println)
+//    println()
+//    println("colour interpolation results")
+//    results.foreach(println)
   }
 
 
