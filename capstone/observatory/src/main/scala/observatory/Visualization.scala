@@ -18,8 +18,8 @@ object Visualization extends VisualizationInterface {
     * @return The predicted temperature at `location`
     */
     val TOLERANCE = 1.0e-9
-  val closeEnough = 1/3000.0 // should be 1km
-  val inverseDistanceP = 4.0
+  val closeEnough = 1/6400.0 // should be 1km
+  val inverseDistanceP = 2.0
   val DEFAULTCOLOUR = Color(85,57,204) // blurple - xkcd
 
 
@@ -84,9 +84,12 @@ object Visualization extends VisualizationInterface {
 
   def interpolateColor(points: Iterable[(Temperature, Color)], value: Temperature): Color = {
 
-    val lower = points.filter(x => x._1 <= value) match {
-      case x if x.isEmpty => None
-      case y => Some(y.maxBy( _._1))}
+    var lower: Option[(Temperature,Color)] = None
+    var upper: Option[(Temperature,Color)] = None
+    for (tc <- points) {
+      
+    }
+
 
     val upper = points.filter(x => x._1 >= value) match {
       case x if x.isEmpty => None
@@ -142,14 +145,18 @@ def getHiTempRangeColours(): Iterable[(Temperature, Color)] = {
 }
 
   def visualize(temperatures: Iterable[(Location, Temperature)], colors: Iterable[(Temperature, Color)]): Image = {
-//    val nPix = (360, 180)
-    val nPix = (720, 360)
+    val nPix = (360, 180)
+//    val nPix = (720, 360)
     val lat_dims = (-90.0,89.0)
     val lon_dims = (-180.0,179.0)
 
     val (lats, lons) = getPixLocations(nPix, lat_dims, lon_dims)
 
     val arr_pix = new Array[Pixel](nPix._1*nPix._2)
+    // initialise to white
+    for (ix <- 0 until nPix._1;
+    iy <- 0 until nPix._2) arr_pix(ix +iy*nPix._1) = Pixel(255,255,255,255)
+
 
     // parallelise on lat dimension, as we move across lon
     // as we move across x memory is adjacent. (lon)
