@@ -79,6 +79,8 @@ trait VisualizationTest extends MilestoneSuite {
 
     val min_t = temps.minBy(_._2)._2
     val max_t = temps.maxBy(_._2)._2
+    println(min_t)
+    println(max_t)
     val nPix = (720, 360)
     val lat_dims = (-90.0,89.0)
     val lon_dims = (-180.0,179.0)
@@ -89,12 +91,22 @@ trait VisualizationTest extends MilestoneSuite {
 
     val predictions = locations.map(Visualization.predictTemperature(temps, _))
 
-    var bads = locations.zip(predictions).filter(x => (x._2 < min_t) | (x._2 > max_t))
+    val bads = locations.zip(predictions).filter(x => (x._2 < min_t) || (x._2 > max_t))
     println(s"bads length: ${bads.size}")
     bads.take(20).foreach(println)
 
+    val bads2 = predictions.filter(x => (x < min_t) || (x > max_t))
+    println(s"bads2 length: ${bads2.size}")
+    bads2.take(20).foreach(println)
 
-    assert(predictions.forall( x => (x >= min_t) & (x <= max_t) ), s"obtained prediction out of bounds")
+    val exceeds = predictions.exists(_ > max_t)
+    val toolow = predictions.exists(_ < min_t)
+
+    println(s"exceeds: ${exceeds}, toolow: ${toolow}")
+
+
+
+    assert(predictions.forall( x => ((x >= min_t) && (x <= max_t) )), s"obtained prediction out of bounds")
   }
 
 
@@ -141,10 +153,34 @@ trait VisualizationTest extends MilestoneSuite {
   }
 
 
+@Test def `visualisation: check dsigma for nans`: Unit = {
+  val ref_loc = Location(0,90)
 
+  val nPix = (360, 180)
+  val lat_dims = (-90.0,89.0)
+  val lon_dims = (-180.0,179.0)
+
+  val (lats,lons) = Visualization.getPixLocations(nPix, lat_dims, lon_dims)
+
+  val locations = for (lat <- lats; lon <- lons) yield Location(lat,lon)
+
+  val dsigmas = locations.map(Visualization.getLocationDifference(_,ref_loc))
+
+  val nans = dsigmas.filter(x => x.isNaN).size
+  assert(nans == 0,s" expected 0 nans, found ${nans} nans (of ${dsigmas.size}")
+
+}
 
 //  computeMeanTemperature - case when distance 0
 //  aggDeltaSigmaTemp = quick check
 
+//  val loctemps = Extraction.locateTemperatures(1976,"stations.csv","/1976.csv")
+//val averageloctemps = Extraction.locationYearlyAverageRecords(loctemps)
+
+//  [Test Description] visualize (5pts)(observatory.CapstoneSuite)
+//  [Observed Error] Incorrect computed color at Location(-33.0,-158.0): Color(125,0,130). Expected to be closer to Color(255,0,0) than Color(0,0,255)
+// closer to 32 than -15
+  
 
 }
+

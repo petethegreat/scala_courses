@@ -32,7 +32,7 @@ object Visualization extends VisualizationInterface {
       else if ((abs(l1.lat + l2.lat) < TOLERANCE ) & abs(abs(l1.lon - l2.lon) - 180.0) < TOLERANCE)
         Pi
       else
-        acos( sin(l1.lat.toRadians)*sin(l2.lat.toRadians) + cos(l1.lat.toRadians)*cos(l2.lat.toRadians)*(l1.lon.toRadians - l2.lon.toRadians))
+        acos( sin(l1.lat.toRadians)*sin(l2.lat.toRadians) + cos(l1.lat.toRadians)*cos(l2.lat.toRadians)*cos(l1.lon.toRadians - l2.lon.toRadians))
       }
 
     def getDeltaSigmas(temperatures: Iterable[(Location, Temperature)],location:Location) : Iterable[(Double, Temperature)] = {
@@ -76,9 +76,9 @@ object Visualization extends VisualizationInterface {
     val frac = (value - t1) / (t2 - t1)
 
     Color(
-      ((1 - frac) * c1.red + frac * c2.red).toInt,
-      ((1 - frac) * c1.green + frac * c2.green).toInt,
-      ((1 - frac) * c1.blue + frac * c2.blue).toInt)
+      ((1 - frac) * c1.red + frac * c2.red).round.toInt,
+      ((1 - frac) * c1.green + frac * c2.green).round.toInt,
+      ((1 - frac) * c1.blue + frac * c2.blue).round.toInt)
   }
 
 
