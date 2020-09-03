@@ -2,6 +2,7 @@ package observatory
 
 import org.junit.Assert._
 import org.junit.Test
+
 import math.abs
 
 trait VisualizationTest extends MilestoneSuite {
@@ -145,6 +146,7 @@ trait VisualizationTest extends MilestoneSuite {
       Color(255,255,255),
       Color(255,255,255))
     val actual = inputTemps.map(Visualization.interpolateColor(colours,_))
+    val different = actual.zip(expected).filter(x => x._1 != x._2).foreach(println)
     assert(expected == actual, "interpolated colours differ from expected")
 
 //    println()
@@ -167,19 +169,60 @@ trait VisualizationTest extends MilestoneSuite {
   val dsigmas = locations.map(Visualization.getLocationDifference(_,ref_loc))
 
   val nans = dsigmas.filter(x => x.isNaN).size
+
   assert(nans == 0,s" expected 0 nans, found ${nans} nans (of ${dsigmas.size}")
 
 }
 
+@Test def `Visualisation check 1976 colour`: Unit = {
+
+  //  [Test Description] visualize (5pts)(observatory.CapstoneSuite)
+  //  [Observed Error] Incorrect computed color at Location(-33.0,-158.0): Color(125,0,130). Expected to be closer to Color(255,0,0) than Color(0,0,255)
+  // closer to 32 than -15
+  val loctemps = Extraction.locateTemperatures(1976,"/stations.csv","/1976.csv")
+  val averageloctemps = Extraction.locationYearlyAverageRecords(loctemps)
+  val ref_loc =  Location(-33.0,-158.0)
+  println(s"ref_loc = ${ref_loc}")
+  val pred_temp = Visualization.predictTemperature(averageloctemps, ref_loc)
+  println(s"predicted temperature: ${pred_temp}")
+  val interpolated_color = Visualization.interpolateColor(Visualization.getDefaultColours, pred_temp)
+  println(s"interpolated colour: ${interpolated_color}")
+
+}
+
+//@Test def `Visualisation: check average temps`:Unit = {
+//  val ref_loc = Location(-33.0, -158.0)
+//  val years = (1976 to 1990).toSeq
+//  val temps = years.map(x => (x, Visualization.predictTemperature(
+//    Extraction.locationYearlyAverageRecords(
+//      Extraction.locateTemperatures(x, "/stations.csv", s"/${x}.csv")),
+//    ref_loc)))
+//  temps.foreach(println)
+//}
+//  (1976,14.423223260610076)
+//  (1977,14.754372975485435)
+//  (1978,15.007796741960252)
+//  (1979,15.075250882823404)
+//  (1980,15.100782554503327)
+//  (1981,15.452644418571058)
+//  (1982,15.183025907500447)
+//  (1983,15.036588153158077)
+//  (1984,14.901673108296695)
+//  (1985,15.041698939120637)
+//  (1986,15.056109635937823)
+//  (1987,15.134656144524095)
+//  (1988,15.073171749347425)
+//  (1989,15.164762798121826)
+//  (1990,15.436182212790504)
+
+  //
 //  computeMeanTemperature - case when distance 0
 //  aggDeltaSigmaTemp = quick check
 
 //  val loctemps = Extraction.locateTemperatures(1976,"stations.csv","/1976.csv")
 //val averageloctemps = Extraction.locationYearlyAverageRecords(loctemps)
 
-//  [Test Description] visualize (5pts)(observatory.CapstoneSuite)
-//  [Observed Error] Incorrect computed color at Location(-33.0,-158.0): Color(125,0,130). Expected to be closer to Color(255,0,0) than Color(0,0,255)
-// closer to 32 than -15
+
   
 
 }
