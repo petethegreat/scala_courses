@@ -179,9 +179,11 @@ trait VisualizationTest extends MilestoneSuite {
   //  [Test Description] visualize (5pts)(observatory.CapstoneSuite)
   //  [Observed Error] Incorrect computed color at Location(-33.0,-158.0): Color(125,0,130). Expected to be closer to Color(255,0,0) than Color(0,0,255)
   // closer to 32 than -15
+//  Location(-28.0,-176.0): Color(125,0,129).
   val loctemps = Extraction.locateTemperatures(1976,"/stations.csv","/1976.csv")
   val averageloctemps = Extraction.locationYearlyAverageRecords(loctemps)
-  val ref_loc =  Location(-33.0,-158.0)
+//  val ref_loc =  Location(-33.0,-158.0)
+  val ref_loc = Location(-28, -176)
   println(s"ref_loc = ${ref_loc}")
   val pred_temp = Visualization.predictTemperature(averageloctemps, ref_loc)
   println(s"predicted temperature: ${pred_temp}")
