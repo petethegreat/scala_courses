@@ -75,14 +75,14 @@ object Visualization extends VisualizationInterface {
   def linearColourInterp(t1: Temperature, c1: Color, t2: Temperature, c2: Color, value: Temperature): Color = {
     val frac = (value - t1) / (t2 - t1)
 
-//    Color(
-//      ((1 - frac) * c1.red.toDouble + frac * c2.red.toDouble).round.toInt,
-//      ((1 - frac) * c1.green.toDouble + frac * c2.green.toDouble).round.toInt,
-//      ((1 - frac) * c1.blue.toDouble + frac * c2.blue.toDouble).round.toInt)
     Color(
-      (((value - t1)* c1.red +   (t2-value)*c2.red)/(t2-t1)).round.toInt,
-      (((value - t1)* c1.green +   (t2-value)*c2.green)/(t2-t1)).round.toInt,
-      (((value - t1)* c1.blue +   (t2-value)*c2.blue)/(t2-t1)).round.toInt)
+      ((1.0 - frac) * c1.red + frac * c2.red).round.toInt,
+      ((1.0 - frac) * c1.green + frac * c2.green).round.toInt,
+      ((1.0 - frac) * c1.blue + frac * c2.blue).round.toInt)
+//    Color(
+//      (((value - t1)* c1.red +   (t2-value)*c2.red)/(t2-t1)).round.toInt,
+//      (((value - t1)* c1.green +   (t2-value)*c2.green)/(t2-t1)).round.toInt,
+//      (((value - t1)* c1.blue +   (t2-value)*c2.blue)/(t2-t1)).round.toInt)
   }
 
 

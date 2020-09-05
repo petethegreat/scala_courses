@@ -139,10 +139,10 @@ trait VisualizationTest extends MilestoneSuite {
     val expected = Seq(
       Color(0,0,0),
       Color(0,0,0),
-      Color(16,0,53),
+      Color(17,0,54),
       Color(33,0,107),
       Color(255,0,255),
-      Color(255,127,0),
+      Color(255,128,0),
       Color(255,255,255),
       Color(255,255,255))
     val actual = inputTemps.map(Visualization.interpolateColor(colours,_))
@@ -191,16 +191,43 @@ trait VisualizationTest extends MilestoneSuite {
   println(s"interpolated colour: ${interpolated_color}")
 
 }
+  @Test def `visualisation: interpolated temps at (-33, -158)`:Unit = {
+    val temps = Seq(
+      14.423223260610076,
+      14.754372975485435,
+      15.007796741960252,
+      15.075250882823404,
+      15.100782554503327,
+      15.452644418571058,
+      15.183025907500447,
+      15.036588153158077,
+      14.901673108296695,
+      15.041698939120637,
+      15.056109635937823,
+      15.134656144524095,
+      15.073171749347425,
+      15.164762798121826,
+      15.436182212790504)
+    val default_colours = Visualization.getDefaultColours()
+    val interp_colours = temps.map(Visualization.interpolateColor(default_colours,_))
+    println("interpolated colours for (-33,-158)")
+    println("expected closer to (255,0,0) than Color(0,0,255)")
+    interp_colours.foreach(println)
 
-//@Test def `Visualisation: check average temps`:Unit = {
-//  val ref_loc = Location(-33.0, -158.0)
-//  val years = (1976 to 1990).toSeq
-//  val temps = years.map(x => (x, Visualization.predictTemperature(
-//    Extraction.locationYearlyAverageRecords(
-//      Extraction.locateTemperatures(x, "/stations.csv", s"/${x}.csv")),
-//    ref_loc)))
-//  temps.foreach(println)
-//}
+//    expected closer to (255,0,0) than Color(0,0,255)
+
+  }
+
+@Test def `Visualisation: check average temps`:Unit = {
+  val ref_loc = Location(-158, -33.0)
+  val years = (1976 to 1990).toSeq
+  val temps = years.map(x => (x, Visualization.predictTemperature(
+    Extraction.locationYearlyAverageRecords(
+      Extraction.locateTemperatures(x, "/stations.csv", s"/${x}.csv")),
+    ref_loc)))
+  temps.foreach(println)
+}
+  // average temps for (-33, -158)
 //  (1976,14.423223260610076)
 //  (1977,14.754372975485435)
 //  (1978,15.007796741960252)
@@ -216,7 +243,22 @@ trait VisualizationTest extends MilestoneSuite {
 //  (1988,15.073171749347425)
 //  (1989,15.164762798121826)
 //  (1990,15.436182212790504)
-
+// temps for (-158, -33)
+//  (1976,19.84497422987818)
+//  (1977,19.865987105124063)
+//  (1978,20.53090161581674)
+//  (1979,20.640732460595537)
+//  (1980,21.42863789251875)
+//  (1981,21.04628116079157)
+//  (1982,20.785057740868428)
+//  (1983,20.527908960758904)
+//  (1984,20.26449132632626)
+//  (1985,20.501488941450827)
+//  (1986,20.68121127664162)
+//  (1987,20.98217875541805)
+//  (1988,20.82756647589077)
+//  (1989,20.108958428938333)
+//  (1990,20.313795463911315)
   //
 //  computeMeanTemperature - case when distance 0
 //  aggDeltaSigmaTemp = quick check
