@@ -154,6 +154,20 @@ trait VisualizationTest extends MilestoneSuite {
 //    results.foreach(println)
   }
 
+  @Test def `visualisation: check color interpolation 2`: Unit = {
+
+    val colours:Seq[(Temperature,Color)] = Seq(
+      (0.0,Color(0,0,0)),
+      (100.0,Color(100,100,100)))
+
+    val test_temps:Seq[Temperature] = (0 to 10).map(x => x*10.0)
+    val actual = test_temps.map( Visualization.interpolateColor(colours,_))
+    val expected = (0 to 10).map(x => Color(x*10,x*10,x*10)).toSeq
+    actual.zip(expected).foreach(println)
+
+    assert(expected == actual, "interpolated colours differ from expected")
+  }
+
 
 @Test def `visualisation: check dsigma for nans`: Unit = {
   val ref_loc = Location(0,90)
@@ -174,6 +188,31 @@ trait VisualizationTest extends MilestoneSuite {
 
 }
 
+  @Test def `check dsigma`:Unit = {
+    val diff_tuples = Seq(
+      (Location(0.0,0.0),Location(10.0,0.0)),
+      (Location(0.0,0.0),Location(20.0,0.0)),
+      (Location(0.0,0.0),Location(45.0,0.0)),
+      (Location(90.0,0.0),Location(0.0,17.0))
+
+    )
+    val expected_diff_rad = Seq(
+      10.0.toRadians,
+      20.0.toRadians,
+      math.Pi/4.0,
+      math.Pi/2.0
+    )
+
+    val actual = diff_tuples.map(x => Visualization.getLocationDifference(x._1,x._2))
+
+    val comparison = actual.zip(expected_diff_rad)
+//    diff_tuples.zip(comparison).filter(x => abs(x._2._1 - x._2._2) > TOLERANCE).foreach(println)
+    diff_tuples.zip(comparison).foreach(println)
+
+
+    assert(actual.zip(expected_diff_rad).forall(x => abs(x._1 - x._2) <= TOLERANCE), "visualisation: expected and actual dsigma values do not agree")
+  }
+
 @Test def `Visualisation check 1976 colour`: Unit = {
 
   //  [Test Description] visualize (5pts)(observatory.CapstoneSuite)
@@ -191,6 +230,21 @@ trait VisualizationTest extends MilestoneSuite {
   println(s"interpolated colour: ${interpolated_color}")
 
 }
+
+  @Test def `visualisation: check aggdeltasigma`: Unit = {
+
+      val ds_t:Seq[(Double, Temperature)] = Seq(
+        (1.0,0.0),
+        (2.0,10.0)
+      )
+      val denom = ds_t.map(x => 1.0/math.pow(x._1,Visualization.inverseDistanceP)).sum
+      val actual = Visualization.aggDeltaSigmaTemp(ds_t)
+      val expected = ds_t.map(x => x._2/math.pow(x._1,Visualization.inverseDistanceP)).sum/denom
+      println("visualisatoion: checkaggdeltasigma")
+      println(s"expected: ${expected}, actual: ${actual}")
+      assert(math.abs(expected - actual) < TOLERANCE,s"expected: ${expected}, actual: ${actual}")
+    }
+
   @Test def `visualisation: interpolated temps at (-33, -158)`:Unit = {
     val temps = Seq(
       14.423223260610076,
@@ -218,15 +272,15 @@ trait VisualizationTest extends MilestoneSuite {
 
   }
 
-@Test def `Visualisation: check average temps`:Unit = {
-  val ref_loc = Location(-158, -33.0)
-  val years = (1976 to 1990).toSeq
-  val temps = years.map(x => (x, Visualization.predictTemperature(
-    Extraction.locationYearlyAverageRecords(
-      Extraction.locateTemperatures(x, "/stations.csv", s"/${x}.csv")),
-    ref_loc)))
-  temps.foreach(println)
-}
+//@Test def `Visualisation: check average temps`:Unit = {
+//  val ref_loc = Location(-158, -33.0)
+//  val years = (1976 to 1990).toSeq
+//  val temps = years.map(x => (x, Visualization.predictTemperature(
+//    Extraction.locationYearlyAverageRecords(
+//      Extraction.locateTemperatures(x, "/stations.csv", s"/${x}.csv")),
+//    ref_loc)))
+//  temps.foreach(println)
+//}
   // average temps for (-33, -158)
 //  (1976,14.423223260610076)
 //  (1977,14.754372975485435)

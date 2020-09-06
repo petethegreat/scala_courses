@@ -185,10 +185,11 @@ def getHiTempRangeColours(): Iterable[(Temperature, Color)] = {
 
     val outPath = "target/test_image.png"
     val temps = Seq(
-      (Location(43.650381, -79.417962), 45.0),
-      (Location(-22.412246, 132.394754), 73.3),
-      (Location(-45.763782, 170.317367),-4.2),
-      (Location(-45.218830, 169.354580),37.5)
+      (Location(90.0,0.0), 60.0),
+      (Location(-90.0,0.0), 45.0),
+      (Location(10, 170),-60.0),
+//      (Location(-10,-170),-45.0),
+      (Location(0,0),0.0)
     )
     val colours = getHiTempRangeColours() // getDefaultColours()
     val image = visualize(temps,colours)
