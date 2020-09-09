@@ -2,7 +2,7 @@ package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
 import math.{atan,log,exp,Pi,pow}
-import Visualization.{interpolateColor, predictTemperature}
+import Visualization.{interpolateColor, predictTemperature,getDefaultColours}
 /**
   * 3rd milestone: interactive visualization
   */
@@ -15,6 +15,8 @@ object Interaction extends InteractionInterface {
     val TILEFUDGE = 0.5 // offset used when going from tile location to lat/lon
   val TWOPI256 = 2.0*Pi/256.0
   val Npix = 256 // number pixels in a tile - fixed, don't play with this
+  val (zMin, zMax) = (0,3) // z values to use in generateTiles
+  val (yearMin, yearMax) = (1979, 1981)
 
 
   def tileLocation(tile: Tile): Location = {
@@ -76,7 +78,41 @@ object Interaction extends InteractionInterface {
     yearlyData: Iterable[(Year, Data)],
     generateImage: (Year, Tile, Data) => Unit
   ): Unit = {
-    ???
+    val yearTiles = for {
+      z <- zMin to zMax
+      ix <- 0 until pow(2,z).toInt
+      jy <- 0 until pow(2,z).toInt
+      yearData <- yearlyData} yield (yearData,Tile(ix,jy,z))
+    yearTiles.par.map(x => generateImage(x._1._1,x._2,x._1._2))
+
+
   }
+
+  def writeImages():Unit = {
+
+    val years = for (y <- yearMin until yearMax) yield y
+
+    println("interaction.writeImages - extracting data")
+    val yearTemps = years.map(x => (
+      x,
+      Extraction.locationYearlyAverageRecords(
+        Extraction.locateTemperatures(x, "/stations.csv", s"/${x}.csv"))))
+    println(s"interaction.writeImages - writing tile images")
+    println(s"z: ${zMin} -${zMax} ")
+    println(s"year: ${yearMin} -${yearMax} ")
+    val nimages = (zMin to zMax).map(x => math.pow(2,2*x).toInt).sum * years.size
+    println(s"${nimages} images")
+
+    def generateTheImage(yy:Year, tt:Tile, dd:Iterable[(Location, Temperature)]) = {
+      val colourMap = getDefaultColours()
+      val image = tile(dd, colourMap, tt)
+      val outPath = s"target/temperatures/${yy}/${tt.zoom}/${tt.x}-${tt.y}.png"
+      image.output(new java.io.File(outPath))
+      println(s"wrote ${outPath}")
+    }
+    // do the writing
+    generateTiles(yearTemps, generateTheImage)
+  }
+
 
 }
