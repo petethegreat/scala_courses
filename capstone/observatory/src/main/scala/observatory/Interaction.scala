@@ -15,8 +15,8 @@ object Interaction extends InteractionInterface {
     val TILEFUDGE = 0.5 // offset used when going from tile location to lat/lon
   val TWOPI256 = 2.0*Pi/256.0
   val Npix = 256 // number pixels in a tile - fixed, don't play with this
-  val (zMin, zMax) = (0,3) // z values to use in generateTiles
-  val (yearMin, yearMax) = (1979, 1981)
+  val (zMin, zMax) = (0,0) // z values to use in generateTiles
+  val (yearMin, yearMax) = (1979, 1979)
 
 
   def tileLocation(tile: Tile): Location = {
@@ -64,7 +64,6 @@ object Interaction extends InteractionInterface {
     // add a little loop here, or define a function to write adjacent pixels if scalefac > 1
     indexed_colours.foreach {case (ij,cc) => out(ij._1 + Npix*ij._2) = Pixel(cc.red, cc.green, cc.blue, alpha)}
     Image(Npix,Npix,out)
-
   }
 
   /**
@@ -83,14 +82,13 @@ object Interaction extends InteractionInterface {
       ix <- 0 until pow(2,z).toInt
       jy <- 0 until pow(2,z).toInt
       yearData <- yearlyData} yield (yearData,Tile(ix,jy,z))
-    yearTiles.par.map(x => generateImage(x._1._1,x._2,x._1._2))
+    yearTiles.map(x => generateImage(x._1._1,x._2,x._1._2))
 
 
   }
-
   def writeImages():Unit = {
 
-    val years = for (y <- yearMin until yearMax) yield y
+    val years = for (y <- yearMin to yearMax) yield y
 
     println("interaction.writeImages - extracting data")
     val yearTemps = years.map(x => (
@@ -107,12 +105,12 @@ object Interaction extends InteractionInterface {
       val colourMap = getDefaultColours()
       val image = tile(dd, colourMap, tt)
       val outPath = s"target/temperatures/${yy}/${tt.zoom}/${tt.x}-${tt.y}.png"
-      image.output(new java.io.File(outPath))
+      val outFile = new java.io.File(outPath)
+      outFile.getParentFile.mkdirs
+      image.output(outFile)
       println(s"wrote ${outPath}")
     }
     // do the writing
     generateTiles(yearTemps, generateTheImage)
   }
-
-
 }
