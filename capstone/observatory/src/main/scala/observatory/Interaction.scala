@@ -23,7 +23,7 @@ object Interaction extends InteractionInterface {
     // take tile, and return lat/lon (presumable at centre)
     val lat = 2.0*atan(exp(Pi - (tile.y + TILEFUDGE)*TWOPI256*pow(2.0,-tile.zoom))) - Pi/2.0
     val lon = (tile.x + TILEFUDGE)*TWOPI256*pow(2.0,-tile.zoom) - Pi
-    return Location(lat,lon)
+    return Location(lat.toDegrees,lon.toDegrees)
   }
 
   /**
