@@ -1,7 +1,7 @@
 package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
-import math.{atan,log,exp,Pi,pow}
+import math.{atan,log, exp, Pi, pow, sinh}
 import Visualization.{interpolateColor, predictTemperature,getDefaultColours}
 /**
   * 3rd milestone: interactive visualization
@@ -12,7 +12,7 @@ object Interaction extends InteractionInterface {
     * @param tile Tile coordinates
     * @return The latitude and longitude of the top-left corner of the tile, as per http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
     */
-    val TILEFUDGE = 0.5 // offset used when going from tile location to lat/lon
+    val TILEFUDGE = 0.0 // offset used when going from tile location to lat/lon
   val TWOPI256 = 2.0*Pi/256.0
   val Npix = 256 // number pixels in a tile - fixed, don't play with this
   val (zMin, zMax) = (0,0) // z values to use in generateTiles
@@ -21,8 +21,11 @@ object Interaction extends InteractionInterface {
 
   def tileLocation(tile: Tile): Location = {
     // take tile, and return lat/lon (presumable at centre)
-    val lat = 2.0*atan(exp(Pi - (tile.y + TILEFUDGE)*TWOPI256*pow(2.0,-tile.zoom))) - Pi/2.0
-    val lon = (tile.x + TILEFUDGE)*TWOPI256*pow(2.0,-tile.zoom) - Pi
+    val nn = pow(2.0,tile.zoom)
+//    val lat = 2.0*atan(exp(Pi - (tile.y + TILEFUDGE)*TWOPI256*pow(2.0,-tile.zoom))) - Pi/2.0
+//    val lon = (tile.x + TILEFUDGE)*TWOPI256*pow(2.0,-tile.zoom) - Pi
+    val lat = atan(sinh(Pi - 2.0*Pi/nn*tile.y))
+    val lon = Pi*(2.0*tile.x/nn - 1.0)
     return Location(lat.toDegrees,lon.toDegrees)
   }
 
