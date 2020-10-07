@@ -15,8 +15,8 @@ object Interaction extends InteractionInterface {
     val TILEFUDGE = 0.0 // offset used when going from tile location to lat/lon
   val TWOPI256 = 2.0*Pi/256.0
   val Npix = 256 // number pixels in a tile - fixed, don't play with this
-  val (zMin, zMax) = (0,0) // z values to use in generateTiles
-  val (yearMin, yearMax) = (1979, 1979)
+  val (zMin, zMax) = (0,2) // z values to use in generateTiles
+  val (yearMin, yearMax) = (2015, 2015)
 
 
   def tileLocation(tile: Tile): Location = {
@@ -42,9 +42,10 @@ object Interaction extends InteractionInterface {
     // if scalefac is not 1, produce fewer distinct locations
 
 //    val scalefac = 1 // resolution - increase to 2 or 4 to skip colour determination at certain pixels
+//    zoom level of 8 and npix of 256 are fixed here
 
-    val location_indices = (for (ix <- 0 until Npix by scalefac; jy <- 0 until Npix by scalefac) yield (ix,jy))
-    val (ix_offset, jy_offset) = (Npix*tile.zoom*tile.x, Npix*tile.zoom*tile.y)
+    val location_indices = (for (ix <- 0 until 256 by scalefac; jy <- 0 until 256 by scalefac) yield (ix,jy))
+    val (ix_offset, jy_offset) = (256*tile.zoom*tile.x, 256*tile.zoom*tile.y)
 
     val dividedTiles = location_indices.map(xy => Tile(xy._1 + ix_offset,xy._2 + jy_offset, tile.zoom +8))
     val locations = dividedTiles.map(tileLocation)
@@ -54,7 +55,7 @@ object Interaction extends InteractionInterface {
 
   def tile(temperatures: Iterable[(Location, Temperature)], colors: Iterable[(Temperature, Color)], tile: Tile): Image = {
 
-    val scale = 1
+    val scale = 4
     val (st_indices, st_locs) = GetSubTileLocations(tile,scale)
 
     // this should be done in parallel
@@ -65,7 +66,17 @@ object Interaction extends InteractionInterface {
     val alpha = 127
     val out = new Array[Pixel](Npix*Npix)
     // add a little loop here, or define a function to write adjacent pixels if scalefac > 1
-    indexed_colours.foreach {case (ij,cc) => out(ij._1 + Npix*ij._2) = Pixel(cc.red, cc.green, cc.blue, alpha)}
+    for (
+      (indices, cc) <- indexed_colours;
+      ii_scale <- 0 until scale;
+      jj_scale <- 0 until scale;
+      ix = indices._1 + ii_scale;
+      jy = indices._2 + jj_scale;
+      if (ix < Npix) ;
+      if (jy < Npix)
+    ) {out(ix + Npix*jy) = Pixel(cc.red, cc.green, cc.blue, alpha) }
+    // indexed_colours.foreach {case (ij,cc) => out(ij._1 + Npix*ij._2) = Pixel(cc.red, cc.green, cc.blue, alpha)}
+    // scalefac
     Image(Npix,Npix,out)
   }
 

@@ -26,6 +26,7 @@ object Extraction extends ExtractionInterface {
       .builder()
       .appName("Time Usage")
       .master("local[4]")
+      .config("spark.driver.memory","5g")
       .getOrCreate()
 
   // For implicit conversions like converting RDDs to DataFrames
@@ -43,9 +44,9 @@ object Extraction extends ExtractionInterface {
     locateTemperaturesSpark(year, stationsFile, temperaturesFile)
   }
 
-  def getRDDFromResource(path:String):RDD[String] = {
+  def getRDDFromResource(path:String,npartitions:Int = 400):RDD[String] = {
     val lines = Source.fromInputStream(getClass.getResourceAsStream(path)).getLines.toStream
-    spark.sparkContext.parallelize(lines).map(x => x.toString)
+    spark.sparkContext.parallelize(lines,npartitions).map(x => x.toString)
   }
 
   //   Haven't used datasets much, so I'm gonna do that
@@ -115,8 +116,10 @@ def resultDStoIterable(inDS: Dataset[resultRecord]): Iterable[(LocalDate, Locati
     // maybe some sort of global spark handler? singleton?
     // what does that solve? when would we call close()?
 //    println("extraction locateTemperaturesSpark")
-    val temp_ds = temperatureDatasetFromRDD(getRDDFromResource(temperaturesFile))
-    val station_ds = stationDatasetFromRDD(getRDDFromResource(stationsFile))
+//    val npartitions = 400 - this is now defaullt
+
+    val temp_ds = temperatureDatasetFromRDD(getRDDFromResource(temperaturesFile,600))
+    val station_ds = stationDatasetFromRDD(getRDDFromResource(stationsFile,20))
 
     val joined = joinTempStationDataSets(temp_ds,station_ds)
     val result_DS = mapJoinedRecords(joined, year)
