@@ -1,6 +1,6 @@
 # intellij stuff
 **/.idea/
-
+**/.DS_STORE
 
 # scala prject stuff
 **/dist/*
