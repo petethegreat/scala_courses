@@ -19,7 +19,7 @@ object Visualization extends VisualizationInterface {
     */
     val TOLERANCE = 1.0e-9
   val closeEnough = 1/6400.0 // should be 1km
-  val inverseDistanceP = 2.0
+  val inverseDistanceP = 6.0
   val DEFAULTCOLOUR = Color(85,57,204) // blurple - xkcd
 
 
@@ -199,5 +199,3 @@ def getHiTempRangeColours(): Iterable[(Temperature, Color)] = {
   }
 
 }
-
-

@@ -15,8 +15,10 @@ object Interaction extends InteractionInterface {
     val TILEFUDGE = 0.0 // offset used when going from tile location to lat/lon
   val TWOPI256 = 2.0*Pi/256.0
   val Npix = 256 // number pixels in a tile - fixed, don't play with this
-  val (zMin, zMax) = (0,2) // z values to use in generateTiles
+  val (zMin, zMax) = (0,3) // z values to use in generateTiles
   val (yearMin, yearMax) = (2015, 2015)
+  val SCALE = 2 // scale factor for images
+
 
 
   def tileLocation(tile: Tile): Location = {
@@ -55,8 +57,7 @@ object Interaction extends InteractionInterface {
 
   def tile(temperatures: Iterable[(Location, Temperature)], colors: Iterable[(Temperature, Color)], tile: Tile): Image = {
 
-    val scale = 4
-    val (st_indices, st_locs) = GetSubTileLocations(tile,scale)
+    val (st_indices, st_locs) = GetSubTileLocations(tile,SCALE)
 
     // this should be done in parallel
     val indexed_colours = st_indices.zip(st_locs).par.map {
@@ -68,8 +69,8 @@ object Interaction extends InteractionInterface {
     // add a little loop here, or define a function to write adjacent pixels if scalefac > 1
     for (
       (indices, cc) <- indexed_colours;
-      ii_scale <- 0 until scale;
-      jj_scale <- 0 until scale;
+      ii_scale <- 0 until SCALE;
+      jj_scale <- 0 until SCALE;
       ix = indices._1 + ii_scale;
       jy = indices._2 + jj_scale;
       if (ix < Npix) ;
@@ -126,5 +127,16 @@ object Interaction extends InteractionInterface {
     }
     // do the writing
     generateTiles(yearTemps, generateTheImage)
+  }
+
+  def getData2015(): Unit = {
+
+    val year = 2015
+    println(s"extracting location/temperatures for {year}")
+    val temps = Extraction.locateTemperatures(year, "/stations.csv", s"/${year}.csv")
+    println(s"averaging temperatures for {year}")
+    val averages = Extraction.locationYearlyAverageRecords(temps)
+    println("Done!")
+    averages.take(20).foreach(println)
   }
 }
