@@ -30,7 +30,8 @@ object Interaction extends InteractionInterface {
     val lon = Pi*(2.0*tile.x/nn - 1.0)
     return Location(lat.toDegrees,lon.toDegrees)
   }
-
+//  https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Subtiles
+  
   /**
     * @param temperatures Known temperatures
     * @param colors Color scale

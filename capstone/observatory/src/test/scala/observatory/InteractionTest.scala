@@ -30,9 +30,9 @@ trait InteractionTest extends MilestoneSuite {
   }
 
   @Test def `interaction: check tileLocation` = {
-    val startTiles = List(Tile(0,0,2), Tile(0,1,2), Tile(0,2,2), Tile(0,3,2),
-      Tile(0,0,2), Tile(1,0,2), Tile(2,0,2), Tile(3,0,2), Tile(3,3,2))
-    val locs = startTiles.map(x => (x,Interaction.tileLocation(x)))
+    val startTiles = List(Tile(0,0,2), Tile(1,0,2), Tile(2,0,2), Tile(3,0,2),
+      Tile(0,0,2), Tile(0,1,2), Tile(0,2,2), Tile(0,3,2), Tile(3,3,2))
+    val locs = startTiles.map(x => (x,Interaction.tileLocation(x),Interaction.tileLocation(Interaction.GetSubTiles(x,scalefac=1)._2(0))))
     locs.foreach(println)
 
 //    locations are in radians
