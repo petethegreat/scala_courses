@@ -15,7 +15,7 @@ object Interaction extends InteractionInterface {
     val TILEFUDGE = 0.0 // offset used when going from tile location to lat/lon
   val TWOPI256 = 2.0*Pi/256.0
   val Npix = 256 // number pixels in a tile - fixed, don't play with this
-  val (zMin, zMax) = (0,3) // z values to use in generateTiles
+  val (zMin, zMax) = (2,2) // z values to use in generateTiles
   val (yearMin, yearMax) = (2015, 2015)
   val SCALE = 2 // scale factor for images
 
@@ -37,7 +37,15 @@ object Interaction extends InteractionInterface {
     * @param tile Tile coordinates
     * @return A 256×256 image showing the contents of the given tile
     */
+  def GetSubTiles(tile: Tile, scalefac:Int = 1) = {
+    // divide a tile by increasing zoom by 8, return the subtiles (256 by 256)
+    val location_indices = (for (jy <- 0 until 256 by scalefac; ix <- 0 until 256 by scalefac) yield (ix,jy))
+    val (ix_offset, jy_offset) = (256*tile.zoom*tile.x, 256*tile.zoom*tile.y)
 
+    val dividedTiles = location_indices.map(xy => Tile(xy._1 + ix_offset,xy._2 + jy_offset, tile.zoom +8))
+    (location_indices, dividedTiles)
+
+  }
   def GetSubTileLocations(tile:Tile, scalefac:Int = 1) = {
 //    get the subtile locations
     // divide the given tile into 256 subtiles, by increasing zoom by 8
@@ -46,11 +54,8 @@ object Interaction extends InteractionInterface {
 //    val scalefac = 1 // resolution - increase to 2 or 4 to skip colour determination at certain pixels
 //    zoom level of 8 and npix of 256 are fixed here
 
-    val location_indices = (for (ix <- 0 until 256 by scalefac; jy <- 0 until 256 by scalefac) yield (ix,jy))
-    val (ix_offset, jy_offset) = (256*tile.zoom*tile.x, 256*tile.zoom*tile.y)
-
-    val dividedTiles = location_indices.map(xy => Tile(xy._1 + ix_offset,xy._2 + jy_offset, tile.zoom +8))
-    val locations = dividedTiles.map(tileLocation)
+    val (location_indices, dividedTiles) = GetSubTiles(tile, scalefac)
+    val locations = dividedTiles.map(tileLocation(_))
     (location_indices,locations)
   }
 

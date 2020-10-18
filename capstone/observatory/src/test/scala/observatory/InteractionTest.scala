@@ -8,9 +8,25 @@ trait InteractionTest extends MilestoneSuite {
   private val milestoneTest = namedMilestoneTest("interactive visualization", 3) _
 
   @Test def `interaction: check GetSubTileLocations` = {
-    val startTile = Tile(0,0,0)
-    val (indices,tiles) = Interaction.GetSubTileLocations(startTile)
-    tiles.take(10).foreach(println)
+    val startTile = Tile(0,0,1)
+    val otherStarts = List(
+      Tile(startTile.x +1, startTile.y, startTile.zoom),
+      Tile(startTile.x, startTile.y +1, startTile.zoom),
+      Tile(startTile.x +1, startTile.y +1, startTile.zoom)
+      ).map(x => (x,Interaction.tileLocation(x)))
+
+    println("other corners:")
+    otherStarts.foreach(x => println(s"${x._1} : ${x._2}"))
+    val (indices,tiles) = Interaction.GetSubTiles(startTile,1)
+    val startloc = Interaction.tileLocation(startTile) // top left
+    println(s"startTile = $startTile, startLoc = ${startloc}")
+    val cornerTiles = List(
+      tiles(0),tiles(255),tiles(256*255),tiles(256*256 -1)
+    )
+    val cornerLocs = cornerTiles.map(x => (x,Interaction.tileLocation(x)))
+    println("corner locations:")
+    cornerLocs.foreach(x => println(s"${x._1} : ${x._2}"))
+
   }
 
   @Test def `interaction: check tileLocation` = {
