@@ -36,8 +36,16 @@ trait VisualizationTest extends MilestoneSuite {
   @Test def `visualisation: aggDeltaSigmaTemp sums correctly` = {
     val dsigma_temp:Iterable[(Double,Temperature)] = Iterable( (1.0,40.0), (2.0,50.0))
     val actual = Visualization.aggDeltaSigmaTemp(dsigma_temp)
-    val expected = 42.0
+    val expected = 40.15384615384615 // assumes p==6
     assert(abs(actual - expected) < TOLERANCE, s"expected ${expected}, actual ${actual}")
+
+//     >>> wt = 40 + 50/math.pow(2.0,6)
+// >>> w = 1 + 1.0/math.pow(2.0,6)
+// >>> w
+// 1.015625
+// >>> wt/w
+// 40.15384615384615
+
   }
 
   @Test def `visualisation: computeMeanTemperature returns zero distance result` = {
@@ -321,7 +329,6 @@ trait VisualizationTest extends MilestoneSuite {
 //val averageloctemps = Extraction.locationYearlyAverageRecords(loctemps)
 
 
-  
+
 
 }
-
