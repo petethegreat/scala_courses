@@ -31,7 +31,7 @@ object Interaction extends InteractionInterface {
     return Location(lat.toDegrees,lon.toDegrees)
   }
 //  https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Subtiles
-  
+
   /**
     * @param temperatures Known temperatures
     * @param colors Color scale
