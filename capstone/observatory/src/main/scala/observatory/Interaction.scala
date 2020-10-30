@@ -30,6 +30,17 @@ object Interaction extends InteractionInterface {
     val lon = Pi*(2.0*tile.x/nn - 1.0)
     return Location(lat.toDegrees,lon.toDegrees)
   }
+
+  def altTileLocation(tile: Tile): Location = {
+    // take tile, and return lat/lon (presumable at centre)
+    val nn = pow(2.0,tile.zoom)
+//    val lat = 2.0*atan(exp(Pi - (tile.y + TILEFUDGE)*TWOPI256*pow(2.0,-tile.zoom))) - Pi/2.0
+//    val lon = (tile.x + TILEFUDGE)*TWOPI256*pow(2.0,-tile.zoom) - Pi
+    val latdeg = atan(sinh(Pi - 2.0*Pi*tile.y/nn))*180.0/Pi
+    val londeg = 360.0*tile.x/nn - 180.0
+    return Location(latdeg,londeg)
+  }
+
 //  https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Subtiles
 
   /**
@@ -41,7 +52,7 @@ object Interaction extends InteractionInterface {
   def GetSubTiles(tile: Tile, scalefac:Int = 1) = {
     // divide a tile by increasing zoom by 8, return the subtiles (256 by 256)
     val location_indices = (for (jy <- 0 until 256 by scalefac; ix <- 0 until 256 by scalefac) yield (ix,jy))
-    val (ix_offset, jy_offset) = (256*tile.zoom*tile.x, 256*tile.zoom*tile.y)
+    val (ix_offset, jy_offset) = (256*tile.x, 256*tile.y)
 
     val dividedTiles = location_indices.map(xy => Tile(xy._1 + ix_offset,xy._2 + jy_offset, tile.zoom +8))
     (location_indices, dividedTiles)
