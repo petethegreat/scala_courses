@@ -15,7 +15,7 @@ object Interaction extends InteractionInterface {
     val TILEFUDGE = 0.0 // offset used when going from tile location to lat/lon
   val TWOPI256 = 2.0*Pi/256.0
   val Npix = 256 // number pixels in a tile - fixed, don't play with this
-  val (zMin, zMax) = (0,3) // z values to use in generateTiles
+  val (zMin, zMax) = (3,3) // z values to use in generateTiles
   val (yearMin, yearMax) = (2015, 2015)
   val SCALE = 1 // scale factor for images
 
